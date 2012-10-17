@@ -36,13 +36,11 @@ function eddc_record_commission($payment_id, $new_status, $old_status) {
 
 				if( $commission_settings ) {
 					
-					$download_price = null;
-
 					if( is_array( $cart_details ) ) {
 
 						$cart_item_id = array_search( $download['id'], $cart_details );
 
-						$download_price = isset( $cart_details[$cart_item_id]['price'] ) ? $cart_details[$cart_item_id]['price'] : null;
+						$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : null;
 
 					}
 
@@ -53,7 +51,7 @@ function eddc_record_commission($payment_id, $new_status, $old_status) {
 					}
 
 					$user_id 			= absint( $commission_settings['user_id'] ); 	// recipient of the commission
-					$rate 				= $commission_settings['amount'];	// percentage amount of download price
+					$rate 				= $commission_settings['amount'];				// percentage amount of download price
 					$commission_amount	= eddc_calc_commission_amount( $price, $rate ); // calculate the commission amount to award
 					$currency 			= $payment_data['currency'];
 
