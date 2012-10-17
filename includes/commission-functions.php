@@ -40,8 +40,8 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 					if ( is_array( $cart_details ) ) {
 
-						$cart_item_id = array_search( $download['id'], $cart_details );
-
+						$cart_item_id = eddc_get_cart_item_id( $cart_details, $download_id );
+						
 						$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : edd_get_download_price( $download_id );
 
 					}
@@ -87,6 +87,16 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 }
 add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
 
+
+function eddc_get_cart_item_id( $cart_details, $download_id ) {
+
+	foreach( (array) $cart_details as $postion => $item ) {
+		if( $item['id'] == $download_id ) {
+			return $postion;
+		}
+	}
+	return null;
+}
 
 function eddc_calc_commission_amount( $price, $rate ) {
 
