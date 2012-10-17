@@ -15,16 +15,16 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 	if ( ! edd_is_test_mode() ) {
 
-		$payment_data  = get_post_meta( $payment_id, '_edd_payment_meta', true );
-		$downloads   = maybe_unserialize( $payment_data['downloads'] );
-		$user_info   = maybe_unserialize( $payment_data['user_info'] );
-		$cart_details  = maybe_unserialize( $payment_data['cart_details'] );
+		$payment_data  	= get_post_meta( $payment_id, '_edd_payment_meta', true );
+		$downloads   	= maybe_unserialize( $payment_data['downloads'] );
+		$user_info   	= maybe_unserialize( $payment_data['user_info'] );
+		$cart_details  	= maybe_unserialize( $payment_data['cart_details'] );
 
 		// loop through each purchased download and award commissions, if needed
 		foreach ( $downloads as $download ) {
 
-			$download_id    = absint( $download['id'] );
-			$commissions_enabled  = get_post_meta( $download_id, '_edd_commisions_enabled', true );
+			$download_id    		= absint( $download['id'] );
+			$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
 
 
 			// if we need to award a commission
