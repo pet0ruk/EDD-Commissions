@@ -42,7 +42,7 @@ function eddc_render_commissions_meta_box()	{
 			echo '<th style="width:20%"><label for="edd_commission_user">' . __ ('User ID', 'eddc') . '</label></th>';
 			echo '<td class="edd_field_type_text">';
 				echo '<input type="text" name="edd_commission_settings[user_id]" id="edd_commission_user" value="' . $user_id . '" size="30" style="width:20%" />&nbsp;';
-				echo __('Enter the user ID that should receive a commission of eachsale', 'eddc');
+				echo __('Enter the user ID that should receive a commission of each sale', 'eddc');
 			echo '<td>';
 		echo '</tr>';
 		
