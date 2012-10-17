@@ -50,23 +50,23 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 						$price = $download_price;
 					}
 
-					$user_id    = absint( $commission_settings['user_id'] );  // recipient of the commission
-					$rate     = $commission_settings['amount'];    // percentage amount of download price
-					$commission_amount = eddc_calc_commission_amount( $price, $rate ); // calculate the commission amount to award
-					$currency    = $payment_data['currency'];
+					$user_id    		= absint( $commission_settings['user_id'] );  // recipient of the commission
+					$rate     			= $commission_settings['amount'];    // percentage amount of download price
+					$commission_amount 	= eddc_calc_commission_amount( $price, $rate ); // calculate the commission amount to award
+					$currency    		= $payment_data['currency'];
 
 					$commission = array(
-						'post_type'  => 'edd_commission',
-						'post_title'  => $payment_data['date'],
-						'post_status'  => 'publish'
+						'post_type'  	=> 'edd_commission',
+						'post_title'  	=> $payment_data['date'],
+						'post_status'  	=> 'publish'
 					);
 
 					$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
 
 					$commission_info = apply_filters( 'edd_commission_info', array(
-							'user_id'  => $user_id,
-							'rate'   => $rate,
-							'amount'  => $commission_amount,
+							'user_id'  	=> $user_id,
+							'rate'   	=> $rate,
+							'amount'  	=> $commission_amount,
 							'currency'  => $currency
 						), $commission_id );
 
