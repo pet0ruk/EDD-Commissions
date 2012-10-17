@@ -23,12 +23,12 @@ function eddc_record_commission($payment_id, $new_status, $old_status) {
 		// loop through each purchased download and award commissions, if needed	
 		foreach($downloads as $download) {
 			
-			$download_id 	= absint( $download['id'] );
-			$has_commission = get_post_meta( $download_id, '_edd_commisions_enabled', true );
+			$download_id 			= absint( $download['id'] );
+			$commissions_enabled 	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
 
 			
 			// if we need to award a commission
-			if( $has_commission ) {
+			if( $commissions_enabled ) {
 				// set a flag so downloads with commissions awarded are easy to query
 				update_post_meta( $download_id, '_edd_has_commission', true );
 
