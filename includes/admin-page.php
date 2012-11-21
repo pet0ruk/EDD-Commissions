@@ -34,7 +34,7 @@ function edd_commissions_page() {
             //Fetch, prepare, sort, and filter our data...
             $commissions_table->prepare_items();
 
-            $total_unpaid = edd_currency_filter( eddc_get_unpaid_totals() )
+            $total_unpaid = edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals() ) );
 
             ?>
 

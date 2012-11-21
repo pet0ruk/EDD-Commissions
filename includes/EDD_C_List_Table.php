@@ -28,7 +28,7 @@ class EDD_C_List_Table extends WP_List_Table {
                 $status = get_post_meta( $item['ID'], '_commission_status', true );
                 return $status ? $status : __('unpaid', 'eddc');
             case 'amount':
-                return edd_currency_filter( $item[$column_name] );
+                return edd_currency_filter( edd_format_amount( $item[$column_name] ) );
             case 'date':
                 return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
             case 'download':

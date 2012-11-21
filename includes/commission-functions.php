@@ -258,7 +258,7 @@ function eddc_generate_payout_file( $data ) {
 				foreach ( $payouts as $key => $payout ) {
 
 					echo $key . ",";
-					echo $payout['amount'] . ",";
+					echo  number_format( $payout['amount'] ) . ",";
 					echo $payout['currency'];
 
 					echo "\r\n";
