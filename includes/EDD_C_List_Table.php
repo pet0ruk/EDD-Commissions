@@ -29,6 +29,8 @@ class EDD_C_List_Table extends WP_List_Table {
                 return $status ? $status : __('unpaid', 'eddc');
             case 'amount':
                 return edd_currency_filter( $item[$column_name] );
+            case 'date':
+                return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
             case 'download':
                 $download = get_post_meta( $item['ID'], '_download_id', true );
                 return $download ? get_the_title( $download ) : '';
@@ -77,7 +79,8 @@ class EDD_C_List_Table extends WP_List_Table {
             'download'  => edd_get_label_singular(),
             'rate'    	=> __('Rate', 'eddc'),
             'amount'    => __('Amount', 'eddc'),
-            'status'    => __('Status', 'eddc')
+            'status'    => __('Status', 'eddc'),
+            'date'      => __('Date', 'eddc')
         );
         return $columns;
     }
