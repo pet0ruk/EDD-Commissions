@@ -192,8 +192,6 @@ function edd_get_commissions_by_date( $day = null, $month, $year ) {
 	$args = apply_filters( 'edd_get_commissions_by_date', array(
 			'post_type' => 'edd_commission',
 			'posts_per_page' => -1,
-			'meta_key' => '_commission_status',
-			'meta_value' => 'paid',
 			'year' => $year,
 			'monthnum' => $month
 		),
