@@ -335,7 +335,7 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 
 	$message = __( 'Hello', 'eddc' ) . "\n\n" . sprintf( __( 'You have made a new sale on %s!', 'eddc' ), stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) ) . ".\n\n";
 	$message .= __( 'Item sold: ', 'eddc' ) . get_the_title( $download_id ) . "\n\n";
-	$message .= __( 'Amount: ', 'eddc' ) . " " . html_entity_decode( edd_currency_filter( $commission_amount ) ) . "\n\n";
+	$message .= __( 'Amount: ', 'eddc' ) . " " . html_entity_decode( edd_currency_filter( edd_format_amount( $commission_amount ) ) ) . "\n\n";
 	$message .= __( 'Commission Rate: ', 'eddc' ) . $rate . "%\n\n";
 	$message .= __( 'Thank you', 'eddc' );
 
