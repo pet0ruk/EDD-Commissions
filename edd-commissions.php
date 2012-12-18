@@ -30,9 +30,9 @@ if(!defined('EDDC_PLUGIN_FILE')) {
 	define('EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMISSIONS_STORE_API_URL', 'http://easydigitaldownloads.com' ); 
-define( 'EDD_COMISSIONS_PRODUCT_NAME', 'Comissions' ); 
-define( 'EDD_COMISSIONS_VERSION', '1.4.2' ); 
+define( 'EDD_COMISSIONS_STORE_API_URL', 'http://easydigitaldownloads.com' );
+define( 'EDD_COMISSIONS_PRODUCT_NAME', 'Comissions' );
+define( 'EDD_COMISSIONS_VERSION', '1.4.2' );
 
 
 /*
@@ -63,14 +63,15 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/reports.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/settings.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/admin-page.php');
-	include_once(EDDC_PLUGIN_DIR . 'includes/metabox.php');	
+	include_once(EDDC_PLUGIN_DIR . 'includes/metabox.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/EDD_C_List_Table.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/upgrades.php');
 } else {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
 }
 
-if( is_admin() ) {
+
+function edd_commissions_updater() {
 
 	if( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
 		// load our custom updater
@@ -83,7 +84,7 @@ if( is_admin() ) {
 	$edd_commissions_license_key = isset( $edd_options['edd_commissions_license_key'] ) ? trim( $edd_options['edd_commissions_license_key'] ) : '';
 
 	// setup the updater
-	$edd_cr_updater = new EDD_SL_Plugin_Updater( EDD_COMISSIONS_STORE_API_URL, __FILE__, array( 
+	$edd_cr_updater = new EDD_SL_Plugin_Updater( EDD_COMISSIONS_STORE_API_URL, __FILE__, array(
 			'version' 	=> EDD_COMISSIONS_VERSION, 			// current version number
 			'license' 	=> $edd_commissions_license_key, 	// license key (used get_option above to retrieve from DB)
 			'item_name' => EDD_COMISSIONS_PRODUCT_NAME, 	// name of this plugin
@@ -92,3 +93,4 @@ if( is_admin() ) {
 	);
 
 }
+add_action( 'admin_init', 'edd_commissions_updater' );
