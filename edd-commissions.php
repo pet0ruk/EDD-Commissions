@@ -30,7 +30,7 @@ if(!defined('EDDC_PLUGIN_FILE')) {
 	define('EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMISSIONS_STORE_API_URL', 'http://easydigitaldownloads.com' );
+define( 'EDD_COMISSIONS_STORE_API_URL', 'https://easydigitaldownloads.com' );
 define( 'EDD_COMISSIONS_PRODUCT_NAME', 'Comissions' );
 define( 'EDD_COMISSIONS_VERSION', '1.5' );
 
