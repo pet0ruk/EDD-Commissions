@@ -193,7 +193,7 @@ function eddc_get_unpaid_totals() {
 	return $total;
 }
 
-function edd_get_commissions_by_date( $day = null, $month, $year ) {
+function edd_get_commissions_by_date( $day = null, $month = null, $year = null, $hour = null  ) {
 
 
 	$args = apply_filters( 'edd_get_commissions_by_date', array(
@@ -207,8 +207,12 @@ function edd_get_commissions_by_date( $day = null, $month, $year ) {
 		$year
 	);
 
-	if ( $day )
+	if ( ! empty( $day ) )
 		$args['day'] = $day;
+
+	if ( ! empty( $hour ) )
+		$args['hour'] = $hour;
+
 
 	$commissions = get_posts( $args );
 

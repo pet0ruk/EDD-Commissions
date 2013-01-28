@@ -29,9 +29,13 @@ function edd_show_commissions_graph() {
 	// retrieve the queried dates
 	$dates = edd_get_report_dates();
 
-	// determine graph options
+	// Determine graph options
 	switch( $dates['range'] ) :
-
+		case 'today' :
+			$time_format 	= '%d/%b';
+			$tick_size		= 'hour';
+			$day_by_day		= true;
+			break;
 		case 'last_year' :
 			$time_format 	= '%b';
 			$tick_size		= 'month';
@@ -52,16 +56,27 @@ function edd_show_commissions_graph() {
 			$tick_size		= 'month';
 			$day_by_day 	= false;
 			break;
+		case 'other' :
+			if( ( $dates['m_end'] - $dates['m_start'] ) >= 2 ) {
+				$time_format	= '%b';
+				$tick_size		= 'month';
+				$day_by_day 	= false;
+			} else {
+				$time_format 	= '%d/%b';
+				$tick_size		= 'day';
+				$day_by_day 	= true;
+			}
+			break;
 		default:
-			$time_format 	= '%d/%b'; 	// show days by default
-			$tick_size		= 'day'; 	// default graph interval
+			$time_format 	= '%d/%b'; 	// Show days by default
+			$tick_size		= 'day'; 	// Default graph interval
 			$day_by_day 	= true;
 			break;
-
 	endswitch;
 
-	$time_format = apply_filters( 'edd_graph_timeformat', $time_format );
-	$tick_size = apply_filters( 'edd_graph_ticksize', $tick_size );
+	$time_format 	= apply_filters( 'edd_graph_timeformat', $time_format );
+	$tick_size 		= apply_filters( 'edd_graph_ticksize', $tick_size );
+	$totals 		= (float) 0.00; // Total commissions for time period shown
 
 	echo '<h3>' . __( 'Commissions Paid Over Time', 'eddc' ) . '</h3>';
 
@@ -76,22 +91,61 @@ function edd_show_commissions_graph() {
 	   			[{
    					data: [
 	   					<?php
-	   					$i = $dates['m_start'];
-						while( $i <= $dates['m_end'] ) :
-							if( $day_by_day ) :
-								$num_of_days 	= cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
-								$d 				= 1;
-								while( $d <= $num_of_days ) : $date = mktime( 0, 0, 0, $i, $d, $dates['year'] ); ?>
-									[<?php echo $date * 1000; ?>, <?php echo edd_get_commissions_by_date( $d, $i, $dates['year'] ); ?>],
-								<?php $d++; endwhile;
-							else :
-								$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
-								?>
-								[<?php echo $date * 1000; ?>, <?php echo edd_get_commissions_by_date( null, $i, $dates['year'] ); ?>],
-							<?php
-							endif;
-							$i++;
-						endwhile;
+
+	   					if( $dates['range'] == 'today' ) {
+
+	   						// Hour by hour
+	   						$hour  = 1;
+	   						$month = date( 'n' );
+							while ( $hour <= 23 ) :
+								$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour );
+								$totals += $commissions;
+								$date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] ); ?>
+								[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
+								<?php
+								$hour++;
+							endwhile;
+
+						} elseif( $dates['range'] == 'this_week' || $dates['range'] == 'last_week' ) {
+
+							//Day by day
+							$day     = $dates['day'];
+							$day_end = $dates['day_end'];
+	   						$month   = $dates['m_start'];
+							while ( $day <= $day_end ) :
+								$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'] );
+								$totals += $commissions;
+								$date = mktime( 0, 0, 0, $month, $day, $dates['year'] ); ?>
+								[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
+								<?php
+								$day++;
+							endwhile;
+
+	   					} else {
+
+		   					$i = $dates['m_start'];
+							while ( $i <= $dates['m_end'] ) :
+								if ( $day_by_day ) :
+									$num_of_days 	= cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
+									$d 				= 1;
+									while ( $d <= $num_of_days ) :
+										$date = mktime( 0, 0, 0, $i, $d, $dates['year'] );
+										$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'] );
+										$totals += $commissions; ?>
+										[<?php echo $date * 1000; ?>, <?php echo $commissions ?>],
+									<?php $d++; endwhile;
+								else :
+									$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
+									$commissions = edd_get_commissions_by_date( null, $i, $dates['year'] );
+									$totals += $commissions;
+									?>
+									[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
+								<?php
+								endif;
+								$i++;
+							endwhile;
+
+						}
 	   					?>,
 	   				],
    					label: "<?php _e( 'Commissions', 'eddc' ); ?>",
