@@ -10,7 +10,12 @@
 
 function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
-	if ( $old_status == 'publish' || $old_status == 'complete' )
+	// Check if the payment was already set to complete
+	if( $old_status == 'publish' || $old_status == 'complete' )
+		return; // Make sure that payments are only completed once
+
+	// Make sure the commission is only recorded when new status is complete
+	if( $new_status != 'publish' && $new_status != 'complete' )
 		return;
 
 	if ( edd_is_test_mode() )
