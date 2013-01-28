@@ -5,7 +5,7 @@
  * Adds "Commissions" to the report views
  *
  * @access      public
- * @since       1.4 
+ * @since       1.4
  * @return      void
 */
 
@@ -20,7 +20,7 @@ add_filter( 'edd_report_views', 'eddc_add_commissions_view' );
  * Show Commissions Graph
  *
  * @access      public
- * @since       1.0 
+ * @since       1.0
  * @return      void
 */
 
@@ -32,13 +32,13 @@ function edd_show_commissions_graph() {
 	// determine graph options
 	switch( $dates['range'] ) :
 
-		case 'last_year' : 
-			$time_format 	= '%b'; 
+		case 'last_year' :
+			$time_format 	= '%b';
 			$tick_size		= 'month';
 			$day_by_day		= false;
 			break;
 		case 'this_year' :
-			$time_format 	= '%b'; 
+			$time_format 	= '%b';
 			$tick_size		= 'month';
 			$day_by_day		= false;
 			break;
@@ -57,7 +57,7 @@ function edd_show_commissions_graph() {
 			$tick_size		= 'day'; 	// default graph interval
 			$day_by_day 	= true;
 			break;
-			
+
 	endswitch;
 
 	$time_format = apply_filters( 'edd_graph_timeformat', $time_format );
@@ -72,23 +72,23 @@ function edd_show_commissions_graph() {
 	<script type="text/javascript">
 	   jQuery( document ).ready( function($) {
 	   		$.plot(
-	   			$("#commissions_chart_div"), 
-	   			[{ 
+	   			$("#commissions_chart_div"),
+	   			[{
    					data: [
 	   					<?php
 	   					$i = $dates['m_start'];
-						while( $i <= $dates['m_end'] ) : 
+						while( $i <= $dates['m_end'] ) :
 							if( $day_by_day ) :
 								$num_of_days 	= cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
 								$d 				= 1;
 								while( $d <= $num_of_days ) : $date = mktime( 0, 0, 0, $i, $d, $dates['year'] ); ?>
 									[<?php echo $date * 1000; ?>, <?php echo edd_get_commissions_by_date( $d, $i, $dates['year'] ); ?>],
 								<?php $d++; endwhile;
-							else : 
+							else :
 								$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
 								?>
 								[<?php echo $date * 1000; ?>, <?php echo edd_get_commissions_by_date( null, $i, $dates['year'] ); ?>],
-							<?php 
+							<?php
 							endif;
 							$i++;
 						endwhile;
@@ -131,7 +131,7 @@ function edd_show_commissions_graph() {
 		            opacity: 0.80
 		        }).appendTo("body").fadeIn(200);
 		    }
-		    
+
 		    var previousPoint = null;
 		    $("#commissions_chart_div").bind("plothover", function (event, pos, item) {
 		        $("#x").text(pos.x.toFixed(2));
@@ -149,12 +149,12 @@ function edd_show_commissions_graph() {
 								edd_flot_tooltip( item.pageX, item.pageY, item.series.label + ' ' + y + edd_vars.currency_sign );
 	                    	}
 	                    } else {
-		                    edd_flot_tooltip( item.pageX, item.pageY, item.series.label + ' ' + y.replace( '.00', '' ) );                    	
+		                    edd_flot_tooltip( item.pageX, item.pageY, item.series.label + ' ' + y.replace( '.00', '' ) );
 	                    }
 	                }
 	            } else {
 	                $("#edd-flot-tooltip").remove();
-	                previousPoint = null;            
+	                previousPoint = null;
 	            }
 		    });
 	   });
