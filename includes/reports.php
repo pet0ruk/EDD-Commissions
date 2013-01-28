@@ -214,6 +214,7 @@ function edd_show_commissions_graph() {
 	   });
     </script>
     <div id="commissions_chart_div" style="height: 300px;"></div>
+    <p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
 	<?php
 	echo ob_get_clean();
 }
