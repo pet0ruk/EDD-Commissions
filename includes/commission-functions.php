@@ -118,6 +118,31 @@ function eddc_calc_commission_amount( $price, $rate ) {
 	return $amount;
 }
 
+function eddc_user_has_commissions( $user_id = false ) {
+
+	if ( empty( $user_id ) )
+		$user_id = get_current_user_id();
+
+	$args = array(
+		'post_type' => 'edd_commission',
+		'posts_per_page' => 1,
+		'meta_query' => array(
+			array(
+				'key' => '_user_id',
+				'value' => $user_id
+			)
+		),
+		'fields' => 'ids'
+	);
+
+	$commissions = get_posts( $args );
+
+	if ( $commissions ) {
+		return true;
+	}
+	return false; // no commissions
+}
+
 function eddc_get_unpaid_commissions( $user_id = false ) {
 
 	$args = array(
