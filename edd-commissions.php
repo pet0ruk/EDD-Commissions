@@ -66,6 +66,7 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/metabox.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/EDD_C_List_Table.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/upgrades.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/widgets.php');
 } else {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
 }
