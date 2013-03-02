@@ -40,18 +40,18 @@ function eddc_activate_license() {
 	if( ! isset( $_POST['edd_settings_misc']['edd_commissions_license_key'] ) )
 		return;
 
-	if( get_option( 'eddc_license_active' ) == 'active' )
+	if( get_option( 'eddc_license_active' ) == 'valid' )
 		return;
 
 	$license = sanitize_text_field( $_POST['edd_settings_misc']['edd_commissions_license_key'] );
 
 	// data to send in our API request
-	$api_params = array( 
-		'edd_action'=> 'activate_license', 
-		'license' 	=> $license, 
+	$api_params = array(
+		'edd_action'=> 'activate_license',
+		'license' 	=> $license,
 		'item_name' => urlencode( EDD_COMISSIONS_PRODUCT_NAME ) // the name of our product in EDD
 	);
-	
+
 	// Call the custom API.
 	$response = wp_remote_get( add_query_arg( $api_params, EDD_COMISSIONS_STORE_API_URL ) );
 
