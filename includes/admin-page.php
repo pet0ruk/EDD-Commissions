@@ -10,7 +10,7 @@
 
 function eddc_add_commissions_link() {
 	global $edd_commissions_page;
-	
+
 	$edd_commissions_page = add_submenu_page('edit.php?post_type=download', __('Easy Digital Download Commissions', 'eddc'), __('Commissions', 'eddc'), 'manage_options', 'edd-commissions', 'edd_commissions_page');
 }
 add_action('admin_menu', 'eddc_add_commissions_link', 10);
@@ -19,10 +19,10 @@ add_action('admin_menu', 'eddc_add_commissions_link', 10);
 function edd_commissions_page() {
     ?>
     <div class="wrap">
-       
+
         <div id="icon-edit" class="icon32"><br/></div>
         <h2><?php _e('Easy Digital Download Commissions', 'eddc'); ?></h2>
-       
+
         <?php
 
         if( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
@@ -68,7 +68,7 @@ function edd_commissions_page() {
 
             <div class="commission-totals">
                 <?php _e('Total Unpaid:', 'eddc'); ?>&nbsp;<strong><?php echo $total_unpaid; ?></strong>
-            </div>  
+            </div>
            <?php
         }
         ?>

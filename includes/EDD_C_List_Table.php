@@ -7,6 +7,15 @@ if ( !class_exists( 'WP_List_Table' ) ) {
 class EDD_C_List_Table extends WP_List_Table {
 
 
+    /**
+     * Number of results to show per page
+     *
+     * @since       1.7
+     * @var         int
+     */
+    public $per_page = 10;
+
+
     function __construct() {
         global $status, $page;
 
@@ -33,7 +42,7 @@ class EDD_C_List_Table extends WP_List_Table {
             return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
         case 'download':
             $download = get_post_meta( $item['ID'], '_download_id', true );
-            return $download ? get_the_title( $download ) : '';
+            return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' : '';
         default:
             return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
@@ -57,7 +66,7 @@ class EDD_C_List_Table extends WP_List_Table {
 
         //Return the title contents
         return sprintf( '%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
-            /*$1%s*/ $user->display_name,
+            /*$1%s*/ '<a href="' . add_query_arg( 'user', $user->ID ) . '" title="' . __( 'View all commissions for this user', 'eddc' ) . '"">' . $user->display_name . '</a>',
             /*$2%s*/ $item['ID'],
             /*$3%s*/ $this->row_actions( $actions )
         );
@@ -107,6 +116,90 @@ class EDD_C_List_Table extends WP_List_Table {
     }
 
 
+    /**
+     * Retrieve the current page number
+     *
+     * @access      private
+     * @since       1.7
+     * @return      int
+     */
+    function get_paged() {
+        return isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+    }
+
+
+    /**
+     * Retrieves the user we are filtering commissions by, if any
+     *
+     * @access      private
+     * @since       1.7
+     * @return      mixed Int if user ID, string if email or login
+     */
+    function get_filtered_user() {
+        return isset( $_GET['user'] ) ? absint( $_GET['user'] ) : false;
+    }
+
+
+    /**
+     * Retrieves the ID of the download we're filtering commissions by
+     *
+     * @access      private
+     * @since       1.7
+     * @return      int
+     */
+    function get_filtered_download() {
+        return ! empty( $_GET['download'] ) ? absint( $_GET['download'] ) : false;
+    }
+
+
+    /**
+     * Gets the meta query for the log query
+     *
+     * This is used to return log entries that match our search query, user query, or download query
+     *
+     * @access      private
+     * @since       1.7
+     * @return      array
+     */
+    function get_meta_query() {
+
+        $meta_query = array();
+
+        $user     = $this->get_filtered_user();
+        $download = $this->get_filtered_download();
+        $view     = isset( $_GET['view'] ) ? $_GET['view'] : false;
+
+        if( $user ) {
+            // Show only commissions from a specific user
+            $meta_query[] = array(
+                'key'   => '_user_id',
+                'value' => $user
+            );
+
+        }
+
+        if( $download ) {
+            // Show only commissions from a specific download
+            $meta_query[] = array(
+                'key'   => '_download_id',
+                'value' => $download
+            );
+
+        }
+
+        if ( $view ) {
+            // Show only commissions of a specific status
+            $meta_query[] = array(
+                'key'   => '_commission_status',
+                'value' => $view
+            );
+
+        }
+
+        return $meta_query;
+    }
+
+
     function process_bulk_action() {
 
         $ids = isset( $_GET['commission'] ) ? $_GET['commission'] : false;
@@ -133,17 +226,16 @@ class EDD_C_List_Table extends WP_List_Table {
 
         $commissions_data = array();
 
-        $commission_args = array(
-            'post_type' => 'edd_commission',
-            'post_status' => 'publish',
-            'posts_per_page' => -1
-        );
+        $paged    = $this->get_paged();
+        $user     = $this-> get_filtered_user();
 
-        $view = isset( $_GET['view'] ) ? $_GET['view'] : false;
-        if ( $view ) {
-            $commission_args['meta_key'] = '_commission_status';
-            $commission_args['meta_value'] = $view;
-        }
+        $commission_args = array(
+            'post_type'      => 'edd_commission',
+            'post_status'    => 'publish',
+            'posts_per_page' => $this->per_page,
+            'paged'          => $paged,
+            'meta_query'     => $this->get_meta_query()
+        );
 
         $commissions = get_posts( $commission_args );
         if ( $commissions ) {
@@ -151,19 +243,19 @@ class EDD_C_List_Table extends WP_List_Table {
                 $commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
                 $download_id = get_post_meta( $commission->ID, '_download_id', true );
                 $commissions_data[] = array(
-                    'ID'   => $commission->ID,
-                    'title'  => get_the_title( $commission->ID ),
-                    'amount'  => $commission_info['amount'],
-                    'rate'  => $commission_info['rate'],
-                    'user'      => $commission_info['user_id'],
-                    'download'  => $download_id
+                    'ID'       => $commission->ID,
+                    'title'    => get_the_title( $commission->ID ),
+                    'amount'   => $commission_info['amount'],
+                    'rate'     => $commission_info['rate'],
+                    'user'     => $commission_info['user_id'],
+                    'download' => $download_id
                 );
             }
         }
         return $commissions_data;
     }
 
-        * * * * /** ************************************************************************
+    /** ************************************************************************
      *
      * @uses $this->_column_headers
      * @uses $this->items
@@ -173,11 +265,6 @@ class EDD_C_List_Table extends WP_List_Table {
      * @uses $this->set_pagination_args()
      * *************************************************************************/
     function prepare_items() {
-
-        /**
-         * First, lets decide how many records per page to show
-         */
-        $per_page = 20;
 
 
         $columns = $this->get_columns();
@@ -196,19 +283,16 @@ class EDD_C_List_Table extends WP_List_Table {
         $current_page = $this->get_pagenum();
 
 
-        $total_items = count( $data );
+        $total_items = wp_count_posts( 'edd_commission' )->publish;
 
-
-        $data = array_slice( $data, ( ( $current_page-1 )*$per_page ), $per_page );
-
+        $data = array_slice( $data, ( ( $current_page-1 ) * $this->per_page ), $this->per_page );
 
         $this->items = $data;
 
-
         $this->set_pagination_args( array(
                 'total_items' => $total_items,                  //WE have to calculate the total number of items
-                'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
-                'total_pages' => ceil( $total_items/$per_page )   //WE have to calculate the total number of pages
+                'per_page'    => $this->per_page,                     //WE have to determine how many items to show on a page
+                'total_pages' => ceil( $total_items/$this->per_page )   //WE have to calculate the total number of pages
             ) );
     }
 
