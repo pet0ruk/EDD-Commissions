@@ -77,7 +77,7 @@ class EDD_C_List_Table extends WP_List_Table {
             'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text
             'title'     => __( 'User', 'eddc' ),
             'download'  => edd_get_label_singular(),
-            'rate'     => __( 'Rate', 'eddc' ),
+            'rate'      => __( 'Rate', 'eddc' ),
             'amount'    => __( 'Amount', 'eddc' ),
             'status'    => __( 'Status', 'eddc' ),
             'date'      => __( 'Date', 'eddc' )
