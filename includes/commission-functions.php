@@ -68,7 +68,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 				$commission = array(
 					'post_type'  	=> 'edd_commission',
-					'post_title'  	=> $payment_data['date'],
+					'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
 					'post_status'  	=> 'publish'
 				);
 
