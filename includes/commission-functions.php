@@ -24,7 +24,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	if( edd_get_payment_gateway( $payment_id ) == 'manual_purchases' )
 		return; // do not record commission on manual payments
 
-	$payment_data  	= get_post_meta( $payment_id, '_edd_payment_meta', true );
+	$payment_data  	= edd_get_payment_meta( $payment_id );
 	$downloads   	= maybe_unserialize( $payment_data['downloads'] );
 	$user_info   	= maybe_unserialize( $payment_data['user_info'] );
 	$cart_details  	= maybe_unserialize( $payment_data['cart_details'] );
