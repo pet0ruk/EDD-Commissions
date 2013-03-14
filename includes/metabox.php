@@ -39,18 +39,18 @@ function eddc_render_commissions_meta_box()	{
 		echo '</tr>';
 
 		echo '<tr' . $display . ' class="eddc_commission_row">';
-			echo '<th style="width:20%"><label for="edd_commission_user">' . __ ('User ID', 'eddc') . '</label></th>';
+			echo '<th style="width:20%"><label for="edd_commission_user">' . __ ('User(s)', 'eddc') . '</label></th>';
 			echo '<td class="edd_field_type_text">';
-				echo '<input type="text" name="edd_commission_settings[user_id]" id="edd_commission_user" value="' . $user_id . '" size="30" style="width:20%" />&nbsp;';
-				echo __('Enter the user ID that should receive a commission of each sale', 'eddc');
+				echo '<input type="text" name="edd_commission_settings[user_id]" id="edd_commission_user" value="' . $user_id . '"/><br/>';
+				echo __('Enter the user ID that should receive a commission of each sale. Separate user IDs by a comma.', 'eddc');
 			echo '<td>';
 		echo '</tr>';
 
 		echo '<tr' . $display . ' class="eddc_commission_row">';
-			echo '<th style="width:20%"><label for="edd_commission_amount">' . __ ('Rate', 'eddc') . '</label></th>';
+			echo '<th style="width:20%"><label for="edd_commission_amount">' . __ ('Rate(s)', 'eddc') . '</label></th>';
 			echo '<td class="edd_field_type_text">';
-				echo '<input type="text" name="edd_commission_settings[amount]" id="edd_commission_amount" value="' . $amount . '" size="30" style="width:20%" />&nbsp;';
-				echo __('Enter the percentage amount this user should receive of each sale', 'eddc');
+				echo '<input type="text" name="edd_commission_settings[amount]" id="edd_commission_amount" value="' . $amount . '"/><br/>';
+				echo __('Enter the percentage amount the user(s) should receive of each sale. Separate rates by a comma.', 'eddc');
 			echo '<td>';
 		echo '</tr>';
 
