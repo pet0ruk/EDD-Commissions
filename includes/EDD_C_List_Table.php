@@ -233,7 +233,7 @@ class EDD_C_List_Table extends WP_List_Table {
             'post_type'      => 'edd_commission',
             'post_status'    => 'publish',
             'posts_per_page' => $this->per_page,
-            'paged'          => 2,
+            'paged'          => $paged,
             'meta_query'     => $this->get_meta_query()
         );
 
@@ -268,34 +268,24 @@ class EDD_C_List_Table extends WP_List_Table {
      * *************************************************************************/
     function prepare_items() {
 
-
         $columns = $this->get_columns();
         $hidden = array(); // no hidden columns
 
-
         $this->_column_headers = array( $columns, $hidden );
-
 
         $this->process_bulk_action();
 
-
-        $data = $this->commissions_data();
-
-
         $current_page = $this->get_pagenum();
-
 
         $total_items = wp_count_posts( 'edd_commission' )->publish;
 
-        $data = array_slice( $data, ( ( $current_page-1 ) * $this->per_page ), $this->per_page );
-
-        $this->items = $data;
+        $this->items = $this->commissions_data();
 
         $this->set_pagination_args( array(
-                'total_items' => $total_items,                  //WE have to calculate the total number of items
-                'per_page'    => $this->per_page,                     //WE have to determine how many items to show on a page
-                'total_pages' => ceil( $total_items/$this->per_page )   //WE have to calculate the total number of pages
-            ) );
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $this->per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items/$this->per_page )   //WE have to calculate the total number of pages
+        ) );
     }
 
 }
