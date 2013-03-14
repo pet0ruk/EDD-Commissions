@@ -233,25 +233,27 @@ class EDD_C_List_Table extends WP_List_Table {
             'post_type'      => 'edd_commission',
             'post_status'    => 'publish',
             'posts_per_page' => $this->per_page,
-            'paged'          => $paged,
+            'paged'          => 2,
             'meta_query'     => $this->get_meta_query()
         );
 
-        $commissions = get_posts( $commission_args );
-        if ( $commissions ) {
-            foreach ( $commissions as $commission ) {
-                $commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
-                $download_id = get_post_meta( $commission->ID, '_download_id', true );
+
+        $commissions = new WP_Query( $commission_args );
+        if ( $commissions->have_posts() ) :
+            while ( $commissions->have_posts() ) : $commissions->the_post();
+                $commission_info = get_post_meta( get_the_ID(), '_edd_commission_info', true );
+                $download_id = get_post_meta( get_the_ID(), '_download_id', true );
                 $commissions_data[] = array(
-                    'ID'       => $commission->ID,
-                    'title'    => get_the_title( $commission->ID ),
+                    'ID'       => get_the_ID(),
+                    'title'    => get_the_title( get_the_ID() ),
                     'amount'   => $commission_info['amount'],
                     'rate'     => $commission_info['rate'],
                     'user'     => $commission_info['user_id'],
                     'download' => $download_id
                 );
-            }
-        }
+            endwhile;
+            wp_reset_postdata();
+        endif;
         return $commissions_data;
     }
 
