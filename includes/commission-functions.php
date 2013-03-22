@@ -24,7 +24,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	if( edd_get_payment_gateway( $payment_id ) == 'manual_purchases' )
 		return; // do not record commission on manual payments
 
-	$payment_data  	= get_post_meta( $payment_id, '_edd_payment_meta', true );
+	$payment_data  	= edd_get_payment_meta( $payment_id );
 	$downloads   	= maybe_unserialize( $payment_data['downloads'] );
 	$user_info   	= maybe_unserialize( $payment_data['user_info'] );
 	$cart_details  	= maybe_unserialize( $payment_data['cart_details'] );
@@ -61,38 +61,59 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					$price = $download_price;
 				}
 
-				$user_id    		= absint( $commission_settings['user_id'] );  // recipient of the commission
-				$rate     			= $commission_settings['amount'];    // percentage amount of download price
-				$commission_amount 	= eddc_calc_commission_amount( $price, $rate ); // calculate the commission amount to award
-				$currency    		= $payment_data['currency'];
+				$recipients = eddc_get_recipients( $download_id );
 
-				$commission = array(
-					'post_type'  	=> 'edd_commission',
-					'post_title'  	=> $payment_data['date'],
-					'post_status'  	=> 'publish'
-				);
+				// Record a commission for each user
+				foreach( $recipients as $recipient ) {
 
-				$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
+					$rate     			= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+					$commission_amount 	= eddc_calc_commission_amount( $price, $rate ); // calculate the commission amount to award
+					$currency    		= $payment_data['currency'];
 
-				$commission_info = apply_filters( 'edd_commission_info', array(
-						'user_id'  	=> $user_id,
+					$commission = array(
+						'post_type'  	=> 'edd_commission',
+						'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
+						'post_status'  	=> 'publish'
+					);
+
+					$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
+
+					$commission_info = apply_filters( 'edd_commission_info', array(
+						'user_id'  	=> $recipient,
 						'rate'   	=> $rate,
 						'amount'  	=> $commission_amount,
 						'currency'  => $currency
 					), $commission_id );
 
-				update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
-				update_post_meta( $commission_id, '_commission_status', 'unpaid' );
-				update_post_meta( $commission_id, '_download_id', $download_id );
-				update_post_meta( $commission_id, '_user_id', $user_id );
+					update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
+					update_post_meta( $commission_id, '_commission_status', 'unpaid' );
+					update_post_meta( $commission_id, '_download_id', $download_id );
+					update_post_meta( $commission_id, '_user_id', $recipient );
 
-				do_action( 'eddc_insert_commission', $user_id, $commission_amount, $rate, $download_id, $commission_id );
+					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id );
+				}
 			}
-
 		}
 	}
 }
 add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
+
+
+function eddc_get_recipients( $download_id = 0 ) {
+	$settings = get_post_meta( $download_id, '_edd_commission_settings', true );
+	$recipients = explode( ',', $settings['user_id'] );
+	return (array) apply_filters( 'eddc_get_recipients', $recipients, $download_id );
+}
+
+
+function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
+	$settings   = get_post_meta( $download_id, '_edd_commission_settings', true );
+	$rates      = explode( ',', $settings['amount'] );
+	$recipients = explode( ',', $settings['user_id'] );
+	$rate_key   = array_search( $user_id, $recipients );
+	$rate       = $rates[ $rate_key ];
+	return apply_filters( 'eddc_get_recipient_rate', $rate, $download_id, $user_id );
+}
 
 
 function eddc_get_cart_item_id( $cart_details, $download_id ) {

@@ -11,14 +11,14 @@ function eddc_render_commissions_meta_box()	{
 
 	// Use nonce for verification
 	echo '<input type="hidden" name="edd_download_commission_meta_box_nonce" value="', wp_create_nonce(basename(__FILE__)), '" />';
-	
+
 	echo '<table class="form-table">';
 
 		$enabled = get_post_meta($post->ID, '_edd_commisions_enabled', true) ? true : false;
 		$meta = get_post_meta($post->ID, '_edd_commission_settings', true);
 		$user_id = isset($meta['user_id']) ? $meta['user_id'] : '';
 		$amount = isset($meta['amount']) ? $meta['amount'] : '';
-		
+
 		$display = $enabled ? '' : ' style="display:none";';
 
 		$script = '<script type="text/javascript">';
@@ -39,28 +39,28 @@ function eddc_render_commissions_meta_box()	{
 		echo '</tr>';
 
 		echo '<tr' . $display . ' class="eddc_commission_row">';
-			echo '<th style="width:20%"><label for="edd_commission_user">' . __ ('User ID', 'eddc') . '</label></th>';
+			echo '<th style="width:20%"><label for="edd_commission_user">' . __ ('User(s)', 'eddc') . '</label></th>';
 			echo '<td class="edd_field_type_text">';
-				echo '<input type="text" name="edd_commission_settings[user_id]" id="edd_commission_user" value="' . $user_id . '" size="30" style="width:20%" />&nbsp;';
-				echo __('Enter the user ID that should receive a commission of each sale', 'eddc');
+				echo '<input type="text" name="edd_commission_settings[user_id]" id="edd_commission_user" value="' . $user_id . '"/><br/>';
+				echo __('Enter the user ID that should receive a commission of each sale. Separate user IDs by a comma.', 'eddc');
 			echo '<td>';
 		echo '</tr>';
-		
+
 		echo '<tr' . $display . ' class="eddc_commission_row">';
-			echo '<th style="width:20%"><label for="edd_commission_amount">' . __ ('Rate', 'eddc') . '</label></th>';
+			echo '<th style="width:20%"><label for="edd_commission_amount">' . __ ('Rate(s)', 'eddc') . '</label></th>';
 			echo '<td class="edd_field_type_text">';
-				echo '<input type="text" name="edd_commission_settings[amount]" id="edd_commission_amount" value="' . $amount . '" size="30" style="width:20%" />&nbsp;';
-				echo __('Enter the percentage amount this user should receive of each sale', 'eddc');
+				echo '<input type="text" name="edd_commission_settings[amount]" id="edd_commission_amount" value="' . $amount . '"/><br/>';
+				echo __('Enter the percentage amount the user(s) should receive of each sale. Separate rates by a comma.', 'eddc');
 			echo '<td>';
 		echo '</tr>';
-		
+
 	echo '</table>';
 }
 
 // Save data from meta box
 function eddc_download_meta_box_save($post_id) {
 	global $post;
-	
+
 	// verify nonce
 	if (isset($_POST['edd_download_commission_meta_box_nonce']) && !wp_verify_nonce($_POST['edd_download_commission_meta_box_nonce'], basename(__FILE__))) {
 		return $post_id;
@@ -72,13 +72,13 @@ function eddc_download_meta_box_save($post_id) {
 	}
 
 	if (isset($_POST['post_type']) && 'download' != $_POST['post_type']) {
-		return $post_id;	
+		return $post_id;
 	}
 
 	if (!current_user_can('edit_post', $post_id)) {
 		return $post_id;
 	}
-	
+
 	if( isset( $_POST['edd_commisions_enabled'] ) ) {
 
 		update_post_meta($post_id, '_edd_commisions_enabled', true);
@@ -89,9 +89,9 @@ function eddc_download_meta_box_save($post_id) {
 			$new['amount'] = str_replace('$', '', $new['amount']);
 			if( $new['amount'] < 1 )
 				$new['amount'] = $new['amount'] * 100;
-			$new['amount'] = absint( $new['amount'] );
+			$new['amount'] = trim( $new['amount'] );
 		}
-		update_post_meta($post_id, '_edd_commission_settings', $new);				
+		update_post_meta($post_id, '_edd_commission_settings', $new);
 
 	} else {
 		delete_post_meta($post_id, '_edd_commisions_enabled');
