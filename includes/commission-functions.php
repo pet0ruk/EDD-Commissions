@@ -143,16 +143,17 @@ function eddc_user_has_commissions( $user_id = false ) {
 	return false; // no commissions
 }
 
-function eddc_get_unpaid_commissions( $user_id = false ) {
+function eddc_get_unpaid_commissions( $user_id = false, $number = 30, $paged = 1 ) {
 
 	$args = array(
-		'post_type' => 'edd_commission',
-		'posts_per_page' => -1,
-		'meta_query' => array(
-			'relation' => 'AND',
+		'post_type'      => 'edd_commission',
+		'posts_per_page' => $number,
+		'paged'          => $paged,
+		'meta_query'     => array(
+			'relation'   => 'AND',
 			array(
-				'key' => '_commission_status',
-				'value' => 'unpaid'
+				'key'    => '_commission_status',
+				'value'  => 'unpaid'
 			)
 		)
 	);
@@ -160,12 +161,11 @@ function eddc_get_unpaid_commissions( $user_id = false ) {
 	if ( $user_id ) {
 
 		$args['meta_query'][] = array(
-			'key' => '_user_id',
+			'key'   => '_user_id',
 			'value' => $user_id
 		);
 
 	}
-
 
 	$commissions = get_posts( $args );
 
@@ -175,16 +175,17 @@ function eddc_get_unpaid_commissions( $user_id = false ) {
 	return false; // no commissions
 }
 
-function eddc_get_paid_commissions( $user_id = false ) {
+function eddc_get_paid_commissions( $user_id = false, $number = 30, $paged = 1 ) {
 
 	$args = array(
-		'post_type' => 'edd_commission',
-		'posts_per_page' => -1,
-		'meta_query' => array(
-			'relation' => 'AND',
+		'post_type'      => 'edd_commission',
+		'posts_per_page' => $number,
+		'paged'          => $paged,
+		'meta_query'     => array(
+			'relation'   => 'AND',
 			array(
-				'key' => '_commission_status',
-				'value' => 'paid'
+				'key'    => '_commission_status',
+				'value'  => 'paid'
 			)
 		)
 	);
@@ -192,7 +193,7 @@ function eddc_get_paid_commissions( $user_id = false ) {
 	if ( $user_id ) {
 
 		$args['meta_query'][] = array(
-			'key' => '_user_id',
+			'key'   => '_user_id',
 			'value' => $user_id
 		);
 
@@ -205,9 +206,56 @@ function eddc_get_paid_commissions( $user_id = false ) {
 	return false; // no commissions
 }
 
-function eddc_get_unpaid_totals() {
 
-	$unpaid = eddc_get_unpaid_commissions();
+function eddc_count_user_commissions( $user_id = false, $status = 'unpaid' ) {
+
+	$args = array(
+		'post_type'      => 'edd_commission',
+		'nopaging'       => true,
+		'meta_query'     => array(
+			'relation'   => 'AND',
+			array(
+				'key'    => '_commission_status',
+				'value'  => $status
+			)
+		)
+	);
+
+	if ( $user_id ) {
+
+		$args['meta_query'][] = array(
+			'key'   => '_user_id',
+			'value' => $user_id
+		);
+
+	}
+
+	$commissions = new WP_Query( $args );
+
+	if ( $commissions ) {
+		return $commissions->post_count;
+	}
+	return false; // no commissions
+}
+
+
+function eddc_get_unpaid_totals( $user_id = 0 ) {
+
+	$unpaid = eddc_get_unpaid_commissions( $user_id, -1 );
+	$total = (float) 0;
+	if ( $unpaid ) {
+		foreach ( $unpaid as $commission ) {
+			$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+			$total += $commission_info['amount'];
+		}
+	}
+	return $total;
+}
+
+
+function eddc_get_paid_totals( $user_id = 0 ) {
+
+	$unpaid = eddc_get_paid_commissions( $user_id, -1 );
 	$total = (float) 0;
 	if ( $unpaid ) {
 		foreach ( $unpaid as $commission ) {
@@ -219,7 +267,6 @@ function eddc_get_unpaid_totals() {
 }
 
 function edd_get_commissions_by_date( $day = null, $month = null, $year = null, $hour = null  ) {
-
 
 	$args = apply_filters( 'edd_get_commissions_by_date', array(
 			'post_type' => 'edd_commission',
@@ -256,7 +303,7 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 function eddc_generate_payout_file( $data ) {
 	if ( wp_verify_nonce( $data['eddc-payout-nonce'], 'eddc-payout-nonce' ) ) {
 
-		$commissions = eddc_get_unpaid_commissions();
+		$commissions = eddc_get_unpaid_commissions( 0, -1 );
 
 		if ( $commissions ) {
 

@@ -7,8 +7,21 @@ function eddc_user_commissions( ) {
 	if( !is_user_logged_in() )
 		return;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( $user_ID );
-	$paid_commissions 	= eddc_get_paid_commissions( $user_ID );
+	$unpaid_paged = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
+	$paid_paged   = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
+
+	$unpaid_commissions = eddc_get_unpaid_commissions( $user_ID, 20, $unpaid_paged );
+	$paid_commissions 	= eddc_get_paid_commissions( $user_ID, 20, $paid_paged );
+
+	$total_unpaid       = eddc_count_user_commissions( $user_ID, 'unpaid' );
+	$total_paid         = eddc_count_user_commissions( $user_ID, 'paid' );
+
+	$unpaid_offset      = 20 * ( $unpaid_paged - 1 );
+	$unpaid_total_pages = ceil( $total_unpaid / 20 );
+
+	$paid_offset        = 20 * ( $paid_paged - 1 );
+	$paid_total_pages   = ceil( $total_paid / 20 );
+
 	$stats 				= '';
 	if( ! empty( $unpaid_commissions ) || ! empty( $paid_commissions ) ) : // only show tables if user has commission data
 		ob_start(); ?>
@@ -39,7 +52,6 @@ function eddc_user_commissions( ) {
 									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
 									$amount 			= $commission_info['amount'];
 									$rate 				= $commission_info['rate'];
-									$total 				+= $amount;
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
 									<td class="edd_commission_amount"><?php echo edd_currency_filter( $amount ); ?></td>
@@ -55,7 +67,20 @@ function eddc_user_commissions( ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
-					<div id="edd_user_commissions_unpaid_total"><?php _e('Total unpaid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( $total ); ?></div>
+					<div id="edd_user_commissions_unpaid_total"><?php _e('Total unpaid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( eddc_get_unpaid_totals( $user_ID ) ); ?></div>
+
+					<div id="edd_commissions_unpaid_pagination" class="navigation">
+					<?php
+						$big = 999999;
+						echo paginate_links( array(
+							'base'    => remove_query_arg( 'eddcup', edd_get_current_page_url() ) . '%_%#edd_user_commissions_unpaid',
+							'format'  => '?eddcup=%#%',
+							'current' => max( 1, $unpaid_paged ),
+							'total'   => $unpaid_total_pages
+						) );
+					?>
+					</div>
+
 				</div><!--end #edd_user_commissions_unpaid-->
 
 				<!-- paid -->
@@ -83,7 +108,6 @@ function eddc_user_commissions( ) {
 									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
 									$amount 			= $commission_info['amount'];
 									$rate 				= $commission_info['rate'];
-									$total 				+= $amount;
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
 									<td class="edd_commission_amount"><?php echo edd_currency_filter( $amount ); ?></td>
@@ -99,7 +123,20 @@ function eddc_user_commissions( ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
-					<div id="edd_user_commissions_paid_total"><?php _e('Total paid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( $total ); ?></div>
+					<div id="edd_user_commissions_paid_total"><?php _e('Total paid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( eddc_get_paid_totals( $user_ID ) ); ?></div>
+
+					<div id="edd_commissions_paid_pagination" class="navigation">
+					<?php
+						$big = 999999;
+						echo paginate_links( array(
+							'base'    => remove_query_arg( 'eddcp', edd_get_current_page_url() ) . '%_%#edd_user_commissions_paid',
+							'format'  => '?eddcp=%#%',
+							'current' => max( 1, $paid_paged ),
+							'total'   => $paid_total_pages
+						) );
+					?>
+					</div>
+
 				</div><!--end #edd_user_commissions_unpaid-->
 
 			</div><!--end #edd_user_commissions-->
