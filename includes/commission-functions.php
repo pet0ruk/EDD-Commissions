@@ -101,15 +101,15 @@ add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
 
 function eddc_get_recipients( $download_id = 0 ) {
 	$settings = get_post_meta( $download_id, '_edd_commission_settings', true );
-	$recipients = explode( ',', $settings['user_id'] );
+	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 	return (array) apply_filters( 'eddc_get_recipients', $recipients, $download_id );
 }
 
 
 function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 	$settings   = get_post_meta( $download_id, '_edd_commission_settings', true );
-	$rates      = explode( ',', $settings['amount'] );
-	$recipients = explode( ',', $settings['user_id'] );
+	$rates      = array_map( 'trim', explode( ',', $settings['amount'] ) );
+	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 	$rate_key   = array_search( $user_id, $recipients );
 	$rate       = $rates[ $rate_key ];
 	return apply_filters( 'eddc_get_recipient_rate', $rate, $download_id, $user_id );
