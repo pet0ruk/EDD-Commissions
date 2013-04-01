@@ -271,7 +271,9 @@ class EDD_C_List_Table extends WP_List_Table {
         $columns = $this->get_columns();
         $hidden = array(); // no hidden columns
 
-        $this->_column_headers = array( $columns, $hidden );
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array( $columns, $hidden, $sortable );
 
         $this->process_bulk_action();
 
