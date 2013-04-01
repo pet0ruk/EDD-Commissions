@@ -360,7 +360,7 @@ function eddc_generate_payout_file( $data ) {
 				foreach ( $payouts as $key => $payout ) {
 
 					echo $key . ",";
-					echo  number_format( $payout['amount'] ) . ",";
+					echo  edd_sanitize_amount( $payout['amount'] ) . ",";
 					echo $payout['currency'];
 
 					echo "\r\n";
