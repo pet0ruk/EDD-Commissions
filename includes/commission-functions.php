@@ -21,8 +21,8 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	if ( edd_is_test_mode() )
 		return;
 
-	if( edd_get_payment_gateway( $payment_id ) == 'manual_purchases' )
-		return; // do not record commission on manual payments
+	if( edd_get_payment_gateway( $payment_id ) == 'manual_purchases' && ! isset( $_POST['commission'] ) )
+		return; // do not record commission on manual payments unless specified
 
 	$payment_data  	= edd_get_payment_meta( $payment_id );
 	$downloads   	= maybe_unserialize( $payment_data['downloads'] );
@@ -101,15 +101,15 @@ add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
 
 function eddc_get_recipients( $download_id = 0 ) {
 	$settings = get_post_meta( $download_id, '_edd_commission_settings', true );
-	$recipients = explode( ',', $settings['user_id'] );
+	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 	return (array) apply_filters( 'eddc_get_recipients', $recipients, $download_id );
 }
 
 
 function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 	$settings   = get_post_meta( $download_id, '_edd_commission_settings', true );
-	$rates      = explode( ',', $settings['amount'] );
-	$recipients = explode( ',', $settings['user_id'] );
+	$rates      = array_map( 'trim', explode( ',', $settings['amount'] ) );
+	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 	$rate_key   = array_search( $user_id, $recipients );
 	$rate       = $rates[ $rate_key ];
 	return apply_filters( 'eddc_get_recipient_rate', $rate, $download_id, $user_id );
