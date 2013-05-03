@@ -15,17 +15,18 @@ function eddc_render_commissions_meta_box() {
 	echo '<table class="form-table">';
 
 	$enabled = get_post_meta( $post->ID, '_edd_commisions_enabled', true ) ? true : false;
-	$meta = get_post_meta( $post->ID, '_edd_commission_settings', true );
+	$meta    = get_post_meta( $post->ID, '_edd_commission_settings', true );
 	$user_id = isset( $meta['user_id'] ) ? $meta['user_id'] : '';
-	$amount = isset( $meta['amount'] ) ? $meta['amount'] : '';
+	$amount  = isset( $meta['amount']  ) ? $meta['amount']  : '';
+	$type    = isset( $meta['type']    ) ? $meta['type']    : 'percentage';
 
 	$display = $enabled ? '' : ' style="display:none";';
 
 	$script = '<script type="text/javascript">';
 	$script .= 'jQuery(document).ready(function($){';
-	$script .= '$("#edd_commisions_enabled").change(function(){';
-	$script .= '$(".eddc_commission_row").toggle();';
-	$script .= '});';
+		$script .= '$("#edd_commisions_enabled").change(function(){';
+			$script .= '$(".eddc_commission_row").toggle();';
+		$script .= '});';
 	$script .= '});';
 	$script .= '</script>';
 
@@ -35,6 +36,15 @@ function eddc_render_commissions_meta_box() {
 		echo '<td class="edd_field_type_text" colspan="2">';
 			echo '<input type="checkbox" name="edd_commisions_enabled" id="edd_commisions_enabled" value="1" ' . checked( true, $enabled, false ) . '/>&nbsp;';
 			echo __( 'Check to enable commissions', 'eddc' );
+		echo '<td>';
+	echo '</tr>';
+
+	echo '<tr' . $display . ' class="eddc_commission_row">';
+		echo '<th style="width:20%"><label>' . __ ( 'Type', 'eddc' ) . '</label></th>';
+		echo '<td class="edd_field_type_text">';
+			echo '<input type="radio" name="edd_commission_settings[type]" value="percentage"' . checked( $type, 'percentage', false ) . '/>&nbsp;' . __( 'Percentage', 'eddc' ) . '<br/>';
+			echo '<input type="radio" name="edd_commission_settings[type]" value="flat"' . checked( $type, 'flat', false ) . '/>&nbsp;' . __( 'Flat', 'eddc' ) . '<br/>';
+			echo __( 'Select the type of commission(s) to record.', 'eddc' );
 		echo '<td>';
 	echo '</tr>';
 
@@ -50,7 +60,7 @@ function eddc_render_commissions_meta_box() {
 		echo '<th style="width:20%"><label for="edd_commission_amount">' . __ ( 'Rate(s)', 'eddc' ) . '</label></th>';
 		echo '<td class="edd_field_type_text">';
 			echo '<input type="text" name="edd_commission_settings[amount]" id="edd_commission_amount" value="' . $amount . '"/><br/>';
-			echo __( 'Enter the percentage amount the user(s) should receive of each sale. Separate rates by a comma.', 'eddc' );
+			echo __( 'Enter the amount the user(s) should receive of each sale. Separate rates by a comma.', 'eddc' );
 		echo '<td>';
 	echo '</tr>';
 

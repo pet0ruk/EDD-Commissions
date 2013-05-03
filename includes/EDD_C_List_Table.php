@@ -32,7 +32,12 @@ class EDD_C_List_Table extends WP_List_Table {
     function column_default( $item, $column_name ) {
         switch ( $column_name ) {
         case 'rate':
-            return $item[$column_name] . '%';
+            $download = get_post_meta( $item['ID'], '_download_id', true );
+            $type = eddc_get_commission_type( $download );
+            if( 'percentage' == $type )
+                return $item[$column_name] . '%';
+            else
+                return edd_currency_filter( edd_sanitize_amount( $item[$column_name] ) );
         case 'status':
             $status = get_post_meta( $item['ID'], '_commission_status', true );
             return $status ? $status : __( 'unpaid', 'eddc' );

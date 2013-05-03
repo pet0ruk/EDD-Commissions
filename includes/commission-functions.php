@@ -45,20 +45,28 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 			if ( $commission_settings ) {
 
+				$type           = eddc_get_commission_type( $download_id );
 				$download_price = edd_get_download_price( $download_id );
 
-				if ( is_array( $cart_details ) ) {
+				// If percentage based, we need to figure out the base price
+				if( $type == 'percentage' ) {
 
-					$cart_item_id = eddc_get_cart_item_id( $cart_details, $download_id );
+					if ( is_array( $cart_details ) ) {
 
-					$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : edd_get_download_price( $download_id );
+						$cart_item_id = eddc_get_cart_item_id( $cart_details, $download_id );
 
-				}
+						$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : edd_get_download_price( $download_id );
 
-				if ( $user_info['discount'] != 'none' ) {
-					$price = edd_get_discounted_amount( $user_info['discount'], $download_price );
+					}
+
+					if ( $user_info['discount'] != 'none' ) {
+						$price = edd_get_discounted_amount( $user_info['discount'], $download_price );
+					} else {
+						$price = $download_price;
+					}
+
 				} else {
-					$price = $download_price;
+					$price = false;
 				}
 
 				$recipients = eddc_get_recipients( $download_id );
@@ -67,7 +75,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				foreach( $recipients as $recipient ) {
 
 					$rate     			= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
-					$commission_amount 	= eddc_calc_commission_amount( $price, $rate ); // calculate the commission amount to award
+					$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
 					$currency    		= $payment_data['currency'];
 
 					$commission = array(
@@ -116,6 +124,13 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 }
 
 
+function eddc_get_commission_type( $download_id = 0 ) {
+	$settings = get_post_meta( $download_id, '_edd_commission_settings', true );
+	$type     = isset( $settings['type'] ) ? $settings['type'] : 'percentage';
+	return apply_filters( 'eddc_get_commission_type', $type, $download_id );
+}
+
+
 function eddc_get_cart_item_id( $cart_details, $download_id ) {
 
 	foreach( (array) $cart_details as $postion => $item ) {
@@ -126,7 +141,10 @@ function eddc_get_cart_item_id( $cart_details, $download_id ) {
 	return null;
 }
 
-function eddc_calc_commission_amount( $price, $rate ) {
+function eddc_calc_commission_amount( $price, $rate, $type = 'percentage' ) {
+
+	if( 'flat' == $type )
+		return $rate;
 
 	if ( $price == false )
 		$price = '0.00';
