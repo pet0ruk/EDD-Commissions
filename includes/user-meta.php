@@ -24,7 +24,7 @@ function eddc_save_user_paypal( $user_id ) {
 		return false;
 
 	if( is_email( $_POST['eddc_user_paypal'] ) ) {
-		update_usermeta( $user_id, 'eddc_user_paypal', $_POST['eddc_user_paypal'] );
+		update_user_meta( $user_id, 'eddc_user_paypal', sanitize_text_field( $_POST['eddc_user_paypal'] ) );
 	}
 }
 add_action( 'personal_options_update', 'eddc_save_user_paypal' );
