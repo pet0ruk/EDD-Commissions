@@ -1,6 +1,6 @@
 <?php
 
-function eddc_user_paypal_email( $user ) { 
+function eddc_user_paypal_email( $user ) {
 	?>
 	<h3><?php _e('Easy Digital Downloads Commissions', 'eddc'); ?></h3>
 	<table class="form-table">
@@ -10,9 +10,9 @@ function eddc_user_paypal_email( $user ) {
 				<input type="email" name="eddc_user_paypal" id="eddc_user_paypal" class="regular-text" value="<?php echo get_user_meta( $user->ID, 'eddc_user_paypal', true ); ?>" />
 				<span class="description"><?php _e('If the user\'s PayPal address is different than their account email, enter it here.', 'eddc'); ?></span>
 			</td>
-		</tr>	
+		</tr>
 	</table>
-	<?php 
+	<?php
 }
 add_action( 'show_user_profile', 'eddc_user_paypal_email' );
 add_action( 'edit_user_profile', 'eddc_user_paypal_email' );
