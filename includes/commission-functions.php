@@ -357,17 +357,17 @@ function eddc_generate_payout_file( $data ) {
 
 				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
 
-				$user_id = $commission_meta['user_id'];
-				$user = get_userdata( $user_id );
+				$user_id       = $commission_meta['user_id'];
+				$user          = get_userdata( $user_id );
 				$custom_paypal = get_user_meta( $user_id, 'eddc_user_paypal', true );
-				$email = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
+				$email         = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
 
 				if ( array_key_exists( $email, $payouts ) ) {
 					$payouts[$email]['amount'] += $commission_meta['amount'];
 				} else {
 					$payouts[$email] = array(
-						'amount' => $commission_meta['amount'],
-						'currency' => $commission_meta['currency']
+						'amount'     => $commission_meta['amount'],
+						'currency'   => $commission_meta['currency']
 					);
 				}
 				update_post_meta( $commission->ID, '_commission_status', 'paid' );
@@ -378,7 +378,7 @@ function eddc_generate_payout_file( $data ) {
 				foreach ( $payouts as $key => $payout ) {
 
 					echo $key . ",";
-					echo  edd_sanitize_amount( $payout['amount'] ) . ",";
+					echo edd_sanitize_amount( number_format( $payout['amount'], 2 ) ) . ",";
 					echo $payout['currency'];
 
 					echo "\r\n";
