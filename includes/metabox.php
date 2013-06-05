@@ -1,7 +1,10 @@
 <?php
 
 function eddc_add_commission_meta_box() {
-	add_meta_box( 'edd_download_commissions', __( 'Commission', 'edd' ), 'eddc_render_commissions_meta_box', 'download', 'side', 'core' );
+
+	if( current_user_can( 'manage_shop_settings' ) ) {
+		add_meta_box( 'edd_download_commissions', __( 'Commission', 'edd' ), 'eddc_render_commissions_meta_box', 'download', 'side', 'core' );
+	}
 }
 add_action( 'add_meta_boxes', 'eddc_add_commission_meta_box', 100 );
 
@@ -72,7 +75,7 @@ function eddc_download_meta_box_save( $post_id ) {
 	global $post;
 
 	// verify nonce
-	if ( isset( $_POST['edd_download_commission_meta_box_nonce'] ) && !wp_verify_nonce( $_POST['edd_download_commission_meta_box_nonce'], basename( __FILE__ ) ) ) {
+	if ( isset( $_POST['edd_download_commission_meta_box_nonce'] ) && ! wp_verify_nonce( $_POST['edd_download_commission_meta_box_nonce'], basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
@@ -85,7 +88,7 @@ function eddc_download_meta_box_save( $post_id ) {
 		return $post_id;
 	}
 
-	if ( !current_user_can( 'edit_post', $post_id ) ) {
+	if ( ! current_user_can( 'edit_product', $post_id ) ) {
 		return $post_id;
 	}
 
