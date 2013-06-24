@@ -163,6 +163,8 @@ function eddc_user_has_commissions( $user_id = false ) {
 	if ( empty( $user_id ) )
 		$user_id = get_current_user_id();
 
+	$return = false;
+
 	$args = array(
 		'post_type' => 'edd_commission',
 		'posts_per_page' => 1,
@@ -178,9 +180,9 @@ function eddc_user_has_commissions( $user_id = false ) {
 	$commissions = get_posts( $args );
 
 	if ( $commissions ) {
-		return true;
+		$return = true;
 	}
-	return false; // no commissions
+	return apply_filters( 'eddc_user_has_commissions', $return, $user_id );
 }
 
 function eddc_get_unpaid_commissions( $user_id = false, $number = 30, $paged = 1 ) {
@@ -465,3 +467,27 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 	wp_mail( $email, __( 'New Sale!', 'eddc' ), $message, $headers );
 }
 add_action( 'eddc_insert_commission', 'eddc_email_alert', 10, 4 );
+
+
+/**
+ * Store a payment note about this commission
+ *
+ * This makes it really easy to find commissions recorded for a specific payment.
+ * Especially useful for when payments are refunded
+ *
+ * @access      private
+ * @since       2.0
+ * @return      void
+ */
+function eddc_record_commission_note( $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id ) {
+
+	$note = sprintf(
+		__( 'Commission of %s recorded for %s &ndash; <a href="%s">View</a>', 'eddc' ),
+		edd_currency_filter( edd_format_amount( $commission_amount ) ),
+		get_userdata( $recipient )->display_name,
+		admin_url( 'edit.php?post_type=download&page=edd-commissions&payment=' . $payment_id )
+	);
+
+	edd_insert_payment_note( $payment_id, $note );
+}
+add_action( 'eddc_insert_commission', 'eddc_record_commission_note', 10, 6 );

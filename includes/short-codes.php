@@ -23,7 +23,7 @@ function eddc_user_commissions( ) {
 	$paid_total_pages   = ceil( $total_paid / 20 );
 
 	$stats 				= '';
-	if( ! empty( $unpaid_commissions ) || ! empty( $paid_commissions ) ) : // only show tables if user has commission data
+	if( eddc_user_has_commissions() ) : // only show tables if user has commission data
 		ob_start(); ?>
 			<div id="edd_user_commissions">
 
