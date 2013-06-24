@@ -97,6 +97,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					update_post_meta( $commission_id, '_commission_status', 'unpaid' );
 					update_post_meta( $commission_id, '_download_id', $download_id );
 					update_post_meta( $commission_id, '_user_id', $recipient );
+					update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
 
 					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id );
 				}

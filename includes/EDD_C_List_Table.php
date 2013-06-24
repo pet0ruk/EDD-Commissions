@@ -46,8 +46,11 @@ class EDD_C_List_Table extends WP_List_Table {
         case 'date':
             return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
         case 'download':
-            $download = get_post_meta( $item['ID'], '_download_id', true );
+            $download = ! empty( $item['download'] ) ? $item['download'] : false;
             return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' : '';
+        case 'payment':
+            $payment = get_post_meta( $item['ID'], '_edd_commission_payment_id', true );
+            return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&edd-action=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
         default:
             return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
@@ -91,6 +94,7 @@ class EDD_C_List_Table extends WP_List_Table {
             'cb'        => '<input type="checkbox" />', //Render a checkbox instead of text
             'title'     => __( 'User', 'eddc' ),
             'download'  => edd_get_label_singular(),
+            'payment'   => __( 'Payment', 'eddc' ),
             'rate'      => __( 'Rate', 'eddc' ),
             'amount'    => __( 'Amount', 'eddc' ),
             'status'    => __( 'Status', 'eddc' ),
@@ -158,6 +162,18 @@ class EDD_C_List_Table extends WP_List_Table {
 
 
     /**
+     * Retrieves the ID of the download we're filtering commissions by
+     *
+     * @access      private
+     * @since       2.0
+     * @return      int
+     */
+    function get_filtered_payment() {
+        return ! empty( $_GET['payment'] ) ? absint( $_GET['payment'] ) : false;
+    }
+
+
+    /**
      * Gets the meta query for the log query
      *
      * This is used to return log entries that match our search query, user query, or download query
@@ -172,6 +188,7 @@ class EDD_C_List_Table extends WP_List_Table {
 
         $user     = $this->get_filtered_user();
         $download = $this->get_filtered_download();
+        $payment  = $this->get_filtered_payment();
         $view     = isset( $_GET['view'] ) ? $_GET['view'] : false;
 
         if( $user ) {
@@ -188,6 +205,15 @@ class EDD_C_List_Table extends WP_List_Table {
             $meta_query[] = array(
                 'key'   => '_download_id',
                 'value' => $download
+            );
+
+        }
+
+        if( $payment ) {
+            // Show only commissions from a specific payment
+            $meta_query[] = array(
+                'key'   => '_edd_commission_payment_id',
+                'value' => $payment
             );
 
         }
