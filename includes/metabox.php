@@ -79,8 +79,8 @@ function eddc_download_meta_box_save( $post_id ) {
 		return $post_id;
 	}
 
-	// check autosave
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+	// Check for auto save / bulk edit
+	if ( ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX') && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ) {
 		return $post_id;
 	}
 
