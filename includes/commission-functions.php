@@ -30,7 +30,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	$cart_details  	= maybe_unserialize( $payment_data['cart_details'] );
 
 	// loop through each purchased download and award commissions, if needed
-	foreach ( $downloads as $download ) {
+	foreach ( $cart_details as $download ) {
 
 		$download_id    		= absint( $download['id'] );
 		$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
@@ -48,58 +48,61 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				$type           = eddc_get_commission_type( $download_id );
 				$download_price = edd_get_download_price( $download_id );
 
-				// If percentage based, we need to figure out the base price
-				if( $type == 'percentage' ) {
+				for( $i = 0; $i < $download['quantity']; $i++ ) {
 
-					if ( is_array( $cart_details ) ) {
+					// If percentage based, we need to figure out the base price
+					if( $type == 'percentage' ) {
 
-						$cart_item_id = eddc_get_cart_item_id( $cart_details, $download_id );
+						if ( is_array( $cart_details ) ) {
 
-						$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : edd_get_download_price( $download_id );
+							$cart_item_id = eddc_get_cart_item_id( $cart_details, $download_id );
 
-					}
+							$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : edd_get_download_price( $download_id );
 
-					if ( $user_info['discount'] != 'none' ) {
-						$price = edd_get_discounted_amount( $user_info['discount'], $download_price );
+						}
+
+						if ( $user_info['discount'] != 'none' ) {
+							$price = edd_get_discounted_amount( $user_info['discount'], $download_price );
+						} else {
+							$price = $download_price;
+						}
+
 					} else {
-						$price = $download_price;
+						$price = false;
 					}
 
-				} else {
-					$price = false;
-				}
+					$recipients = eddc_get_recipients( $download_id );
 
-				$recipients = eddc_get_recipients( $download_id );
+					// Record a commission for each user
+					foreach( $recipients as $recipient ) {
 
-				// Record a commission for each user
-				foreach( $recipients as $recipient ) {
+						$rate     			= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+						$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
+						$currency    		= $payment_data['currency'];
 
-					$rate     			= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
-					$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
-					$currency    		= $payment_data['currency'];
+						$commission = array(
+							'post_type'  	=> 'edd_commission',
+							'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
+							'post_status'  	=> 'publish'
+						);
 
-					$commission = array(
-						'post_type'  	=> 'edd_commission',
-						'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
-						'post_status'  	=> 'publish'
-					);
+						$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
 
-					$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
+						$commission_info = apply_filters( 'edd_commission_info', array(
+							'user_id'  	=> $recipient,
+							'rate'   	=> $rate,
+							'amount'  	=> $commission_amount,
+							'currency'  => $currency
+						), $commission_id );
 
-					$commission_info = apply_filters( 'edd_commission_info', array(
-						'user_id'  	=> $recipient,
-						'rate'   	=> $rate,
-						'amount'  	=> $commission_amount,
-						'currency'  => $currency
-					), $commission_id );
+						update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
+						update_post_meta( $commission_id, '_commission_status', 'unpaid' );
+						update_post_meta( $commission_id, '_download_id', $download_id );
+						update_post_meta( $commission_id, '_user_id', $recipient );
+						update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
 
-					update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
-					update_post_meta( $commission_id, '_commission_status', 'unpaid' );
-					update_post_meta( $commission_id, '_download_id', $download_id );
-					update_post_meta( $commission_id, '_user_id', $recipient );
-					update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
-
-					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
+						do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
+					}
 				}
 			}
 		}
