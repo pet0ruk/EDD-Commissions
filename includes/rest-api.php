@@ -18,6 +18,9 @@ class EDDC_REST_API {
 
 	public function output_data( $data, $query_mode, $api_object ) {
 
+		if( 'commissions' != $query_mode )
+			return $data;
+
 		$user_id = $api_object->get_user();
 
 		$data['unpaid'] = array();

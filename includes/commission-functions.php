@@ -448,7 +448,10 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 	global $edd_options;
 
 	$from_name = isset( $edd_options['from_name'] ) ? $edd_options['from_name'] : get_bloginfo( 'name' );
+	$from_name = apply_filters( 'eddc_email_from_name', $from_name, $user_id, $commission_amount, $rate, $download_id );
+
 	$from_email = isset( $edd_options['from_email'] ) ? $edd_options['from_email'] : get_option( 'admin_email' );
+	$from_email = apply_filters( 'eddc_email_from_email', $from_email, $user_id, $commission_amount, $rate, $download_id );
 
 	$headers = "From: " . stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) . " <$from_email>\r\n";
 
@@ -464,7 +467,7 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 	$message .= __( 'Commission Rate: ', 'eddc' ) . $rate . "%\n\n";
 	$message .= __( 'Thank you', 'eddc' );
 
-	$message = apply_filters( 'eddc_sale_alert_email', $message, $download_id, $user_id, $commission_amount, $rate );
+	$message = apply_filters( 'eddc_sale_alert_email', $message, $user_id, $commission_amount, $rate, $download_id );
 
 	wp_mail( $email, __( 'New Sale!', 'eddc' ), $message, $headers );
 }
