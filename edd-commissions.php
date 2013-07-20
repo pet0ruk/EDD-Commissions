@@ -29,8 +29,6 @@ if(!defined('EDDC_PLUGIN_FILE')) {
 	define('EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMISSIONS_STORE_API_URL', 'https://easydigitaldownloads.com' );
-define( 'EDD_COMISSIONS_PRODUCT_NAME', 'Comissions' );
 define( 'EDD_COMISSIONS_VERSION', '2.0.1' );
 
 
@@ -71,27 +69,7 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
 }
 
-
-function edd_commissions_updater() {
-
-	if( !class_exists( 'EDD_SL_Plugin_Updater' ) ) {
-		// load our custom updater
-		include( EDDC_PLUGIN_DIR . 'EDD_SL_Plugin_Updater.php' );
-	}
-
-	global $edd_options;
-
-	// retrieve our license key from the DB
-	$edd_commissions_license_key = isset( $edd_options['edd_commissions_license_key'] ) ? trim( $edd_options['edd_commissions_license_key'] ) : '';
-
-	// setup the updater
-	$edd_cr_updater = new EDD_SL_Plugin_Updater( EDD_COMISSIONS_STORE_API_URL, __FILE__, array(
-			'version' 	=> EDD_COMISSIONS_VERSION, 			// current version number
-			'license' 	=> $edd_commissions_license_key, 	// license key (used get_option above to retrieve from DB)
-			'item_name' => EDD_COMISSIONS_PRODUCT_NAME, 	// name of this plugin
-			'author' 	=> 'Pippin Williamson'  			// author of this plugin
-		)
-	);
-
+if( ! class_exists( 'EDD_License' ) ) {
+	include( EDDC_PLUGIN_DIR . 'includes/EDD_License_Handler.php' );
 }
-add_action( 'admin_init', 'edd_commissions_updater' );
+$eddc_license = new EDD_License( __FILE__, 'Comissions', EDD_COMISSIONS_VERSION, 'Pippin Williamson' );
