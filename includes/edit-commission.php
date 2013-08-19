@@ -5,7 +5,7 @@ $commission_info = get_post_meta( $commission, '_edd_commission_info', true);
 ?>
 <form id="edit-field" method="post">
 	<table class="form-table">
-		<tbody>		
+		<tbody>
 			<tr class="form-field">
 				<th scope="row" valign="top">
 					<label for="rate"><?php _e('Rate', 'eddc'); ?></label>
@@ -31,5 +31,5 @@ $commission_info = get_post_meta( $commission, '_edd_commission_info', true);
 		<input type="hidden" name="edd-action" value="edit_commission"/>
 		<input type="hidden" name="commission" value="<?php echo $commission; ?>"/>
 		<input type="submit" class="button-primary" value="<?php _e('Update', 'eddc'); ?>"/>
-	</p>	
+	</p>
 </form>
