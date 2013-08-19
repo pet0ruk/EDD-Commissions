@@ -144,6 +144,33 @@ function eddc_get_cart_item_id( $cart_details, $download_id ) {
 	return null;
 }
 
+/**
+ * Retrieve the Download IDs a user receives commissions for
+ *
+ * @access      public
+ * @since       2.1
+ * @return      array
+ */
+function eddc_get_download_ids_of_user( $user_id = 0 ) {
+	if( empty( $user_id ) )
+		return false;
+
+	global $wpdb;
+
+	$downloads = $wpdb->get_results( "SELECT post_id, meta_value AS settings FROM $wpdb->postmeta WHERE meta_key='_edd_commission_settings' AND meta_value LIKE '%{$user_id}%';" );
+
+	foreach( $downloads as $key => $download ) {
+		$settings = maybe_unserialize( $download->settings );
+		$user_ids = explode( ',', $settings['user_id'] );
+
+		if( ! in_array( $user_id, $user_ids ) ) {
+			unset( $downloads[ $key ] );
+		}
+	}
+
+	return wp_list_pluck( $downloads, 'post_id' );
+}
+
 function eddc_calc_commission_amount( $price, $rate, $type = 'percentage' ) {
 
 	if( 'flat' == $type )

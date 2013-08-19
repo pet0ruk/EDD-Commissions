@@ -1,5 +1,45 @@
 <?php
 
+function eddc_user_product_list() {
+
+	$user_id  = get_current_user_id();
+	$products = eddc_get_download_ids_of_user( $user_id );
+	ob_start(); ?>
+	<div id="edd_commissioned_products">
+		<h3 class="edd_commissioned_products_header"><?php _e('Your Items', 'eddc'); ?></h3>
+		<table id="edd_commissioned_products_table">
+			<thead>
+				<tr>
+					<?php do_action( 'edd_commissioned_products_head_row_begin' ); ?>
+					<th class="edd_commissioned_item"><?php _e('Item', 'eddc'); ?></th>
+					<th class="edd_commissioned_sales"><?php _e('Sales', 'eddc'); ?></th>
+					<?php do_action( 'edd_commissioned_products_head_row_end' ); ?>
+				</tr>
+			</thead>
+			<tbody>
+			<?php if( ! empty( $products ) ) : ?>
+				<?php foreach( $products as $product ) : if( ! get_post( $product ) ) continue; ?>
+					<tr class="edd_user_commission_row">
+						<?php
+						do_action( 'edd_commissioned_products_row_begin', $product, $user_id ); ?>
+						<td class="edd_commissioned_item"><?php echo get_the_title( $product ); ?></td>
+						<td class="edd_commissioned_sales"><?php echo edd_get_download_sales_stats( $product ); ?></td>
+						<?php do_action( 'edd_commissioned_products_row_end', $product, $user_id ); ?>
+					</tr>
+				<?php endforeach; ?>
+			<?php else : ?>
+				<tr class="edd_commissioned_products_row_empty">
+					<td colspan="4"><?php _e('No item', 'eddc'); ?></td>
+				</tr>
+			<?php endif; ?>
+			</tbody>
+		</table>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+add_shortcode( 'edd_commissioned_products', 'eddc_user_product_list' );
+
 function eddc_user_commissions( ) {
 
 	global $user_ID;
