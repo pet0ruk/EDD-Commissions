@@ -107,7 +107,7 @@ function eddc_user_commissions( ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
-					<div id="edd_user_commissions_unpaid_total"><?php _e('Total unpaid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( eddc_get_unpaid_totals( $user_ID ) ); ?></div>
+					<div id="edd_user_commissions_unpaid_total"><?php _e('Total unpaid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $user_ID ) ) ); ?></div>
 
 					<div id="edd_commissions_unpaid_pagination" class="navigation">
 					<?php
@@ -163,7 +163,7 @@ function eddc_user_commissions( ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
-					<div id="edd_user_commissions_paid_total"><?php _e('Total paid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( eddc_get_paid_totals( $user_ID ) ); ?></div>
+					<div id="edd_user_commissions_paid_total"><?php _e('Total paid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_paid_totals( $user_ID ) ) ); ?></div>
 
 					<div id="edd_commissions_paid_pagination" class="navigation">
 					<?php
