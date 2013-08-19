@@ -7,14 +7,14 @@
  * Registers the Commissions CPT.
  *
  * @access      private
- * @since       1.0 
+ * @since       1.0
  * @return      void
 */
 
 function eddc_setup_post_type() {
 
-	/* commission post type */	
-	
+	/* commission post type */
+
 	$commission_labels = array(
 		'name' 				=> _x('Commissions', 'post type general name', 'eddc'),
 		'singular_name' 	=> _x('Commission', 'post type singular name', 'eddc'),
@@ -26,27 +26,27 @@ function eddc_setup_post_type() {
 		'view_item' 		=> __('View Commission', 'eddc'),
 		'search_items' 		=> __('Search Commissions', 'eddc'),
 		'not_found' 		=>  __('No Commissions found', 'eddc'),
-		'not_found_in_trash'=> __('No Commissions found in Trash', 'eddc'), 
+		'not_found_in_trash'=> __('No Commissions found in Trash', 'eddc'),
 		'parent_item_colon' => '',
 		'menu_name' 		=> __('Commissions', 'eddc')
 	);
-	
+
 	$commission_args = array(
 		'labels' 			=> apply_filters('edd_commission_labels', $commission_labels),
 		'public' 			=> false,
 		'publicly_queryable'=> false,
-		'show_ui' 			=> false, 
-		'show_in_menu' 		=> false, 
-		'show_in_nav_menu' 	=> false, 
+		'show_ui' 			=> false,
+		'show_in_menu' 		=> false,
+		'show_in_nav_menu' 	=> false,
 		'query_var' 		=> false,
 		'rewrite' 			=> false,
 		'capability_type' 	=> 'page',
-		'has_archive' 		=> false, 
+		'has_archive' 		=> false,
 		'hierarchical' 		=> false,
 		'supports' 			=> array( 'title' )
-	); 
+	);
 
 	register_post_type('edd_commission', $commission_args);
-	
+
 }
 add_action( 'init', 'eddc_setup_post_type' );
