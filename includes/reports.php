@@ -78,12 +78,10 @@ function edd_show_commissions_graph() {
 	$tick_size 		= apply_filters( 'edd_graph_ticksize', $tick_size );
 	$totals 		= (float) 0.00; // Total commissions for time period shown
 
-	echo '<h3>' . __( 'Commissions Paid Over Time', 'eddc' ) . '</h3>';
-
-	// show the date controls
-	edd_reports_graph_controls();
-
 	ob_start(); ?>
+	<div class="tablenav top">
+		<div class="alignleft actions"><?php edd_report_views(); ?></div>
+	</div>
 	<script type="text/javascript">
 	   jQuery( document ).ready( function($) {
 	   		$.plot(
@@ -213,8 +211,17 @@ function edd_show_commissions_graph() {
 		    });
 	   });
     </script>
-    <div id="commissions_chart_div" style="height: 300px;"></div>
-    <p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
+    <div class="metabox-holder" style="padding-top: 0;">
+		<div class="postbox">
+			<h3><span><?php _e('Commissions Paid Over Time', 'edd'); ?></span></h3>
+
+			<div class="inside">
+				<?php edd_reports_graph_controls(); ?>
+   				 <div id="commissions_chart_div" style="height: 300px;"></div>
+   			</div>
+   		</div>
+   	</div>
+	<p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
 	<?php
 	echo ob_get_clean();
 }
