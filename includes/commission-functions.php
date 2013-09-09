@@ -122,7 +122,13 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 	$rates      = array_map( 'trim', explode( ',', $settings['amount'] ) );
 	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 	$rate_key   = array_search( $user_id, $recipients );
-	$rate       = $rates[ $rate_key ];
+	if( ! empty( $rates[ $rate_key ] ) ) {
+		$rate   = $rates[ $rate_key ];
+	} elseif( eddc_get_default_rate() ) {
+		$rate = eddc_get_default_rate();
+	} else {
+		$rate = 0;
+	}
 	return apply_filters( 'eddc_get_recipient_rate', $rate, $download_id, $user_id );
 }
 
@@ -523,3 +529,17 @@ function eddc_record_commission_note( $recipient, $commission_amount, $rate, $do
 	edd_insert_payment_note( $payment_id, $note );
 }
 add_action( 'eddc_insert_commission', 'eddc_record_commission_note', 10, 6 );
+
+
+/**
+ * Gets the default commission rate
+ *
+ * @access      private
+ * @since       2.1
+ * @return      float
+ */
+function eddc_get_default_rate() {
+	global $edd_options;
+	$rate = isset( $edd_options['edd_commissions_default_rate'] ) ? $edd_options['edd_commissions_default_rate'] : false;
+	return apply_filters( 'eddc_default_rate', $rate );
+}

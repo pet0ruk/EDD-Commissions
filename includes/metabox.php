@@ -98,11 +98,13 @@ function eddc_download_meta_box_save( $post_id ) {
 
 		$new = isset( $_POST['edd_commission_settings'] ) ? $_POST['edd_commission_settings'] : false;
 		if ( $new ) {
-			$new['amount'] = str_replace( '%', '', $new['amount'] );
-			$new['amount'] = str_replace( '$', '', $new['amount'] );
-			if ( $new['amount'] < 1 )
-				$new['amount'] = $new['amount'] * 100;
-			$new['amount'] = trim( $new['amount'] );
+			if( ! empty( $new['amount'] ) ) {
+				$new['amount'] = str_replace( '%', '', $new['amount'] );
+				$new['amount'] = str_replace( '$', '', $new['amount'] );
+				if ( $new['amount'] < 1 )
+					$new['amount'] = $new['amount'] * 100;
+				$new['amount'] = trim( $new['amount'] );
+			}
 		}
 		update_post_meta( $post_id, '_edd_commission_settings', $new );
 
