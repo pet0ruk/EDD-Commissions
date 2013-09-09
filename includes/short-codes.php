@@ -4,6 +4,12 @@ function eddc_user_product_list() {
 
 	$user_id  = get_current_user_id();
 	$products = eddc_get_download_ids_of_user( $user_id );
+
+	if( !is_user_logged_in() )
+		return;
+	if( ! eddc_user_has_commissions() )
+		return;
+
 	ob_start(); ?>
 	<div id="edd_commissioned_products">
 		<h3 class="edd_commissioned_products_header"><?php _e('Your Items', 'eddc'); ?></h3>
