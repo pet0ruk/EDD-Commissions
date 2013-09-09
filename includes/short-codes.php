@@ -5,9 +5,10 @@ function eddc_user_product_list() {
 	$user_id  = get_current_user_id();
 	$products = eddc_get_download_ids_of_user( $user_id );
 
-	if( !is_user_logged_in() )
+	if( ! is_user_logged_in() )
 		return;
-	if( ! eddc_user_has_commissions() )
+
+	if( ! empty( $products ) )
 		return;
 
 	ob_start(); ?>
