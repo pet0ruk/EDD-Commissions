@@ -8,7 +8,7 @@ function eddc_user_product_list() {
 	if( ! is_user_logged_in() )
 		return;
 
-	if( ! empty( $products ) )
+	if( empty( $products ) )
 		return;
 
 	ob_start(); ?>
