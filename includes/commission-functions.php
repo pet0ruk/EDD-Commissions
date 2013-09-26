@@ -118,17 +118,39 @@ function eddc_get_recipients( $download_id = 0 ) {
 
 
 function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
-	$settings   = get_post_meta( $download_id, '_edd_commission_settings', true );
-	$rates      = array_map( 'trim', explode( ',', $settings['amount'] ) );
-	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
-	$rate_key   = array_search( $user_id, $recipients );
-	if( ! empty( $rates[ $rate_key ] ) ) {
-		$rate   = $rates[ $rate_key ];
-	} elseif( eddc_get_default_rate() ) {
-		$rate = eddc_get_default_rate();
-	} else {
-		$rate = 0;
+
+	// Check for a rate specified on a specific product
+	if( ! empty( $download_id ) ) {
+
+		$settings   = get_post_meta( $download_id, '_edd_commission_settings', true );
+		$rates      = array_map( 'trim', explode( ',', $settings['amount'] ) );
+		$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
+		$rate_key   = array_search( $user_id, $recipients );
+
+		if( ! empty( $rates[ $rate_key ] ) ) {
+			$rate = $rates[ $rate_key ];
+		} else {
+			$rate = 0;
+		}
+
 	}
+
+	// Check for a user specific global rate
+	if( empty( $download_id ) || empty( $rate ) ) {
+
+		$rate = get_user_meta( $user_id, 'eddc_user_rate', true );
+
+		if( empty( $rate ) ) {
+			$rate = 0;
+		}
+
+	}
+
+	// Check for an overall global rate
+	if( empty( $rate ) && eddc_get_default_rate() ) {
+		$rate = eddc_get_default_rate();
+	}
+
 	return apply_filters( 'eddc_get_recipient_rate', $rate, $download_id, $user_id );
 }
 

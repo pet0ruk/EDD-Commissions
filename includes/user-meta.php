@@ -11,6 +11,13 @@ function eddc_user_paypal_email( $user ) {
 				<span class="description"><?php _e('If the user\'s PayPal address is different than their account email, enter it here.', 'eddc'); ?></span>
 			</td>
 		</tr>
+		<tr>
+			<th><label><?php _e('User\'s Global Rate', 'eddc'); ?></label></th>
+			<td>
+				<input type="text" name="eddc_user_rate" id="eddc_user_rate" class="small-text" value="<?php echo get_user_meta( $user->ID, 'eddc_user_rate', true ); ?>" />
+				<span class="description"><?php _e('Enter a global commission rate for this user. If a rate is not specified for a product, this rate will be used.', 'eddc'); ?></span>
+			</td>
+		</tr>
 	</table>
 	<?php
 }
@@ -25,6 +32,14 @@ function eddc_save_user_paypal( $user_id ) {
 
 	if( is_email( $_POST['eddc_user_paypal'] ) ) {
 		update_user_meta( $user_id, 'eddc_user_paypal', sanitize_text_field( $_POST['eddc_user_paypal'] ) );
+	} else {
+		delete_user_meta( $user_id, 'eddc_user_paypal' );
+	}
+
+	if( ! empty( $_POST['eddc_user_rate'] ) ) {
+		update_user_meta( $user_id, 'eddc_user_rate', sanitize_text_field( $_POST['eddc_user_rate'] ) );
+	} else {
+		delete_user_meta( $user_id, 'eddc_user_rate' );
 	}
 }
 add_action( 'personal_options_update', 'eddc_save_user_paypal' );
