@@ -17,6 +17,15 @@ $commission_info = get_post_meta( $commission, '_edd_commission_info', true);
 			</tr>
 			<tr class="form-field">
 				<th scope="row" valign="top">
+					<label for="download_id"><?php _e('Download ID', 'eddc'); ?></label>
+				</th>
+				<td>
+					<input type="text" id="download_id" name="download_id" value="<?php echo get_post_meta( $commission, '_download_id', true ); ?>"/>
+					<p class="description"><?php _e('The ID of the product this commission was for', 'eddc'); ?></p>
+				</td>
+			</tr>
+			<tr class="form-field">
+				<th scope="row" valign="top">
 					<label for="rate"><?php _e('Rate', 'eddc'); ?></label>
 				</th>
 				<td>

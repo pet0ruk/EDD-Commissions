@@ -461,6 +461,7 @@ function eddc_update_commission( $data ) {
 
 		update_post_meta( $id, '_edd_commission_info', $commission_data );
 		update_post_meta( $id, '_user_id', absint( $data['user_id'] ) );
+		update_post_meta( $id, '_download_id', absint( $data['download_id'] ) );
 
 		wp_redirect( admin_url( 'edit.php?post_type=download&page=edd-commissions' ) ); exit;
 
