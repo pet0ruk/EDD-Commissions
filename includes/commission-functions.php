@@ -457,8 +457,10 @@ function eddc_update_commission( $data ) {
 
 		$commission_data['rate'] = (float)$rate;
 		$commission_data['amount'] = (float) $amount;
+		$commission_data['user_id'] = absint( $data['user_id'] );
 
 		update_post_meta( $id, '_edd_commission_info', $commission_data );
+		update_post_meta( $id, '_user_id', absint( $data['user_id'] ) );
 
 		wp_redirect( admin_url( 'edit.php?post_type=download&page=edd-commissions' ) ); exit;
 

@@ -8,6 +8,15 @@ $commission_info = get_post_meta( $commission, '_edd_commission_info', true);
 		<tbody>
 			<tr class="form-field">
 				<th scope="row" valign="top">
+					<label for="user_id"><?php _e('User ID', 'eddc'); ?></label>
+				</th>
+				<td>
+					<input type="text" id="user_id" name="user_id" value="<?php echo $commission_info['user_id']; ?>"/>
+					<p class="description"><?php _e('The ID of the user that received this commission', 'eddc'); ?></p>
+				</td>
+			</tr>
+			<tr class="form-field">
+				<th scope="row" valign="top">
 					<label for="rate"><?php _e('Rate', 'eddc'); ?></label>
 				</th>
 				<td>
