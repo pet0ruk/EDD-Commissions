@@ -33,7 +33,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 		$download_id    		= absint( $download['id'] );
 		$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
-
+		$price                  = $download['price'];
 
 		// if we need to award a commission
 		if ( $commissions_enabled ) {
@@ -44,31 +44,9 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 			if ( $commission_settings ) {
 
-				$type           = eddc_get_commission_type( $download_id );
-				$download_price = edd_get_download_price( $download_id );
+				$type = eddc_get_commission_type( $download_id );
 
 				for( $i = 0; $i < $download['quantity']; $i++ ) {
-
-					// If percentage based, we need to figure out the base price
-					if( $type == 'percentage' ) {
-
-						if ( is_array( $cart_details ) ) {
-
-							$cart_item_id = eddc_get_cart_item_id( $cart_details, $download_id );
-
-							$download_price = isset( $cart_details[ $cart_item_id ]['price'] ) ? $cart_details[ $cart_item_id ]['price'] : edd_get_download_price( $download_id );
-
-						}
-
-						if ( $user_info['discount'] != 'none' ) {
-							$price = edd_get_discounted_amount( $user_info['discount'], $download_price );
-						} else {
-							$price = $download_price;
-						}
-
-					} else {
-						$price = false;
-					}
 
 					$recipients = eddc_get_recipients( $download_id );
 

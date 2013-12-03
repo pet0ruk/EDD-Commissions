@@ -50,7 +50,7 @@ class EDD_C_List_Table extends WP_List_Table {
             return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' : '';
         case 'payment':
             $payment = get_post_meta( $item['ID'], '_edd_commission_payment_id', true );
-            return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&edd-action=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
+            return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
         default:
             return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
