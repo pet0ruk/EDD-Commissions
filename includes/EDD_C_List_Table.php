@@ -47,7 +47,7 @@ class EDD_C_List_Table extends WP_List_Table {
             return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
         case 'download':
             $download = ! empty( $item['download'] ) ? $item['download'] : false;
-            return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' : '';
+            return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' . (!empty($item['variation']) ? ' - ' . $item['variation'] : '') : '';
         case 'payment':
             $payment = get_post_meta( $item['ID'], '_edd_commission_payment_id', true );
             return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
@@ -274,13 +274,15 @@ class EDD_C_List_Table extends WP_List_Table {
             while ( $commissions->have_posts() ) : $commissions->the_post();
                 $commission_info = get_post_meta( get_the_ID(), '_edd_commission_info', true );
                 $download_id = get_post_meta( get_the_ID(), '_download_id', true );
+                $variation = get_post_meta( get_the_ID(), '_edd_commission_download_variation', true );
                 $commissions_data[] = array(
                     'ID'       => get_the_ID(),
                     'title'    => get_the_title( get_the_ID() ),
                     'amount'   => $commission_info['amount'],
                     'rate'     => $commission_info['rate'],
                     'user'     => $commission_info['user_id'],
-                    'download' => $download_id
+                    'download' => $download_id,
+                    'variation'=> $variation
                 );
             endwhile;
             wp_reset_postdata();

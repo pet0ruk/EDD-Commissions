@@ -46,6 +46,12 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 				$type = eddc_get_commission_type( $download_id );
 
+				//but if we have price variations, then we need to get the name of the variation
+				if ( edd_has_variable_prices( $download_id ) ) {
+					$price_id = edd_get_cart_item_price_id ( $download );
+					$variation = edd_get_price_option_name( $download_id, $price_id );
+				}
+
 				for( $i = 0; $i < $download['quantity']; $i++ ) {
 
 					$recipients = eddc_get_recipients( $download_id );
@@ -53,7 +59,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					// Record a commission for each user
 					foreach( $recipients as $recipient ) {
 
-						$rate     			= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+						$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
 						$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
 						$currency    		= $payment_data['currency'];
 
@@ -77,6 +83,10 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 						update_post_meta( $commission_id, '_download_id', $download_id );
 						update_post_meta( $commission_id, '_user_id', $recipient );
 						update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
+						//if we are dealing with a variation, then save variation info
+						if ( isset($variation) ) {
+							update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
+						}
 
 						do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
 					}
