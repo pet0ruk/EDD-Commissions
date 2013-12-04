@@ -490,7 +490,7 @@ add_action( 'edd_edit_commission', 'eddc_update_commission' );
  * @return      void
  */
 
-function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
+function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id, $commission_id ) {
 	global $edd_options;
 
 	$from_name = isset( $edd_options['from_name'] ) ? $edd_options['from_name'] : get_bloginfo( 'name' );
@@ -508,7 +508,8 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 	$email = $user->user_email; // set address here
 
 	$message = __( 'Hello', 'eddc' ) . "\n\n" . sprintf( __( 'You have made a new sale on %s!', 'eddc' ), stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) ) . ".\n\n";
-	$message .= __( 'Item sold: ', 'eddc' ) . get_the_title( $download_id ) . "\n\n";
+	$variation = get_post_meta( $commission_id, '_edd_commission_download_variation', true );
+	$message .= __( 'Item sold: ', 'eddc' ) . get_the_title( $download_id ) . (!empty($variation) ? ' - ' . $variation : '') . "\n\n";
 	$message .= __( 'Amount: ', 'eddc' ) . " " . html_entity_decode( edd_currency_filter( edd_format_amount( $commission_amount ) ) ) . "\n\n";
 	$message .= __( 'Commission Rate: ', 'eddc' ) . $rate . "%\n\n";
 	$message .= __( 'Thank you', 'eddc' );
@@ -517,7 +518,7 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 
 	wp_mail( $email, __( 'New Sale!', 'eddc' ), $message, $headers );
 }
-add_action( 'eddc_insert_commission', 'eddc_email_alert', 10, 4 );
+add_action( 'eddc_insert_commission', 'eddc_email_alert', 10, 5 );
 
 
 /**
