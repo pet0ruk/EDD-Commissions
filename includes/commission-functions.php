@@ -35,8 +35,8 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
 		$price                  = $download['price'];
 
-		// if we need to award a commission
-		if ( $commissions_enabled ) {
+		// if we need to award a commission, and the price is greater than zero
+		if ( $commissions_enabled && floatval($price) > 0 ) {
 			// set a flag so downloads with commissions awarded are easy to query
 			update_post_meta( $download_id, '_edd_has_commission', true );
 
