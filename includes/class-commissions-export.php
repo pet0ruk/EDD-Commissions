@@ -30,6 +30,34 @@ class EDD_Commissions_Export extends EDD_Export {
 	public $export_type = 'commissions';
 
 	/**
+	 * User ID to export commissions for.
+	 *
+	 * @access      public
+	 * @var         int
+	 * @since       2.3
+	 */
+	public $user_id = 0;
+
+	/**
+	 * Export Year.
+	 *
+	 * @access      public
+	 * @var         int
+	 * @since       2.3
+	 */
+	public $year = 0;
+
+	/**
+	 * Export month.
+	 *
+	 * @access      public
+	 * @var         int
+	 * @since       2.3
+	 */
+	public $month = 0;
+
+
+	/**
 	 * Set the CSV columns
 	 *
 	 * @access      public
@@ -39,7 +67,6 @@ class EDD_Commissions_Export extends EDD_Export {
 	public function csv_cols() {
 		$cols = array(
 			'download' => __( 'Product', 'eddc' ),
-			'rate'     => __( 'Rate',    'eddc' ),
 			'amount'   => __( 'Amount',  'eddc' ) . ' (' . html_entity_decode( edd_currency_filter( '' ) ) . ')',
 			'date'     => __( 'Date',    'eddc' )
 		);
@@ -57,16 +84,22 @@ class EDD_Commissions_Export extends EDD_Export {
 
 		$data = array();
 
-		$commissions = eddc_get_paid_commissions( $this->user_id,  )
+		$args = array(
+			'year'     => ! empty( $this->year )  ? $this->year  : date( 'Y' ),
+			'monthnum' => ! empty( $this->month ) ? $this->month : date( 'n' )
+		);
+
+		$commissions = eddc_get_paid_commissions( array( 'user_id' => $this->user_id, 'number' => -1, 'query_args' => $args ) );
 
 		if ( $commissions ) {
 			foreach ( $commissions as $commission ) {
 				
+				$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+
 				$data[]        = array(
-					'download' => '',
-					'rate'     => '',
-					'amount'   => '',
-					'date'     => ''
+					'download' => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
+					'amount'   => $commission_info['amount'],
+					'date'     => $commission->post_date
 
 				);
 			}

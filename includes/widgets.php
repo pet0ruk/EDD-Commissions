@@ -30,8 +30,8 @@ function eddc_dashboard_commissions_widget() {
 	$unpaid_paged = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
 	$paid_paged   = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( $user_ID, 20, $unpaid_paged );
-	$paid_commissions 	= eddc_get_paid_commissions( $user_ID, 20, $paid_paged );
+	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $unpaid_paged ) );
+	$paid_commissions 	= eddc_get_paid_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $paid_paged ) );
 
 	$total_unpaid       = eddc_count_user_commissions( $user_ID, 'unpaid' );
 	$total_paid         = eddc_count_user_commissions( $user_ID, 'paid' );
@@ -152,6 +152,16 @@ function eddc_dashboard_commissions_widget() {
 							'total'   => $paid_total_pages
 						) );
 					?>
+					</div>
+
+					<div id"edd_commissions_export">
+						<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
+						<form method="post" action="<?php echo admin_url( 'index.php' ); ?>">
+							<?php echo EDD()->html->month_dropdown(); ?>
+							<?php echo EDD()->html->year_dropdown(); ?>
+							<input type="hidden" name="edd_action" value="generate_commission_export"/>
+							<input type="submit" class="button-secondary" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
+						</form>
 					</div>
 				</div><!--end #edd_user_commissions_unpaid-->
 			</div><!--end #edd_user_commissions-->

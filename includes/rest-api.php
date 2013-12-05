@@ -26,7 +26,7 @@ class EDDC_REST_API {
 		$data['unpaid'] = array();
 		$data['paid']   = array();
 
-		$unpaid = eddc_get_unpaid_commissions( $user_id, 30, $api_object->get_paged() );
+		$unpaid = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => 30, 'paged' => $api_object->get_paged() ) );
 		if( ! empty( $unpaid ) ) {
 			foreach( $unpaid as $commission ) {
 
@@ -41,7 +41,7 @@ class EDDC_REST_API {
 			}
 		}
 
-		$paid = eddc_get_paid_commissions( $user_id, 30, $api_object->get_paged() );
+		$paid = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => 30, 'paged' => $api_object->get_paged() ) );
 		if( ! empty( $paid ) ) {
 			foreach( $paid as $commission ) {
 
