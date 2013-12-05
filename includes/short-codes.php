@@ -128,16 +128,6 @@ function eddc_user_commissions( ) {
 					?>
 					</div>
 
-					<div id"edd_commissions_export">
-						<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
-						<form method="post" action="<?php echo home_url(); ?>">
-							<?php echo EDD()->html->month_dropdown(); ?>
-							<?php echo EDD()->html->year_dropdown(); ?>
-							<input type="hidden" name="edd_action" value="generate_commission_export"/>
-							<input type="submit" class="edd-submit button" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
-						</form><br/>
-					</div>
-
 				</div><!--end #edd_user_commissions_unpaid-->
 
 				<!-- paid -->
@@ -194,7 +184,17 @@ function eddc_user_commissions( ) {
 					?>
 					</div>
 
-				</div><!--end #edd_user_commissions_unpaid-->
+					<div id"edd_commissions_export">
+						<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
+						<form method="post" action="<?php echo home_url(); ?>">
+							<?php echo EDD()->html->month_dropdown(); ?>
+							<?php echo EDD()->html->year_dropdown(); ?>
+							<input type="hidden" name="edd_action" value="generate_commission_export"/>
+							<input type="submit" class="edd-submit button" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
+						</form><br/>
+					</div>
+
+				</div><!--end #edd_user_commissions_paid-->
 
 			</div><!--end #edd_user_commissions-->
 		<?php

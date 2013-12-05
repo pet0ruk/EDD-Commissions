@@ -56,6 +56,35 @@ class EDD_Commissions_Export extends EDD_Export {
 	 */
 	public $month = 0;
 
+	/**
+	 * Can we export?
+	 *
+	 * @access public
+	 * @since 2.3
+	 * @return bool Whether we can export or not
+	 */
+	public function can_export() {
+		return (bool) apply_filters( 'edd_export_capability', current_user_can( 'read' ) );
+	}
+
+	/**
+	 * Set the export headers
+	 *
+	 * @access public
+	 * @since 2.3
+	 * @return void
+	 */
+	public function headers() {
+		ignore_user_abort( true );
+
+		if ( ! edd_is_func_disabled( 'set_time_limit' ) && ! ini_get( 'safe_mode' ) )
+			set_time_limit( 0 );
+
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=edd-export-' . $this->export_type . '-' . $this->year . '-' . $this->month . '.csv' );
+		header( "Expires: 0" );
+	}
 
 	/**
 	 * Set the CSV columns
