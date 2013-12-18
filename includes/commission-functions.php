@@ -35,8 +35,8 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
 		$price                  = $download['price'];
 
-		// if we need to award a commission
-		if ( $commissions_enabled ) {
+		// if we need to award a commission, and the price is greater than zero
+		if ( $commissions_enabled && floatval($price) > 0 ) {
 			// set a flag so downloads with commissions awarded are easy to query
 			update_post_meta( $download_id, '_edd_has_commission', true );
 
@@ -46,6 +46,12 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 				$type = eddc_get_commission_type( $download_id );
 
+				//but if we have price variations, then we need to get the name of the variation
+				if ( edd_has_variable_prices( $download_id ) ) {
+					$price_id = edd_get_cart_item_price_id ( $download );
+					$variation = edd_get_price_option_name( $download_id, $price_id );
+				}
+
 				for( $i = 0; $i < $download['quantity']; $i++ ) {
 
 					$recipients = eddc_get_recipients( $download_id );
@@ -53,7 +59,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					// Record a commission for each user
 					foreach( $recipients as $recipient ) {
 
-						$rate     			= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+						$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
 						$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
 						$currency    		= $payment_data['currency'];
 
@@ -77,6 +83,10 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 						update_post_meta( $commission_id, '_download_id', $download_id );
 						update_post_meta( $commission_id, '_user_id', $recipient );
 						update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
+						//if we are dealing with a variation, then save variation info
+						if ( isset($variation) ) {
+							update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
+						}
 
 						do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
 					}
@@ -520,7 +530,7 @@ add_action( 'edd_edit_commission', 'eddc_update_commission' );
  * @return      void
  */
 
-function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
+function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id, $commission_id ) {
 	global $edd_options;
 
 	$from_name = isset( $edd_options['from_name'] ) ? $edd_options['from_name'] : get_bloginfo( 'name' );
@@ -538,7 +548,8 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 	$email = $user->user_email; // set address here
 
 	$message = __( 'Hello', 'eddc' ) . "\n\n" . sprintf( __( 'You have made a new sale on %s!', 'eddc' ), stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) ) . ".\n\n";
-	$message .= __( 'Item sold: ', 'eddc' ) . get_the_title( $download_id ) . "\n\n";
+	$variation = get_post_meta( $commission_id, '_edd_commission_download_variation', true );
+	$message .= __( 'Item sold: ', 'eddc' ) . get_the_title( $download_id ) . (!empty($variation) ? ' - ' . $variation : '') . "\n\n";
 	$message .= __( 'Amount: ', 'eddc' ) . " " . html_entity_decode( edd_currency_filter( edd_format_amount( $commission_amount ) ) ) . "\n\n";
 	$message .= __( 'Commission Rate: ', 'eddc' ) . $rate . "%\n\n";
 	$message .= __( 'Thank you', 'eddc' );
@@ -547,7 +558,7 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id ) {
 
 	wp_mail( $email, __( 'New Sale!', 'eddc' ), $message, $headers );
 }
-add_action( 'eddc_insert_commission', 'eddc_email_alert', 10, 4 );
+add_action( 'eddc_insert_commission', 'eddc_email_alert', 10, 5 );
 
 
 /**
