@@ -29,7 +29,7 @@ if(!defined('EDDC_PLUGIN_FILE')) {
 	define('EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMISSIONS_VERSION', '2.4' );
+define( 'EDD_COMMISSIONS_VERSION', '2.4' );
 
 
 /*
@@ -72,4 +72,4 @@ if( is_admin() ) {
 if( ! class_exists( 'EDD_License' ) ) {
 	include( EDDC_PLUGIN_DIR . 'includes/EDD_License_Handler.php' );
 }
-$eddc_license = new EDD_License( __FILE__, 'Comissions', EDD_COMISSIONS_VERSION, 'Pippin Williamson' );
+$eddc_license = new EDD_License( __FILE__, 'Commissions', EDD_COMMISSIONS_VERSION, 'Pippin Williamson' );
