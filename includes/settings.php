@@ -25,7 +25,14 @@ function eddc_settings( $settings ) {
 			'desc' => __('Enter the default rate recipients should receive. This can be overwritten on a per-product basis. 10 = 10%', 'eddc'),
 			'type' => 'text',
 			'size' => 'small'
-		)
+		),
+		array(
+			'id' => 'edd_commissions_autopay_pa',
+			'name' => __('Autopay Commmissions', 'eddc'),
+			'desc' => __('If checked & PayPal Adaptive is gateway, EDD will automatically pay commissions on purchases', 'eddc'),
+			'type' => 'checkbox',
+			'std' => false
+		)		
 	);
 
 	return array_merge( $settings, $commission_settings );
