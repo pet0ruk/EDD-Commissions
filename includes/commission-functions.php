@@ -413,7 +413,7 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 function eddc_generate_payout_file( $data ) {
 	if ( wp_verify_nonce( $data['eddc-payout-nonce'], 'eddc-payout-nonce' ) ) {
 
-		$commissions = eddc_get_unpaid_commissions( 0, -1 );
+		$commissions = eddc_get_unpaid_commissions( array( 'number' => -1 ) );
 
 		if ( $commissions ) {
 
