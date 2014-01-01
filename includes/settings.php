@@ -43,7 +43,8 @@ function eddc_settings( $settings ) {
 				'biweekly' => __( 'Biweekly', 'eddc' ),
 				'monthly'  => __( 'Monthly', 'eddc' ),
 				'manual'   => __( 'Manual', 'eddc' ),
-			)
+			),
+			'std' => 'manual'
 		)
 	);
 
