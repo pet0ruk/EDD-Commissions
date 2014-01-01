@@ -28,11 +28,23 @@ function eddc_settings( $settings ) {
 		),
 		array(
 			'id' => 'edd_commissions_autopay_pa',
-			'name' => __('Autopay Commmissions', 'eddc'),
+			'name' => __('Instant Pay Commmissions', 'eddc'),
 			'desc' => __('If checked & PayPal Adaptive is gateway, EDD will automatically pay commissions on purchases', 'eddc'),
 			'type' => 'checkbox',
 			'std' => false
-		)		
+		),
+		array(
+			'id' => 'edd_commissions_autopay_schedule',
+			'name' => __( 'Payment schedule', 'edd' ),
+			'desc' => __( 'Note: Schedule will only work if instant pay is unchecked, and requires PayPal Adaptive', 'edd' ),
+			'type' => 'select',
+			'options' => array(
+				'weekly'   => __( 'Weekly', 'edd' ),
+				'biweekly' => __( 'Biweekly', 'edd' ),
+				'monthly'  => __( 'Monthly', 'edd' ),
+				'manual'   => __( 'Manual', 'edd' ),
+			)
+		)
 	);
 
 	return array_merge( $settings, $commission_settings );
