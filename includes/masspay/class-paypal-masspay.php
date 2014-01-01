@@ -69,7 +69,7 @@ class EDDC_Mass_Pay {
 		if (empty($vendors)) {
 			$return = array(
 				'status' => 'error',
-				'msg' => __('No vendors found to pay. Maybe they haven\'t set a PayPal address?', 'edd')
+				'msg' => __('No vendors found to pay. Maybe they haven\'t set a PayPal address?', 'eddc')
 			);
 			$this->mail_results($return);
 			
@@ -107,7 +107,7 @@ class EDDC_Mass_Pay {
 		catch (Exception $ex) {
 			$return = array(
 				'status' => 'error',
-				'msg' => sprintf(__('Error: %s', 'edd'), $ex->getMessage()),
+				'msg' => sprintf(__('Error: %s', 'eddc'), $ex->getMessage()),
 				'total' => $total_pay
 			);
 			
@@ -121,13 +121,13 @@ class EDDC_Mass_Pay {
 				if ($this->purge_user_meta($vendors)) {
 					$return = array(
 						'status' => 'updated',
-						'msg' => __('All due commission has been paid for.', 'edd'),
+						'msg' => __('All due commission has been paid for.', 'eddc'),
 						'total' => $total_pay
 					);
 				} else {
 					$return = array(
 						'status' => 'error',
-						'msg' => __('All due commission has been paid for, but I could not clear it from their profiles due to an internal error. Commission will still be listed as due. Please manually mark the commission as paid from the Commissions page.', 'edd'),
+						'msg' => __('All due commission has been paid for, but I could not clear it from their profiles due to an internal error. Commission will still be listed as due. Please manually mark the commission as paid from the Commissions page.', 'eddc'),
 						'total' => $total_pay
 					);
 				}
@@ -152,16 +152,16 @@ class EDDC_Mass_Pay {
 		$admin_email = edd_get_admin_notice_emails();
 		
 		$admin_message = edd_get_email_body_header();
-		$admin_message .= __('Hello! A payment was just triggered to mass pay all vendors their due commission.', 'edd') . PHP_EOL . PHP_EOL;
-		$admin_message .= sprintf(__('Payment status: %s.', 'edd'), $result['status']) . PHP_EOL;
-		$admin_message .= sprintf(__('Payment message: %s.', 'edd'), $result['msg']) . PHP_EOL;
+		$admin_message .= __('Hello! A payment was just triggered to mass pay all vendors their due commission.', 'eddc') . PHP_EOL . PHP_EOL;
+		$admin_message .= sprintf(__('Payment status: %s.', 'eddc'), $result['status']) . PHP_EOL;
+		$admin_message .= sprintf(__('Payment message: %s.', 'eddc'), $result['msg']) . PHP_EOL;
 		
 		if (!empty($result['total'])) {
-			$admin_message .= sprintf(__('Payment total: %s.', 'edd'), $result['total']);
+			$admin_message .= sprintf(__('Payment total: %s.', 'eddc'), $result['total']);
 		}
 		$admin_message .= edd_get_email_body_footer();
 		
-		$admin_subject = __('EDD Commissions: Mass payments for vendors update', 'edd');
+		$admin_subject = __('EDD Commissions: Mass payments for vendors update', 'eddc');
 		$admin_subject = apply_filters('eddc_admin_commissions_payout_notification_subject', $admin_subject, $result);
 		
 		$from_name  = isset( $edd_options['from_name'] ) ? $edd_options[ 'from_name' ] : get_bloginfo( 'name' );

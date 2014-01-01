@@ -52,17 +52,17 @@ function eddc_schedule_cron($interval) {
 function custom_cron_intervals($schedules) {
 	$schedules['weekly'] = array(
 		'interval' => 604800,
-		'display' => __('Once Weekly')
+		'display' => __('Once Weekly','eddc')
 	);
 	
 	$schedules['biweekly'] = array(
 		'interval' => 1209600,
-		'display' => __('Once every two weeks')
+		'display' => __('Once every two weeks','eddc')
 	);
 	
 	$schedules['monthly'] = array(
 		'interval' => 2635200,
-		'display' => __('Once a month')
+		'display' => __('Once a month','eddc')
 	);
 	
 	return $schedules;

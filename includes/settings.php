@@ -35,14 +35,14 @@ function eddc_settings( $settings ) {
 		),
 		array(
 			'id' => 'edd_commissions_autopay_schedule',
-			'name' => __( 'Payment schedule', 'edd' ),
-			'desc' => __( 'Note: Schedule will only work if instant pay is unchecked, and requires PayPal Adaptive', 'edd' ),
+			'name' => __( 'Payment schedule', 'eddc' ),
+			'desc' => __( 'Note: Schedule will only work if instant pay is unchecked, and requires PayPal Adaptive', 'eddc' ),
 			'type' => 'select',
 			'options' => array(
-				'weekly'   => __( 'Weekly', 'edd' ),
-				'biweekly' => __( 'Biweekly', 'edd' ),
-				'monthly'  => __( 'Monthly', 'edd' ),
-				'manual'   => __( 'Manual', 'edd' ),
+				'weekly'   => __( 'Weekly', 'eddc' ),
+				'biweekly' => __( 'Biweekly', 'eddc' ),
+				'monthly'  => __( 'Monthly', 'eddc' ),
+				'manual'   => __( 'Manual', 'eddc' ),
 			)
 		)
 	);
