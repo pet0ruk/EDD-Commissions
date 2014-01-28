@@ -413,7 +413,33 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 function eddc_generate_payout_file( $data ) {
 	if ( wp_verify_nonce( $data['eddc-payout-nonce'], 'eddc-payout-nonce' ) ) {
 
-		$commissions = eddc_get_unpaid_commissions( array( 'number' => -1 ) );
+		$from = ! empty( $data['from'] ) ? sanitize_text_field( $data['from'] ) : date( 'm/d/Y', strtotime( '-1 month' ) );
+		$to   = ! empty( $data['to'] )   ? sanitize_text_field( $data['to'] )   : date( 'm/d/Y' );
+		
+		$from = explode( '/', $from );
+		$to   = explode( '/', $to );
+
+		$args = array(
+			'number'         => -1,
+			'query_args'     => array(
+				'date_query' => array(
+					array(
+						'month'       => $from[0],
+						'day'     => $from[1],
+						'year'      => $from[2],
+						'compare'   => '>=',
+					),
+					array(
+						'month'       => $to[0],
+						'day'     => $to[1],
+						'year'      => $to[2],
+						'compare'   => '<=',
+					),
+				)
+			)
+		);
+
+		$commissions = eddc_get_unpaid_commissions( $args );
 
 		if ( $commissions ) {
 

@@ -17,6 +17,16 @@ add_action('admin_menu', 'eddc_add_commissions_link', 10);
 
 
 function edd_commissions_page() {
+
+    $js_dir = EDD_PLUGIN_URL . 'assets/js/';
+    $css_dir = EDD_PLUGIN_URL . 'assets/css/';
+
+    // Use minified libraries if SCRIPT_DEBUG is turned off
+    $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+    wp_enqueue_script( 'jquery-ui-datepicker' );
+    $ui_style = ( 'classic' == get_user_option( 'admin_color' ) ) ? 'classic' : 'fresh';
+    wp_enqueue_style( 'jquery-ui-css', $css_dir . 'jquery-ui-' . $ui_style . $suffix . '.css' );
+
     ?>
     <div class="wrap">
 
@@ -46,9 +56,17 @@ function edd_commissions_page() {
                         }
                         return false;
                     });
+                    if ($('.edd_datepicker').length > 0) {
+                        var dateFormat = 'mm/dd/yy';
+                        $('.edd_datepicker').datepicker({
+                            dateFormat: dateFormat
+                        });
+                    }
                 });
             </script>
             <form id="commission-payouts" method="get" style="float:right;margin:0;">
+                <input type="text" name="from" class="edd_datepicker" placeholder="<?php _e( 'From - mm/dd/yyyy', 'eddc' ); ?>"/>
+                <input type="text" name="to" class="edd_datepicker" placeholder="<?php _e( 'To - mm/dd/yyyy', 'eddc' ); ?>"/>
                 <input type="hidden" name="post_type" value="download" />
                 <input type="hidden" name="page" value="edd-commissions" />
                 <input type="hidden" name="edd_action" value="generate_payouts" />
