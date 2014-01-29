@@ -1,5 +1,5 @@
 <?php
-add_filter('cron_schedules', 'custom_cron_intervals');
+add_filter('cron_schedules', 'eddc_commissions_custom_cron_intervals');
 add_action('edd_settings_extensions_sanitize', 'eddc_check_schedule');
 
 function eddc_check_schedule($input) {
@@ -24,7 +24,7 @@ function eddc_check_schedule($input) {
 	
 }
 
-function pay_now() {
+function eddc_commissions_pay_now() {
 	$mass_pay = new PV_Mass_Pay;
 	$mass_pay = $mass_pay->do_payments();
 }
@@ -37,7 +37,7 @@ function eddc_remove_cron_schedule() {
 
 function eddc_schedule_cron($interval) {
 	// Scheduled event
-	add_action('eddc_schedule_mass_payments', 'pay_now');
+	add_action('eddc_schedule_mass_payments', 'eddc_commissions_pay_now');
 	
 	// Schedule the event
 	if (!wp_next_scheduled('eddc_schedule_mass_payments')) {
@@ -49,7 +49,7 @@ function eddc_schedule_cron($interval) {
 	return false;
 }
 
-function custom_cron_intervals($schedules) {
+function eddc_commissions_custom_cron_intervals($schedules) {
 	$schedules['weekly'] = array(
 		'interval' => 604800,
 		'display' => __('Once Weekly','eddc')
