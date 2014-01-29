@@ -25,7 +25,7 @@ function eddc_check_schedule($input) {
 }
 
 function eddc_commissions_pay_now() {
-	$mass_pay = new PV_Mass_Pay;
+	$mass_pay = new EDDC_Mass_Pay;
 	$mass_pay = $mass_pay->do_payments();
 }
 
