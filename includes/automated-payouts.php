@@ -1,15 +1,14 @@
 <?php
-global $edd_options;
-if ( $edd_options[ 'edd_commissions_autopay_pa' ] ) {
+if( edd_get_option( 'edd_commissions_autopay_pa' ) ){
 	
 	add_filter('epap_adaptive_receivers', 'eddc_paypal_adaptive_autopay', 8, 2);
 	add_action('eddc_insert_commission', 'eddc_override_commission_status', 8, 6);
 	
 	function eddc_paypal_adaptive_autopay($receivers, $payment) {
-		$data  = edd_get_payment_meta($payment);
-		$cart  = unserialize($data['cart_details']);
-		$total = get_post_meta($payment, '_edd_payment_total', true);
-		$data  = unserialize($data['downloads']);
+		$data  = edd_get_payment_meta( $payment );
+		$cart  = edd_get_payment_meta_cart_details( $payment )
+		$total = edd_get_payment_amount($payment);
+		$data  = edd_get_payment_meta_downloads($payment);
 		$final = array();
 		foreach ($data as $val) {
 			$recipients = eddc_get_recipients($val['id']);
@@ -18,7 +17,7 @@ if ( $edd_options[ 'edd_commissions_autopay_pa' ] ) {
 				$amount = 0;
 				if ($type === 'percentage') {
 					// get percentage of cart is product total
-					$poc    = get_percentage_of_cart_wp($val['id'], $cart, $payment);
+					$poc    = edd_get_percentage_of_cart($val['id'], $cart, $payment);
 					// get percentage of product is user total
 					$amount = $amount + $poc * (eddc_get_recipient_rate($val['id'], $recipient)) / 100;
 				} else if ($type === 'flat') {
@@ -66,10 +65,10 @@ if ( $edd_options[ 'edd_commissions_autopay_pa' ] ) {
 		}
 		return $return;
 	}
-	function get_percentage_of_cart_wp($id, $data, $payment) {
+	function edd_get_percentage_of_cart($id, $data, $payment) {
 		$total   = 0;
 		$price   = 0;
-		$overall = get_post_meta($payment, '_edd_payment_total', true);
+		$overall = edd_get_payment_amount($payment);
 		foreach ($data as $val) {
 			if ($id == $val['id']) {
 				$price = $val['quantity'] * $val['price'];
