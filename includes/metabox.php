@@ -75,7 +75,7 @@ function eddc_download_meta_box_save( $post_id ) {
 	global $post;
 
 	// verify nonce
-	if ( isset( $_POST['edd_download_commission_meta_box_nonce'] ) && ! wp_verify_nonce( $_POST['edd_download_commission_meta_box_nonce'], basename( __FILE__ ) ) ) {
+	if ( ! isset( $_POST['edd_download_commission_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['edd_download_commission_meta_box_nonce'], basename( __FILE__ ) ) ) {
 		return $post_id;
 	}
 
