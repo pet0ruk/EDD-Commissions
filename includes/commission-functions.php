@@ -33,7 +33,16 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 		$download_id    		= absint( $download['id'] );
 		$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
-		$price                  = $download['price'];
+
+		if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
+
+			$price = $download['subtotal'];
+
+		} else {
+		
+			$price = $download['price'];
+
+		}
 
 		// if we need to award a commission, and the price is greater than zero
 		if ( $commissions_enabled && floatval($price) > 0 ) {
