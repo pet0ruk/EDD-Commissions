@@ -39,14 +39,13 @@ function eddc_settings( $settings ) {
 		array(
 			'id' => 'edd_commissions_autopay_pa',
 			'name' => __('Instant Pay Commmissions', 'eddc'),
-			'desc' => __('If checked & PayPal Adaptive is gateway, EDD will automatically pay commissions on purchases', 'eddc'),
-			'type' => 'checkbox',
-			'std' => false
+			'desc' => sprintf( __('If checked and <a href="%s">PayPal Adaptive Payments</a> gateway is installed, EDD will automatically pay commissions at the time of purchase', 'eddc'), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
+			'type' => 'checkbox'
 		),
 		array(
 			'id' => 'edd_commissions_autopay_schedule',
 			'name' => __( 'Payment schedule', 'eddc' ),
-			'desc' => __( 'Note: Schedule will only work if instant pay is unchecked, and requires PayPal Adaptive', 'eddc' ),
+			'desc' => sprintf( __( 'Note: Schedule will only work if Instant Pay is unchecked, and <a href="%s">PayPal Adaptive Payments</a> is installed', 'eddc' ), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
 			'type' => 'select',
 			'options' => array(
 				'weekly'   => __( 'Weekly', 'eddc' ),

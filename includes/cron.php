@@ -1,28 +1,30 @@
 <?php
-add_filter('cron_schedules', 'eddc_commissions_custom_cron_intervals');
-add_action('edd_settings_extensions_sanitize', 'eddc_check_schedule');
 
-function eddc_check_schedule($input) {
+function eddc_check_schedule( $input ) {
 	global $edd_options;
+
 	$old_interval = wp_get_schedule('eddc_schedule_mass_payments');
 	$new_interval = $input['edd_commissions_autopay_schedule'];
 	$instapay     = $edd_options['edd_commissions_autopay_pa'];
 	
 	/**
 	 * 1. The user actually changed the schedule
-	 * 2. Instapay is turned off
+	 * 2. Instant Pay is turned off
 	 * 3. Manual was not selected
 	 */
-	if (($old_interval != $new_interval) && !$instapay && $new_interval != 'manual') {
-		eddc_remove_cron_schedule($options);
-		eddc_schedule_cron($new_interval);
+	if ( ( $old_interval != $new_interval ) && ! $instapay && $new_interval != 'manual' ) {
+		eddc_remove_cron_schedule( $options );
+		eddc_schedule_cron( $new_interval );
 	}
 	
-	if ($new_interval == 'manual' || $instapay) {
-		eddc_remove_cron_schedule($options);
+	if ( $new_interval == 'manual' || $instapay ) {
+		eddc_remove_cron_schedule( $options );
 	}
+
+	return $input;
 	
 }
+add_filter( 'edd_settings_extensions_sanitize', 'eddc_check_schedule' );
 
 function eddc_commissions_pay_now() {
 	$mass_pay = new EDDC_Mass_Pay;
@@ -30,18 +32,18 @@ function eddc_commissions_pay_now() {
 }
 
 function eddc_remove_cron_schedule() {
-	$timestamp = wp_next_scheduled('eddc_schedule_mass_payments');
+	$timestamp = wp_next_scheduled( 'eddc_schedule_mass_payments' );
 	
-	return wp_unschedule_event($timestamp, 'eddc_schedule_mass_payments');
+	return wp_unschedule_event( $timestamp, 'eddc_schedule_mass_payments' );
 }
 
-function eddc_schedule_cron($interval) {
+function eddc_schedule_cron( $interval ) {
 	// Scheduled event
 	add_action('eddc_schedule_mass_payments', 'eddc_commissions_pay_now');
 	
 	// Schedule the event
-	if (!wp_next_scheduled('eddc_schedule_mass_payments')) {
-		wp_schedule_event(time(), $interval, 'eddc_schedule_mass_payments');
+	if ( ! wp_next_scheduled( 'eddc_schedule_mass_payments' ) ) {
+		wp_schedule_event( time(), $interval, 'eddc_schedule_mass_payments' );
 		
 		return true;
 	}
@@ -49,11 +51,7 @@ function eddc_schedule_cron($interval) {
 	return false;
 }
 
-function eddc_commissions_custom_cron_intervals($schedules) {
-	$schedules['weekly'] = array(
-		'interval' => 604800,
-		'display' => __('Once Weekly','eddc')
-	);
+function eddc_commissions_custom_cron_intervals( $schedules ) {
 	
 	$schedules['biweekly'] = array(
 		'interval' => 1209600,
@@ -67,3 +65,4 @@ function eddc_commissions_custom_cron_intervals($schedules) {
 	
 	return $schedules;
 }
+add_filter( 'cron_schedules', 'eddc_commissions_custom_cron_intervals' );
