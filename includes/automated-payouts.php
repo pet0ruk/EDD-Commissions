@@ -6,7 +6,7 @@ if( edd_get_option( 'edd_commissions_autopay_pa' ) ){
 	
 	function eddc_paypal_adaptive_autopay($receivers, $payment) {
 		$data  = edd_get_payment_meta( $payment );
-		$cart  = edd_get_payment_meta_cart_details( $payment )
+		$cart  = edd_get_payment_meta_cart_details( $payment );
 		$total = edd_get_payment_amount($payment);
 		$data  = edd_get_payment_meta_downloads($payment);
 		$final = array();
