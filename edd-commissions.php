@@ -56,8 +56,11 @@ include_once(EDDC_PLUGIN_DIR . 'includes/commission-functions.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/post-type.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
+include_once(EDDC_PLUGIN_DIR . 'includes/automated-payouts.php');
 
 if( is_admin() ) {
+	include_once(EDDC_PLUGIN_DIR . 'includes/cron.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/masspay/class-paypal-masspay.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/reports.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/settings.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/admin-page.php');

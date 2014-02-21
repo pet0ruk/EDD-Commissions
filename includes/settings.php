@@ -35,6 +35,26 @@ function eddc_settings( $settings ) {
 				'subtotal' => __( 'Subtotal (default)', 'eddc' ),
 				'total'    => __( 'Total', 'eddc' )
 			)
+		),
+		array(
+			'id' => 'edd_commissions_autopay_pa',
+			'name' => __('Instant Pay Commmissions', 'eddc'),
+			'desc' => __('If checked & PayPal Adaptive is gateway, EDD will automatically pay commissions on purchases', 'eddc'),
+			'type' => 'checkbox',
+			'std' => false
+		),
+		array(
+			'id' => 'edd_commissions_autopay_schedule',
+			'name' => __( 'Payment schedule', 'eddc' ),
+			'desc' => __( 'Note: Schedule will only work if instant pay is unchecked, and requires PayPal Adaptive', 'eddc' ),
+			'type' => 'select',
+			'options' => array(
+				'weekly'   => __( 'Weekly', 'eddc' ),
+				'biweekly' => __( 'Biweekly', 'eddc' ),
+				'monthly'  => __( 'Monthly', 'eddc' ),
+				'manual'   => __( 'Manual', 'eddc' ),
+			),
+			'std' => 'manual'
 		)
 	);
 
