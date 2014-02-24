@@ -37,6 +37,7 @@ class EDDC_REST_API {
 					'rate'     => $commission_meta['rate'],
 					'currency' => $commission_meta['currency'],
 					'item'     => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
+					'date'     => $commission->post_date
 				);
 			}
 		}
@@ -52,6 +53,7 @@ class EDDC_REST_API {
 					'rate'     => $commission_meta['rate'],
 					'currency' => $commission_meta['currency'],
 					'item'     => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
+					'date'     => $commission->post_date
 				);
 			}
 		}
