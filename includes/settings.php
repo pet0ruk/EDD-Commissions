@@ -45,7 +45,7 @@ function eddc_settings( $settings ) {
 		array(
 			'id' => 'edd_commissions_autopay_schedule',
 			'name' => __( 'Payment schedule', 'eddc' ),
-			'desc' => __( 'Select when to automatically payout commissions. <strong>Note</strong>: scheduled payouts will only work if Instant Pay is disabled', 'eddc' ),
+			'desc' => sprintf( __( 'Note: Schedule will only work if Instant Pay is unchecked, and <a href="%s">PayPal Adaptive Payments</a> is installed', 'eddc' ), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
 			'type' => 'select',
 			'options' => array(
 				'weekly'   => __( 'Weekly', 'eddc' ),
