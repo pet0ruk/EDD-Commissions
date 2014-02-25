@@ -59,7 +59,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 			} else {
 
 				$amount     = eddc_calc_commission_amount( $price, $rate, $type );
-				$percentage = ( ( 100 / $total ) * $amount );
+				$percentage = ( 100 / $total ) * $amount;
 
 			}
 		
@@ -85,7 +85,6 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 	foreach ( $final as $person => $val ) {
 		$taken = $taken + $val;
 	}
-
 
 	// Calculate the final percentage the store owners should receive
 
@@ -119,7 +118,6 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		$counter++;
 
 	}
-
 	return $return;
 }
 add_filter( 'epap_adaptive_receivers', 'eddc_paypal_adaptive_autopay', 8, 2 );
