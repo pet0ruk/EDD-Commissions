@@ -1,19 +1,34 @@
 <?php
+/**
+ * PayPal Adaptive Payments integration
+ *
+ * This file holds all functions that take care of instant payouts using PayPal Adaptive Payments
+ *
+ * @copyright   Copyright (c) 2014, Pippin Williamson
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+ */
 
-if( edd_get_option( 'edd_commissions_autopay_pa' ) ) {
-	
-	add_filter( 'epap_adaptive_receivers', 'eddc_paypal_adaptive_autopay', 8, 2 );
-	add_action( 'eddc_insert_commission', 'eddc_override_commission_status', 8, 6 );
-	
-}
 
-function eddc_paypal_adaptive_autopay( $receivers, $payment ) {
+/**
+ * Setup PayPal receivers when a purchase is made
+ *
+ * @since 2.7
+ * @param $receivers string The default receivers and their percentages as defined in the Payment Gateway settings
+ * @param $payment_id int The payment ID of the purchase
+ * @return receivers $string The modified receivers string
+ */
+function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 
-	$cart  = edd_get_payment_meta_cart_details( $payment );
+	if( ! edd_get_option( 'edd_commissions_autopay_pa' ) ) {
+		return $receivers;
+	}
+
+	$cart  = edd_get_payment_meta_cart_details( $payment_id );
 	if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-		$total = edd_get_payment_subtotal( $payment );
+		$total = edd_get_payment_subtotal( $payment_id );
 	} else {
-		$total = edd_get_payment_amount( $payment );
+		$total = edd_get_payment_amount( $payment_id );
 	}
 
 	$final = array();
@@ -83,7 +98,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment ) {
 		$val        = explode( '|', $val );
 		$email      = $val[0];
 		$percentage = $val[1];
-		$remainder  = ( 100 / $percentage ) * $remaining;
+		$remainder  = ( $percentage / 100 ) * $remaining;
 
 		if ( isset( $final[ $email ] ) ) {
 			$final[ $email ] = $final[ $email ] + $remainder;
@@ -93,7 +108,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment ) {
 
 	}
 
-	// rebuild the final PayPal receivers string
+	// Rebuild the final PayPal receivers string
 	foreach ( $final as $person => $val ) {
 
 		if ( $counter === 0) {
@@ -104,11 +119,24 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment ) {
 		$counter++;
 
 	}
-	echo $return; exit;
 
 	return $return;
 }
+add_filter( 'epap_adaptive_receivers', 'eddc_paypal_adaptive_autopay', 8, 2 );
 
+
+/**
+ * Mark commissions as paid immediately since they are paid at the time of purchase
+ *
+ * @since 2.7
+ * @return void
+ */
 function eddc_override_commission_status( $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id ) {
+	
+	if( ! edd_get_option( 'edd_commissions_autopay_pa' ) ) {
+		return;
+	}
+
 	update_post_meta( $commission_id, '_commission_status', 'paid' );
 }
+add_action( 'eddc_insert_commission', 'eddc_override_commission_status', 8, 6 );
