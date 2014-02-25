@@ -1,4 +1,14 @@
 <?php
+/**
+ * Mass payment class
+ *
+ * This class handles paying out commissions via the PayPal Mass Pay API
+ *
+ * @copyright   Copyright (c) 2014, Pippin Williamson
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+ */
+
 class EDDC_Mass_Pay {
 
 	private static $plugin_dir;
@@ -20,15 +30,17 @@ class EDDC_Mass_Pay {
 
 
 	private function get_users() {
+
 		$commissions = eddc_get_unpaid_commissions( array(
-				'number' => -1
-			) );
+			'number' => -1
+		) );
 
 		if ( empty( $commissions ) )
 			return false;
 
 		$due_amounts = array();
 		foreach ( $commissions as $commission ) {
+
 			$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
 			$user_id         = $commission_meta['user_id'];
 			$user            = get_userdata( $user_id );
@@ -68,7 +80,9 @@ class EDDC_Mass_Pay {
 	}
 
 	private function pay_vendors( $vendors ) {
+
 		if ( empty( $vendors ) ) {
+
 			$return = array(
 				'status' => 'error',
 				'msg' => __( 'No vendors found to pay. Maybe they haven\'t set a PayPal address?', 'eddc' )
@@ -86,6 +100,7 @@ class EDDC_Mass_Pay {
 
 		$total_pay = 0;
 		foreach ( $vendors as $user_paypal => $user ) {
+
 			// Don't attempt to process payments for users that owe the admin money
 			if ( $user['total_due'] <= 0 )
 				continue;
@@ -95,6 +110,7 @@ class EDDC_Mass_Pay {
 			$masspayItem->Amount           = new BasicAmountType( edd_get_currency(), $user['total_due'] );
 			$masspayItem->ReceiverEmail    = $user_paypal;
 			$massPayRequest->MassPayItem[] = $masspayItem;
+
 		}
 
 		$massPayReq                 = new MassPayReq();
@@ -104,9 +120,12 @@ class EDDC_Mass_Pay {
 
 		// Wrap API method calls on the service object with a try catch
 		try {
+
 			$massPayResponse = $paypalService->MassPay( $massPayReq );
+
 		}
 		catch ( Exception $ex ) {
+
 			$return = array(
 				'status' => 'error',
 				'msg' => sprintf( __( 'Error: %s', 'eddc' ), $ex->getMessage() ),
@@ -114,11 +133,13 @@ class EDDC_Mass_Pay {
 			);
 
 			return $return;
+
 		}
 
 		$return = array();
 
 		if ( isset( $massPayResponse ) ) {
+
 			if ( $massPayResponse->Ack === 'Success' ) {
 				if ( $this->purge_user_meta( $vendors ) ) {
 					$return = array(
@@ -140,6 +161,7 @@ class EDDC_Mass_Pay {
 					'total'  => $total_pay
 				);
 			}
+
 		}
 
 		$this->mail_results( $return );
