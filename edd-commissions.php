@@ -69,7 +69,7 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/widgets.php');
 } else {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
-	include_once(EDDC_PLUGIN_DIR . 'includes/automated-payouts.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php');
 }
 
 if( ! class_exists( 'EDD_License' ) ) {

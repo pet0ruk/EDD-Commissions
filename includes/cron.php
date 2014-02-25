@@ -1,9 +1,10 @@
 <?php
 
 function eddc_check_schedule( $input ) {
-	global $edd_options;
 
-	$old_interval = wp_get_schedule('eddc_schedule_mass_payments');
+	global $edd_options;
+	//print_r( $input ); exit;
+	$old_interval = wp_get_schedule( 'eddc_schedule_mass_payments' );
 	$new_interval = $input['edd_commissions_autopay_schedule'];
 	$instapay     = $edd_options['edd_commissions_autopay_pa'];
 	

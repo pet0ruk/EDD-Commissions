@@ -18,9 +18,6 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	if( $new_status != 'publish' && $new_status != 'complete' )
 		return;
 
-	if ( edd_is_test_mode() )
-		return;
-
 	if( edd_get_payment_gateway( $payment_id ) == 'manual_purchases' && ! isset( $_POST['commission'] ) )
 		return; // do not record commission on manual payments unless specified
 
