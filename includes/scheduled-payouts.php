@@ -1,5 +1,21 @@
 <?php
+/**
+ * Scheduled commission payouts
+ *
+ * This file holds all functions that take care of paying out commissions automatically on a schedule
+ *
+ * @copyright   Copyright (c) 2014, Pippin Williamson
+ * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @since       2.7
+ */
 
+
+/**
+ * Add / remove cron schedules when settings are saved
+ *
+ * @since 2.7
+ * @return $input array The settings being saved
+ */
 function eddc_check_schedule( $input ) {
 
 	global $edd_options;
@@ -27,6 +43,12 @@ function eddc_check_schedule( $input ) {
 }
 add_filter( 'edd_settings_extensions_sanitize', 'eddc_check_schedule' );
 
+/**
+ * Pay commissions
+ *
+ * @since 2.7
+ * @return $input array The settings being saved
+ */
 function eddc_commissions_pay_now() {
 	$mass_pay = new EDDC_Mass_Pay;
 	$mass_pay = $mass_pay->do_payments();
