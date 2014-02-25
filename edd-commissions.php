@@ -56,7 +56,6 @@ include_once(EDDC_PLUGIN_DIR . 'includes/commission-functions.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/post-type.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
-include_once(EDDC_PLUGIN_DIR . 'includes/automated-payouts.php');
 
 if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/cron.php');
@@ -70,6 +69,7 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/widgets.php');
 } else {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/automated-payouts.php');
 }
 
 if( ! class_exists( 'EDD_License' ) ) {
