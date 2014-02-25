@@ -12,7 +12,6 @@
 class EDDC_Mass_Pay {
 
 	private static $plugin_dir;
-	private $orders_paid;
 
 	public function do_payments() {
 		self::$plugin_dir = trailingslashit( dirname( __FILE__ ) );
@@ -128,8 +127,8 @@ class EDDC_Mass_Pay {
 
 			$return = array(
 				'status' => 'error',
-				'msg' => sprintf( __( 'Error: %s', 'eddc' ), $ex->getMessage() ),
-				'total' => $total_pay
+				'msg'    => sprintf( __( 'Error: %s', 'eddc' ), $ex->getMessage() ),
+				'total'  => $total_pay
 			);
 
 			return $return;
