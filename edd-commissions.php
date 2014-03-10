@@ -6,7 +6,7 @@ Description: Record commisions automatically for users in your site when downloa
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
-Version: 2.6
+Version: 2.7
 */
 
 
@@ -29,7 +29,7 @@ if(!defined('EDDC_PLUGIN_FILE')) {
 	define('EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMMISSIONS_VERSION', '2.6' );
+define( 'EDD_COMMISSIONS_VERSION', '2.7' );
 
 
 /*
@@ -58,6 +58,8 @@ include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
 
 if( is_admin() ) {
+	//include_once(EDDC_PLUGIN_DIR . 'includes/scheduled-payouts.php');
+	//include_once(EDDC_PLUGIN_DIR . 'includes/masspay/class-paypal-masspay.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/reports.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/settings.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/admin-page.php');
@@ -67,6 +69,7 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/widgets.php');
 } else {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php');
 }
 
 if( ! class_exists( 'EDD_License' ) ) {

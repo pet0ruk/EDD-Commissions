@@ -35,7 +35,28 @@ function eddc_settings( $settings ) {
 				'subtotal' => __( 'Subtotal (default)', 'eddc' ),
 				'total'    => __( 'Total', 'eddc' )
 			)
+		),
+		array(
+			'id' => 'edd_commissions_autopay_pa',
+			'name' => __('Instant Pay Commmissions', 'eddc'),
+			'desc' => sprintf( __('If checked and <a href="%s">PayPal Adaptive Payments</a> gateway is installed, EDD will automatically pay commissions at the time of purchase', 'eddc'), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
+			'type' => 'checkbox'
+		),
+		/*
+		array(
+			'id' => 'edd_commissions_autopay_schedule',
+			'name' => __( 'Payment schedule', 'eddc' ),
+			'desc' => sprintf( __( 'Note: Schedule will only work if Instant Pay is unchecked, and <a href="%s">PayPal Adaptive Payments</a> is installed', 'eddc' ), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
+			'type' => 'select',
+			'options' => array(
+				'weekly'   => __( 'Weekly', 'eddc' ),
+				'biweekly' => __( 'Biweekly', 'eddc' ),
+				'monthly'  => __( 'Monthly', 'eddc' ),
+				'manual'   => __( 'Manual', 'eddc' ),
+			),
+			'std' => 'manual'
 		)
+		*/
 	);
 
 	return array_merge( $settings, $commission_settings );
