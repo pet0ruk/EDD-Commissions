@@ -42,6 +42,7 @@ function eddc_settings( $settings ) {
 			'desc' => sprintf( __('If checked and <a href="%s">PayPal Adaptive Payments</a> gateway is installed, EDD will automatically pay commissions at the time of purchase', 'eddc'), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
 			'type' => 'checkbox'
 		),
+		/*
 		array(
 			'id' => 'edd_commissions_autopay_schedule',
 			'name' => __( 'Payment schedule', 'eddc' ),
@@ -55,6 +56,7 @@ function eddc_settings( $settings ) {
 			),
 			'std' => 'manual'
 		)
+		*/
 	);
 
 	return array_merge( $settings, $commission_settings );
