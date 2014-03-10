@@ -131,7 +131,7 @@ add_filter( 'epap_adaptive_receivers', 'eddc_paypal_adaptive_autopay', 8, 2 );
  */
 function eddc_override_commission_status( $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id ) {
 	
-	if( ! edd_get_option( 'edd_commissions_autopay_pa' ) ) {
+	if( ! edd_get_option( 'edd_commissions_autopay_pa' ) || 'paypal_adaptive_payments' != edd_get_payment_gateway( $payment_id ) ) {
 		return;
 	}
 
