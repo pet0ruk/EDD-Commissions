@@ -44,7 +44,9 @@ function edd_commissions_page() {
             //Fetch, prepare, sort, and filter our data...
             $commissions_table->prepare_items();
 
-            $total_unpaid = edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals() ) );
+            $user_id = isset( $_GET['user'] ) ? absint( $_GET['user'] ) : 0;
+
+            $total_unpaid = edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $user_id ) ) );
 
             ?>
 
