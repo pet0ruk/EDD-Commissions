@@ -72,7 +72,6 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php');
 }
 
-if( ! class_exists( 'EDD_License' ) ) {
-	include( EDDC_PLUGIN_DIR . 'includes/EDD_License_Handler.php' );
+if( class_exists( 'EDD_License' ) ) {
+	$eddc_license = new EDD_License( __FILE__, 'Commissions', EDD_COMMISSIONS_VERSION, 'Pippin Williamson' );
 }
-$eddc_license = new EDD_License( __FILE__, 'Commissions', EDD_COMMISSIONS_VERSION, 'Pippin Williamson' );
