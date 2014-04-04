@@ -58,6 +58,10 @@ include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
 
 if( is_admin() ) {
+
+	if( class_exists( 'EDD_License' ) ) {
+		$eddc_license = new EDD_License( __FILE__, 'Commissions', EDD_COMMISSIONS_VERSION, 'Pippin Williamson' );
+	}
 	//include_once(EDDC_PLUGIN_DIR . 'includes/scheduled-payouts.php');
 	//include_once(EDDC_PLUGIN_DIR . 'includes/masspay/class-paypal-masspay.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/reports.php');
@@ -71,8 +75,3 @@ if( is_admin() ) {
 	include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php');
 }
-
-if( ! class_exists( 'EDD_License' ) ) {
-	include( EDDC_PLUGIN_DIR . 'includes/EDD_License_Handler.php' );
-}
-$eddc_license = new EDD_License( __FILE__, 'Commissions', EDD_COMMISSIONS_VERSION, 'Pippin Williamson' );
