@@ -31,28 +31,28 @@ class EDD_C_List_Table extends WP_List_Table {
 
     function column_default( $item, $column_name ) {
         switch ( $column_name ) {
-        case 'rate':
-            $download = get_post_meta( $item['ID'], '_download_id', true );
-            $type = eddc_get_commission_type( $download );
-            if( 'percentage' == $type )
-                return $item[$column_name] . '%';
-            else
-                return edd_currency_filter( edd_sanitize_amount( $item[$column_name] ) );
-        case 'status':
-            $status = get_post_meta( $item['ID'], '_commission_status', true );
-            return $status ? $status : __( 'unpaid', 'eddc' );
-        case 'amount':
-            return edd_currency_filter( edd_format_amount( $item[$column_name] ) );
-        case 'date':
-            return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
-        case 'download':
-            $download = ! empty( $item['download'] ) ? $item['download'] : false;
-            return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' . (!empty($item['variation']) ? ' - ' . $item['variation'] : '') : '';
-        case 'payment':
-            $payment = get_post_meta( $item['ID'], '_edd_commission_payment_id', true );
-            return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
-        default:
-            return print_r( $item, true ); //Show the whole array for troubleshooting purposes
+            case 'rate':
+                $download = get_post_meta( $item['ID'], '_download_id', true );
+                $type = eddc_get_commission_type( $download );
+                if( 'percentage' == $type )
+                    return $item[$column_name] . '%';
+                else
+                    return edd_currency_filter( edd_sanitize_amount( $item[$column_name] ) );
+            case 'status':
+                $status = get_post_meta( $item['ID'], '_commission_status', true );
+                return $status ? $status : __( 'unpaid', 'eddc' );
+            case 'amount':
+                return edd_currency_filter( edd_format_amount( $item[$column_name] ) );
+            case 'date':
+                return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
+            case 'download':
+                $download = ! empty( $item['download'] ) ? $item['download'] : false;
+                return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' . (!empty($item['variation']) ? ' - ' . $item['variation'] : '') : '';
+            case 'payment':
+                $payment = get_post_meta( $item['ID'], '_edd_commission_payment_id', true );
+                return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
+            default:
+                return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
     }
 

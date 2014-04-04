@@ -382,25 +382,29 @@ function eddc_get_paid_totals( $user_id = 0 ) {
 	return $total;
 }
 
-function edd_get_commissions_by_date( $day = null, $month = null, $year = null, $hour = null  ) {
+function edd_get_commissions_by_date( $day = null, $month = null, $year = null, $hour = null, $user = 0  ) {
 
-	$args = apply_filters( 'edd_get_commissions_by_date', array(
-			'post_type' => 'edd_commission',
-			'posts_per_page' => -1,
-			'year' => $year,
-			'monthnum' => $month
-		),
-		$day,
-		$month,
-		$year
+	$args = array(
+		'post_type'      => 'edd_commission',
+		'posts_per_page' => -1,
+		'year'           => $year,
+		'monthnum'       => $month
 	);
-
-	if ( ! empty( $day ) )
+	
+	if ( ! empty( $day ) ) {
 		$args['day'] = $day;
-
-	if ( ! empty( $hour ) )
+	}
+	
+	if ( ! empty( $hour ) ) {
 		$args['hour'] = $hour;
+	}
 
+	if( ! empty( $user ) ) {
+		$args['meta_key']   = '_user_id';
+		$args['meta_value'] = absint( $user );
+	}
+
+	$args = apply_filters( 'edd_get_commissions_by_date', $args, $day, $month, $year, $user );
 
 	$commissions = get_posts( $args );
 
@@ -409,7 +413,7 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 		foreach ( $commissions as $commission ) {
 			$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
 			$amount = $commission_meta['amount'];
-			$total = $total + $amount;
+			$total  = $total + $amount;
 		}
 	}
 	return $total;

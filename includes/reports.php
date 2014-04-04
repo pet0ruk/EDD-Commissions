@@ -76,6 +76,7 @@ function edd_show_commissions_graph() {
 
 	$time_format 	= apply_filters( 'edd_graph_timeformat', $time_format );
 	$tick_size 		= apply_filters( 'edd_graph_ticksize', $tick_size );
+	$user           = isset( $_GET['user'] ) ? absint( $_GET['user'] ) : 0;
 	$totals 		= (float) 0.00; // Total commissions for time period shown
 
 	ob_start(); ?>
@@ -96,7 +97,7 @@ function edd_show_commissions_graph() {
 	   						$hour  = 1;
 	   						$month = date( 'n' );
 							while ( $hour <= 23 ) :
-								$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour );
+								$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour, $user );
 								$totals += $commissions;
 								$date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] ); ?>
 								[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
@@ -111,7 +112,7 @@ function edd_show_commissions_graph() {
 							$day_end = $dates['day_end'];
 	   						$month   = $dates['m_start'];
 							while ( $day <= $day_end ) :
-								$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'] );
+								$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'], null, $user );
 								$totals += $commissions;
 								$date = mktime( 0, 0, 0, $month, $day, $dates['year'] ); ?>
 								[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
@@ -128,13 +129,13 @@ function edd_show_commissions_graph() {
 									$d 				= 1;
 									while ( $d <= $num_of_days ) :
 										$date = mktime( 0, 0, 0, $i, $d, $dates['year'] );
-										$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'] );
+										$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
 										$totals += $commissions; ?>
 										[<?php echo $date * 1000; ?>, <?php echo $commissions ?>],
 									<?php $d++; endwhile;
 								else :
 									$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
-									$commissions = edd_get_commissions_by_date( null, $i, $dates['year'] );
+									$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
 									$totals += $commissions;
 									?>
 									[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
@@ -216,8 +217,14 @@ function edd_show_commissions_graph() {
 			<h3><span><?php _e('Commissions Paid Over Time', 'edd'); ?></span></h3>
 
 			<div class="inside">
+				<?php if( ! empty( $user ) ) : $user_data = get_userdata( $user ); ?>
+				<p>
+					<?php printf( __( 'Showing commissions paid to %s', 'eddc' ), $user_data->display_name ); ?>
+					&nbsp;&ndash;&nbsp;<a href="<?php echo esc_url( remove_query_arg( 'user' ) ); ?>"><?php _e( 'clear', 'eddc' ); ?></a>
+				</p>
+				<?php endif; ?>
 				<?php edd_reports_graph_controls(); ?>
-   				 <div id="commissions_chart_div" style="height: 300px;"></div>
+   				<div id="commissions_chart_div" style="height: 300px;"></div>
    			</div>
    		</div>
    	</div>
