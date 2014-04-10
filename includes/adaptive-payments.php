@@ -65,7 +65,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		
 			$user          = get_userdata( $recipient );
 			$custom_paypal = get_user_meta( $recipient, 'eddc_user_paypal', true );
-			$email        = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
+			$email         = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
 
 			if ( $percentage !== 0 ) {
 				if ( isset( $final[ $email ] ) ) {
