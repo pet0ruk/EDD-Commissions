@@ -65,13 +65,13 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		
 			$user          = get_userdata( $recipient );
 			$custom_paypal = get_user_meta( $recipient, 'eddc_user_paypal', true );
-			$paypal        = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
+			$email        = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
 
 			if ( $percentage !== 0 ) {
-				if ( isset( $final[ $paypal ] ) ) {
-					$final[ $paypal ] = $percentage + $final[ $paypal ];
+				if ( isset( $final[ $email ] ) ) {
+					$final[ $email ] = $percentage + $final[ $email ];
 				} else {
-					$final[ $paypal ] = $percentage;
+					$final[ $email ] = $percentage;
 				}
 			}
 		}
@@ -118,6 +118,9 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		$counter++;
 
 	}
+
+	echo '<pre>'; print_r( $return ); echo '</pre>'; exit;
+
 	return $return;
 }
 add_filter( 'epap_adaptive_receivers', 'eddc_paypal_adaptive_autopay', 8, 2 );
