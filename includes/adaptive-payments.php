@@ -49,20 +49,10 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 
 		foreach ( $recipients as $recipient ) {
 
-			$type   = eddc_get_commission_type( $item['id'] );
-			$rate   = eddc_get_recipient_rate( $item['id'], $recipient );
-
-			if( 'percentage' == $type ) {
-
-				$percentage = $rate;
-
-			} else {
-
-				$amount     = eddc_calc_commission_amount( $price, $rate, $type );
-				$percentage = ( 100 / $total ) * $amount;
-
-			}
-		
+			$type          = eddc_get_commission_type( $item['id'] );
+			$rate          = eddc_get_recipient_rate( $item['id'], $recipient );
+			$amount        = eddc_calc_commission_amount( $price, $rate, $type );
+			$percentage    = round( ( 100 / $total ) * $amount, 2 );
 			$user          = get_userdata( $recipient );
 			$custom_paypal = get_user_meta( $recipient, 'eddc_user_paypal', true );
 			$email         = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
@@ -119,7 +109,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 
 	}
 
-	echo '<pre>'; print_r( $return ); echo '</pre>'; exit;
+	//echo '<pre>'; print_r( $return ); echo '</pre>'; exit;
 
 	return $return;
 }
