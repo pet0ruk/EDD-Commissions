@@ -271,6 +271,8 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 
 	$query = array_merge( $query, $args['query_args'] );
 
+	//echo '<pre>';print_r( $query ); echo '</pre>';exit;
+
 	$commissions = get_posts( $query );
 
 	if ( $commissions ) {
@@ -433,18 +435,17 @@ function eddc_generate_payout_file( $data ) {
 			'number'         => -1,
 			'query_args'     => array(
 				'date_query' => array(
-					array(
-						'month'       => $from[0],
+					'after'       => array(
+						'year'    => $from[2],
+						'month'   => $from[0],
 						'day'     => $from[1],
-						'year'      => $from[2],
-						'compare'   => '>=',
 					),
-					array(
-						'month'       => $to[0],
+					'before'      => array(
+						'year'    => $to[2],
+						'month'   => $to[0],
 						'day'     => $to[1],
-						'year'      => $to[2],
-						'compare'   => '<=',
 					),
+					'inclusive' => true
 				)
 			)
 		);
