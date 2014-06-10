@@ -78,11 +78,11 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 						$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
 
 						$commission_info = apply_filters( 'edd_commission_info', array(
-							'user_id'  	=> $recipient,
-							'rate'   	=> $rate,
-							'amount'  	=> $commission_amount,
+							'user_id'   => $recipient,
+							'rate'      => $rate,
+							'amount'    => $commission_amount,
 							'currency'  => $currency
-						), $commission_id );
+						), $commission_id, $payment_id );
 
 						update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
 						update_post_meta( $commission_id, '_commission_status', 'unpaid' );
