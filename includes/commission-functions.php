@@ -36,7 +36,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 			$price = $download['subtotal'];
 
 		} else {
-		
+
 			$price = $download['price'];
 
 		}
@@ -82,7 +82,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 							'rate'      => $rate,
 							'amount'    => $commission_amount,
 							'currency'  => $currency
-						), $commission_id, $payment_id );
+						), $commission_id, $payment_id, $download_id );
 
 						update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
 						update_post_meta( $commission_id, '_commission_status', 'unpaid' );
@@ -392,11 +392,11 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 		'year'           => $year,
 		'monthnum'       => $month
 	);
-	
+
 	if ( ! empty( $day ) ) {
 		$args['day'] = $day;
 	}
-	
+
 	if ( ! empty( $hour ) ) {
 		$args['hour'] = $hour;
 	}
@@ -427,7 +427,7 @@ function eddc_generate_payout_file( $data ) {
 
 		$from = ! empty( $data['from'] ) ? sanitize_text_field( $data['from'] ) : date( 'm/d/Y', strtotime( '-1 month' ) );
 		$to   = ! empty( $data['to'] )   ? sanitize_text_field( $data['to'] )   : date( 'm/d/Y' );
-		
+
 		$from = explode( '/', $from );
 		$to   = explode( '/', $to );
 
