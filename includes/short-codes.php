@@ -184,7 +184,7 @@ function eddc_user_commissions( ) {
 					?>
 					</div>
 
-					<div id"edd_commissions_export">
+					<div id="edd_commissions_export">
 						<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
 						<form method="post" action="<?php echo home_url(); ?>">
 							<?php echo EDD()->html->month_dropdown(); ?>
