@@ -231,7 +231,7 @@ class EDD_C_List_Table extends WP_List_Table {
      */
     function get_tax_query() {
 
-        $meta_query = array();
+        $tax_query = array();
         $view       = isset( $_GET['view'] ) ? $_GET['view'] : false;
        
         if ( $view ) {
