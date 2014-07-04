@@ -50,3 +50,17 @@ function eddc_setup_post_type() {
 
 }
 add_action( 'init', 'eddc_setup_post_type' );
+
+
+/**
+ * Registers the custom taxonomy for tracking commission statuses
+ *
+ * @since 2.8
+ * @return void
+*/
+function eddc_setup_taxonomy() {
+
+	register_taxonomy( 'edd_commission_status', 'edd_commission', array( 'public' => false ) );
+
+}
+add_action( 'init', 'eddc_setup_taxonomy', 0 );

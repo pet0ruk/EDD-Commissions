@@ -128,6 +128,6 @@ function eddc_override_commission_status( $recipient, $commission_amount, $rate,
 		return;
 	}
 
-	update_post_meta( $commission_id, '_commission_status', 'paid' );
+	eddc_set_commission_status( $commission_id, 'paid' );
 }
 add_action( 'eddc_insert_commission', 'eddc_override_commission_status', 8, 6 );

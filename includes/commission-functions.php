@@ -85,11 +85,14 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 							'currency'  => $currency
 						), $commission_id );
 
+						wp_set_object_terms( $commission_id, 'unpaid', 'edd_commission_status' );
+
 						update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
 						update_post_meta( $commission_id, '_commission_status', 'unpaid' );
 						update_post_meta( $commission_id, '_download_id', $download_id );
 						update_post_meta( $commission_id, '_user_id', $recipient );
 						update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
+
 						//if we are dealing with a variation, then save variation info
 						if ( isset( $variation ) ) {
 							update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
@@ -103,6 +106,40 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	}
 }
 add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
+
+
+/**
+ * Retrieve the paid status of a commissions
+ *
+ * @access      public
+ * @since       2.8
+ * @return      string
+ */
+function eddc_get_commission_status( $commission_id = 0 ) {
+
+	$status = has_term( 'paid', 'edd_commission_status', $commission_id ) ? 'paid' : 'unpaid';
+
+	return apply_filters( 'eddc_get_commission_status', $status, $commission_id );
+}
+
+/**
+ * Sets the status for a commission record
+ *
+ * @access      public
+ * @since       2.8
+ * @return      void
+ */
+function eddc_set_commission_status( $commission_id = 0, $new_status = 'unpaid' ) {
+
+	$old_status = eddc_get_commission_status( $commission_id );
+
+	do_action( 'eddc_pre_set_commission_status', $commission_id, $new_status, $old_status );
+	
+	wp_set_object_terms( $commission_id, $new_status, 'edd_commission_status' );
+
+	do_action( 'eddc_set_commission_status', $commission_id, $new_status, $old_status );
+
+}
 
 
 function eddc_get_recipients( $download_id = 0 ) {
@@ -252,20 +289,22 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 		'post_type'      => 'edd_commission',
 		'posts_per_page' => $args['number'],
 		'paged'          => $args['paged'],
-		'meta_query'     => array(
-			'relation'   => 'AND',
+		'tax_query'      => array(
 			array(
-				'key'    => '_commission_status',
-				'value'  => 'unpaid'
+				'taxonomy' => 'edd_commission_status',
+				'terms'    => 'unpaid',
+				'field'    => 'slug'
 			)
 		)
 	);
 
 	if ( $args['user_id'] ) {
 
-		$query['meta_query'][] = array(
-			'key'   => '_user_id',
-			'value' => $args['user_id']
+		$query['meta_query'] = array( 
+			array(
+				'key'   => '_user_id',
+				'value' => $args['user_id']
+			)
 		);
 
 	}
@@ -297,20 +336,22 @@ function eddc_get_paid_commissions( $args = array() ) {
 		'post_type'      => 'edd_commission',
 		'posts_per_page' => $args['number'],
 		'paged'          => $args['paged'],
-		'meta_query'     => array(
-			'relation'   => 'AND',
+		'tax_query'      => array(
 			array(
-				'key'    => '_commission_status',
-				'value'  => 'paid'
+				'taxonomy' => 'edd_commission_status',
+				'terms'    => 'paid',
+				'field'    => 'slug'
 			)
 		)
 	);
 
 	if ( $args['user_id'] ) {
 
-		$query['meta_query'][] = array(
-			'key'   => '_user_id',
-			'value' => $args['user_id']
+		$query['meta_query'] = array(
+			array(
+				'key'   => '_user_id',
+				'value' => $args['user_id']
+			)
 		);
 
 	}
@@ -331,20 +372,22 @@ function eddc_count_user_commissions( $user_id = false, $status = 'unpaid' ) {
 	$args = array(
 		'post_type'      => 'edd_commission',
 		'nopaging'       => true,
-		'meta_query'     => array(
-			'relation'   => 'AND',
+		'tax_query'      => array(
 			array(
-				'key'    => '_commission_status',
-				'value'  => $status
+				'taxonomy' => 'edd_commission_status',
+				'terms'    => $status,
+				'field'    => 'slug'
 			)
 		)
 	);
 
 	if ( $user_id ) {
 
-		$args['meta_query'][] = array(
-			'key'   => '_user_id',
-			'value' => $user_id
+		$args['meta_query'] = array(
+			array(
+				'key'   => '_user_id',
+				'value' => $user_id
+			)
 		);
 
 	}
@@ -479,7 +522,8 @@ function eddc_generate_payout_file( $data ) {
 						'currency'   => $commission_meta['currency']
 					);
 				}
-				update_post_meta( $commission->ID, '_commission_status', 'paid' );
+
+				eddc_set_commission_status( $commission->ID, 'paid' );
 
 			}
 
@@ -635,3 +679,38 @@ function eddc_get_default_rate() {
 	$rate = isset( $edd_options['edd_commissions_default_rate'] ) ? $edd_options['edd_commissions_default_rate'] : false;
 	return apply_filters( 'eddc_default_rate', $rate );
 }
+
+
+/**
+ * Filters get_post_meta() to ensure old commission status checks don't fail
+ *
+ * The status for commission records used to be stored in postmeta, now it's stored in a taxonomy
+ *
+ * @access      private
+ * @since       2.8
+ * @return      mixed
+ */
+function eddc_filter_post_meta_for_status( $check, $object_id, $meta_key, $single ) {
+
+	if( defined( 'EDDC_DOING_UPGRADES' ) ) {
+		return $check;
+	}
+
+	if( '_commission_status' === $meta_key ) {
+
+		if( has_term( 'paid', 'edd_commission_status', $object_id ) ) {
+
+			return 'paid';
+
+		} else {
+
+			return 'unpaid';
+
+		}
+
+	}
+
+	return $check;
+
+}
+add_filter( 'get_post_metadata', 'eddc_filter_post_meta_for_status', 10, 4 );

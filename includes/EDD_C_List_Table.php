@@ -39,7 +39,7 @@ class EDD_C_List_Table extends WP_List_Table {
                 else
                     return edd_currency_filter( edd_sanitize_amount( $item[$column_name] ) );
             case 'status':
-                $status = get_post_meta( $item['ID'], '_commission_status', true );
+                $status = eddc_get_commission_status( $item['ID'] );
                 return $status ? $status : __( 'unpaid', 'eddc' );
             case 'amount':
                 return edd_currency_filter( edd_format_amount( $item[$column_name] ) );
@@ -61,7 +61,7 @@ class EDD_C_List_Table extends WP_List_Table {
         //Build row actions
         $actions = array();
         $base = admin_url( 'edit.php?post_type=download&page=edd-commissions' );
-        if ( get_post_meta( $item['ID'], '_commission_status', true ) == 'paid' ) {
+        if ( eddc_get_commission_status( $item['ID'] ) == 'paid' ) {
             $actions['mark_as_unpaid'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Mark as Unpaid', 'eddc' ) . '</a>', $base, 'mark_as_unpaid', $item['ID'] );
         } else {
             $actions['mark_as_paid'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Mark as Paid', 'eddc' ) . '</a>', $base, 'mark_as_paid', $item['ID'] );
@@ -189,7 +189,6 @@ class EDD_C_List_Table extends WP_List_Table {
         $user     = $this->get_filtered_user();
         $download = $this->get_filtered_download();
         $payment  = $this->get_filtered_payment();
-        $view     = isset( $_GET['view'] ) ? $_GET['view'] : false;
 
         if( $user ) {
             // Show only commissions from a specific user
@@ -218,18 +217,37 @@ class EDD_C_List_Table extends WP_List_Table {
 
         }
 
+        return $meta_query;
+    }
+
+    /**
+     * Gets the tax query
+     *
+     * This is used to return commissions of a specific status
+     *
+     * @access      private
+     * @since       2.8
+     * @return      array
+     */
+    function get_tax_query() {
+
+        $meta_query = array();
+        $view       = isset( $_GET['view'] ) ? $_GET['view'] : false;
+       
         if ( $view ) {
+
             // Show only commissions of a specific status
-            $meta_query[] = array(
-                'key'   => '_commission_status',
-                'value' => $view
+            $tax_query[] = array(
+                'taxonomy' => 'edd_commission_status',
+                'terms'    => $view,
+                'field'    => 'slug'
             );
 
         }
 
-        return $meta_query;
-    }
+        return $tax_query;
 
+    }
 
     function process_bulk_action() {
 
@@ -244,10 +262,10 @@ class EDD_C_List_Table extends WP_List_Table {
                 wp_delete_post( $id );
             }
             if ( 'mark_as_paid' === $this->current_action() ) {
-                update_post_meta( $id, '_commission_status', 'paid' );
+                eddc_set_commission_status( $id, 'paid' );
             }
             if ( 'mark_as_unpaid' === $this->current_action() ) {
-                update_post_meta( $id, '_commission_status', 'unpaid' );
+                eddc_set_commission_status( $id, 'unpaid' );
             }
         }
     }
@@ -265,7 +283,8 @@ class EDD_C_List_Table extends WP_List_Table {
             'post_status'    => 'publish',
             'posts_per_page' => $this->per_page,
             'paged'          => $paged,
-            'meta_query'     => $this->get_meta_query()
+            'meta_query'     => $this->get_meta_query(),
+            'tax_query'      => $this->get_tax_query()
         );
 
 
@@ -309,8 +328,6 @@ class EDD_C_List_Table extends WP_List_Table {
         $this->_column_headers = array( $columns, $hidden, $sortable );
 
         $this->process_bulk_action();
-
-        $current_page = $this->get_pagenum();
 
         $total_items = wp_count_posts( 'edd_commission' )->publish;
 
