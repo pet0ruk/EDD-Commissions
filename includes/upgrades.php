@@ -86,8 +86,6 @@ function eddc_upgrade_commission_statuses() {
 	}
 
 	$step   = isset( $_GET['step'] )  ? absint( $_GET['step'] )  : 1;
-	$total  = isset( $_GET['total'] ) ? absint( $_GET['total'] ) : false;
-	$total  = wp_count_posts( 'edd_commission' )->publish;
 
 	$args = array(
 		'posts_per_page' => 100,
@@ -117,8 +115,7 @@ function eddc_upgrade_commission_statuses() {
 		$redirect = add_query_arg( array(
 			'page'        => 'edd-upgrades',
 			'edd-upgrade' => 'upgrade_commission_statuses',
-			'step'        => $step,
-			'total'       => $total
+			'step'        => $step
 		), admin_url( 'index.php' ) );
 		wp_redirect( $redirect ); exit;
 
