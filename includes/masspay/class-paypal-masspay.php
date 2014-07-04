@@ -48,7 +48,7 @@ class EDDC_Mass_Pay {
 
 			$due_amounts[ $user_id ][] = $commission_meta['amount'];
 
-			update_post_meta( $commission->ID, '_commission_status', 'paid' );
+			eddc_set_commission_status( $commission->ID, 'paid' );
 		}
 
 		foreach ( $due_amounts as $vendor_id => $totals_due ) {

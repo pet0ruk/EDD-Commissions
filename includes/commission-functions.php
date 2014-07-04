@@ -85,10 +85,9 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 							'currency'  => $currency
 						), $commission_id );
 
-						wp_set_object_terms( $commission_id, 'unpaid', 'edd_commission_status' );
+						eddc_set_commission_status( $commission_id, 'unpaid' );
 
 						update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
-						update_post_meta( $commission_id, '_commission_status', 'unpaid' );
 						update_post_meta( $commission_id, '_download_id', $download_id );
 						update_post_meta( $commission_id, '_user_id', $recipient );
 						update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
