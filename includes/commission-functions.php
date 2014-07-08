@@ -67,7 +67,16 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					foreach( $recipients as $recipient ) {
 
 						$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
-						$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
+						$args               = array(
+							'price'         => $price,
+							'rate'          => $rate,
+							'type'          => $type,
+							'download_id'   => $download_id,
+							'recipient'     => $recipient,
+							'payment_id'    => $payment_id
+						);
+
+						$commission_amount 	= eddc_calc_commission_amount( $args ); // calculate the commission amount to award
 						$currency    		= $payment_data['currency'];
 
 						$commission = array(
@@ -133,7 +142,7 @@ function eddc_set_commission_status( $commission_id = 0, $new_status = 'unpaid' 
 	$old_status = eddc_get_commission_status( $commission_id );
 
 	do_action( 'eddc_pre_set_commission_status', $commission_id, $new_status, $old_status );
-	
+
 	wp_set_object_terms( $commission_id, $new_status, 'edd_commission_status' );
 
 	do_action( 'eddc_set_commission_status', $commission_id, $new_status, $old_status );
@@ -230,20 +239,29 @@ function eddc_get_download_ids_of_user( $user_id = 0 ) {
 	return wp_list_pluck( $downloads, 'post_id' );
 }
 
-function eddc_calc_commission_amount( $price, $rate, $type = 'percentage' ) {
+function eddc_calc_commission_amount( $args ) {
 
-	if( 'flat' == $type )
-		return $rate;
+	$defaults = array(
+		'type' => 'percentage'
+	);
 
-	if ( $price == false )
-		$price = '0.00';
+	$args = wp_parse_args( $args, $defaults );
 
-	if ( $rate >= 1 )
-		$amount = $price * ( $rate / 100 ); // rate format = 10 for 10%
-	else
-		$amount = $price * $rate; // rate format set as 0.10 for 10%
+	if( 'flat' == $args['type'] ) {
+		return $args['rate'];
+	}
 
-	return $amount;
+	if ( ! isset( $args['price'] ) || $args['price'] == false ) {
+		$args['price'] = '0.00';
+	}
+
+	if ( $args['rate'] >= 1 ) {
+		$amount = $args['price'] * ( $args['rate'] / 100 ); // rate format = 10 for 10%
+	} else {
+		$amount = $args['price'] * $args['rate']; // rate format set as 0.10 for 10%
+	}
+
+	return apply_filters( 'eddc_calc_commission_amount', $amount, $args );
 }
 
 function eddc_user_has_commissions( $user_id = false ) {
@@ -299,7 +317,7 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 
 	if ( $args['user_id'] ) {
 
-		$query['meta_query'] = array( 
+		$query['meta_query'] = array(
 			array(
 				'key'   => '_user_id',
 				'value' => $args['user_id']
@@ -435,11 +453,11 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 		'year'           => $year,
 		'monthnum'       => $month
 	);
-	
+
 	if ( ! empty( $day ) ) {
 		$args['day'] = $day;
 	}
-	
+
 	if ( ! empty( $hour ) ) {
 		$args['hour'] = $hour;
 	}
@@ -470,7 +488,7 @@ function eddc_generate_payout_file( $data ) {
 
 		$from = ! empty( $data['from'] ) ? sanitize_text_field( $data['from'] ) : date( 'm/d/Y', strtotime( '-1 month' ) );
 		$to   = ! empty( $data['to'] )   ? sanitize_text_field( $data['to'] )   : date( 'm/d/Y' );
-		
+
 		$from = explode( '/', $from );
 		$to   = explode( '/', $to );
 
