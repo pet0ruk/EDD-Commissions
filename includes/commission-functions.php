@@ -23,7 +23,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 	$payment_data  	= edd_get_payment_meta( $payment_id );
 	$user_info   	= maybe_unserialize( $payment_data['user_info'] );
-	$cart_details  	= maybe_unserialize( $payment_data['cart_details'] );
+	$cart_details  	= edd_get_payment_meta_cart_details( $payment_id );
 
 	// loop through each purchased download and award commissions, if needed
 	foreach ( $cart_details as $download ) {
@@ -39,6 +39,12 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 			$price = $download['price'];
 
+		}
+
+		if( ! empty( $download['fees'] ) ) {
+			foreach( $download['fees'] as $fee ) {
+				$price += $fee['amount'];
+			}
 		}
 
 		// if we need to award a commission, and the price is greater than zero
@@ -67,6 +73,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					foreach( $recipients as $recipient ) {
 
 						$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+
 						$args               = array(
 							'price'         => $price,
 							'rate'          => $rate,
