@@ -365,7 +365,7 @@ function eddc_get_unpaid_totals( $user_id = 0 ) {
 			$total += $commission_info['amount'];
 		}
 	}
-	return $total;
+	return edd_sanitize_amount( $total );
 }
 
 
@@ -379,7 +379,7 @@ function eddc_get_paid_totals( $user_id = 0 ) {
 			$total += $commission_info['amount'];
 		}
 	}
-	return $total;
+	return edd_sanitize_amount( $total );
 }
 
 function edd_get_commissions_by_date( $day = null, $month = null, $year = null, $hour = null, $user = 0  ) {
@@ -416,7 +416,7 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 			$total  = $total + $amount;
 		}
 	}
-	return $total;
+	return edd_sanitize_amount( $total );
 }
 
 
