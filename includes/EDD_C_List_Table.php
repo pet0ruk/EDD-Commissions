@@ -39,8 +39,7 @@ class EDD_C_List_Table extends WP_List_Table {
                 else
                     return edd_currency_filter( edd_sanitize_amount( $item[$column_name] ) );
             case 'status':
-                $status = eddc_get_commission_status( $item['ID'] );
-                return $status ? $status : __( 'unpaid', 'eddc' );
+                return eddc_get_commission_status( $item['ID'] );
             case 'amount':
                 return edd_currency_filter( edd_format_amount( $item[$column_name] ) );
             case 'date':
@@ -61,10 +60,13 @@ class EDD_C_List_Table extends WP_List_Table {
         //Build row actions
         $actions = array();
         $base = admin_url( 'edit.php?post_type=download&page=edd-commissions' );
-        if ( eddc_get_commission_status( $item['ID'] ) == 'paid' ) {
+        if ( eddc_get_commission_status( $item['ID'] ) == 'revoked' ) {
+            $actions['mark_as_accepted'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Accept', 'eddc' ) . '</a>', $base, 'mark_as_accepted', $item['ID'] );
+        } elseif ( eddc_get_commission_status( $item['ID'] ) == 'paid' ) {
             $actions['mark_as_unpaid'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Mark as Unpaid', 'eddc' ) . '</a>', $base, 'mark_as_unpaid', $item['ID'] );
         } else {
             $actions['mark_as_paid'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Mark as Paid', 'eddc' ) . '</a>', $base, 'mark_as_paid', $item['ID'] );
+            $actions['mark_as_revoked'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Revoke', 'eddc' ) . '</a>', $base, 'mark_as_revoked', $item['ID'] );
         }
         $actions['edit'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Edit' ) . '</a>', $base, 'edit', $item['ID'] );
         $actions['delete'] = sprintf( '<a href="%s&action=%s&commission=%s">' . __( 'Delete' ) . '</a>', $base, 'delete', $item['ID'] );
@@ -107,9 +109,10 @@ class EDD_C_List_Table extends WP_List_Table {
         $base = admin_url( 'edit.php?post_type=download&page=edd-commissions' );
         $current = isset( $_GET['view'] ) ? $_GET['view'] : '';
         $views = array(
-            'all'       => sprintf( '<a href="%s"%s>%s</a>', remove_query_arg( 'view', $base ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All' ) ),
-            'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'unpaid', $base ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid' ) ),
-            'paid'      => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'paid', $base ), $current === 'paid' ? ' class="current"' : '', __( 'Paid' ) )
+            'all'       => sprintf( '<a href="%s"%s>%s</a>', remove_query_arg( 'view', $base ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ) ),
+            'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'unpaid', $base ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ) ),
+            'revoked'   => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'revoked', $base ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ) ),
+            'paid'      => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'paid', $base ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ) )
         );
         return $views;
     }
@@ -117,9 +120,10 @@ class EDD_C_List_Table extends WP_List_Table {
 
     function get_bulk_actions() {
         $actions = array(
-            'mark_as_paid'      => __( 'Mark as Paid' ),
-            'mark_as_unpaid'    => __( 'Mark as Unpaid' ),
-            'delete'            => __( 'Delete' ),
+            'mark_as_paid'      => __( 'Mark as Paid', 'eddc' ),
+            'mark_as_unpaid'    => __( 'Mark as Unpaid', 'eddc' ),
+            'mark_as_revoked'   => __( 'Mark as Revoked', 'eddc' ),
+            'delete'            => __( 'Delete', 'eddc' )
         );
         return $actions;
     }
@@ -265,6 +269,12 @@ class EDD_C_List_Table extends WP_List_Table {
                 eddc_set_commission_status( $id, 'paid' );
             }
             if ( 'mark_as_unpaid' === $this->current_action() ) {
+                eddc_set_commission_status( $id, 'unpaid' );
+            }
+            if ( 'mark_as_revoked' === $this->current_action() ) {
+                eddc_set_commission_status( $id, 'revoked' );
+            }
+            if ( 'mark_as_accepted' === $this->current_action() ) {
                 eddc_set_commission_status( $id, 'unpaid' );
             }
         }

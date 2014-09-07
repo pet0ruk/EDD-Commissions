@@ -127,7 +127,18 @@ add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
  */
 function eddc_get_commission_status( $commission_id = 0 ) {
 
-	$status = has_term( 'paid', 'edd_commission_status', $commission_id ) ? 'paid' : 'unpaid';
+	$status = 'unpaid';
+	$terms  = get_the_terms( $commission_id, 'edd_commission_status' );
+
+	if( is_array( $terms ) ) {
+
+		foreach( $terms as $term ) {
+
+			$status = $term->slug;
+			break;
+		}
+
+	}
 
 	return apply_filters( 'eddc_get_commission_status', $status, $commission_id );
 }
@@ -145,7 +156,7 @@ function eddc_set_commission_status( $commission_id = 0, $new_status = 'unpaid' 
 
 	do_action( 'eddc_pre_set_commission_status', $commission_id, $new_status, $old_status );
 
-	wp_set_object_terms( $commission_id, $new_status, 'edd_commission_status' );
+	wp_set_object_terms( $commission_id, $new_status, 'edd_commission_status', false );
 
 	do_action( 'eddc_set_commission_status', $commission_id, $new_status, $old_status );
 
