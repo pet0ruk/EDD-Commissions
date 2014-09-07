@@ -23,8 +23,9 @@ class EDDC_REST_API {
 
 		$user_id = $api_object->get_user();
 
-		$data['unpaid'] = array();
-		$data['paid']   = array();
+		$data['unpaid']  = array();
+		$data['paid']    = array();
+		$data['revoked'] = array();
 
 		$unpaid = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => 30, 'paged' => $api_object->get_paged() ) );
 		if( ! empty( $unpaid ) ) {
@@ -58,9 +59,26 @@ class EDDC_REST_API {
 			}
 		}
 
+		$revoked = eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => 30, 'paged' => $api_object->get_paged() ) );
+		if( ! empty( $revoked ) ) {
+			foreach( $revoked as $commission ) {
+
+				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+
+				$data['revoked'][] = array(
+					'amount'   => edd_sanitize_amount( $commission_meta['amount'] ),
+					'rate'     => $commission_meta['rate'],
+					'currency' => $commission_meta['currency'],
+					'item'     => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
+					'date'     => $commission->post_date
+				);
+			}
+		}
+
 		$data['totals'] = array(
-			'unpaid'    => eddc_get_unpaid_totals( $user_id ),
-			'paid'      => eddc_get_paid_totals( $user_id )
+			'unpaid'  => eddc_get_unpaid_totals( $user_id ),
+			'paid'    => eddc_get_paid_totals( $user_id ),
+			'revoked' => eddc_get_revoked_totals( $user_id )
 		);
 
 		return $data;

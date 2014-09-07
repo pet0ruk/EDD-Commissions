@@ -492,10 +492,23 @@ function eddc_get_unpaid_totals( $user_id = 0 ) {
 
 function eddc_get_paid_totals( $user_id = 0 ) {
 
-	$unpaid = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => -1 ) );
+	$paid = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => -1 ) );
 	$total = (float) 0;
-	if ( $unpaid ) {
-		foreach ( $unpaid as $commission ) {
+	if ( $paid ) {
+		foreach ( $paid as $commission ) {
+			$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+			$total += $commission_info['amount'];
+		}
+	}
+	return edd_sanitize_amount( $total );
+}
+
+function eddc_get_revoked_totals( $user_id = 0 ) {
+
+	$revoked = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => -1 ) );
+	$total = (float) 0;
+	if ( $revoked ) {
+		foreach ( $revoked as $commission ) {
 			$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
 			$total += $commission_info['amount'];
 		}
