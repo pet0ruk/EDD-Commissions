@@ -72,7 +72,15 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				foreach( $recipients as $recipient ) {
 
 					$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
-					$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
+					$args               = array(
+						'price'         => $price,
+						'rate'          => $rate,
+						'type'          => $type,
+						'download_id'   => $download_id,
+						'recipient'     => $recipient,
+						'payment_id'    => $payment_id
+					);
+					$commission_amount 	= eddc_calc_commission_amount( $args ); // calculate the commission amount to award
 					$currency    		= $payment_data['currency'];
 
 					$commission = array(
