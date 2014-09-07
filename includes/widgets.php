@@ -147,23 +147,23 @@ function eddc_dashboard_commissions_widget() {
 						$big = 999999;
 						echo paginate_links( array(
 							'base'    => admin_url() . '%_%#edd_user_commissions_paid',
-							'format'  => '?eddcup=%#%',
+							'format'  => '?eddcp=%#%',
 							'current' => max( 1, $paid_paged ),
 							'total'   => $paid_total_pages
 						) );
 					?>
 					</div>
+				</div><!--end #edd_user_commissions_paid-->
 
-					<div id"edd_commissions_export">
-						<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
-						<form method="post" action="<?php echo admin_url( 'index.php' ); ?>">
-							<?php echo EDD()->html->month_dropdown(); ?>
-							<?php echo EDD()->html->year_dropdown(); ?>
-							<input type="hidden" name="edd_action" value="generate_commission_export"/>
-							<input type="submit" class="button-secondary" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
-						</form>
-					</div>
-				</div><!--end #edd_user_commissions_unpaid-->
+				<div id"edd_commissions_export">
+					<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
+					<form method="post" action="<?php echo admin_url( 'index.php' ); ?>">
+						<?php echo EDD()->html->month_dropdown(); ?>
+						<?php echo EDD()->html->year_dropdown(); ?>
+						<input type="hidden" name="edd_action" value="generate_commission_export"/>
+						<input type="submit" class="button-secondary" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
+					</form>
+				</div>
 			</div><!--end #edd_user_commissions-->
 		<?php
 		$stats = ob_get_clean();

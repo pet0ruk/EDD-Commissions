@@ -396,6 +396,51 @@ function eddc_get_paid_commissions( $args = array() ) {
 	return false; // no commissions
 }
 
+function eddc_get_revoked_commissions( $args = array() ) {
+
+	$defaults = array(
+		'user_id'    => false,
+		'number'     => 30,
+		'paged'      => 1,
+		'query_args' => array()
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+
+	$query = array(
+		'post_type'      => 'edd_commission',
+		'posts_per_page' => $args['number'],
+		'paged'          => $args['paged'],
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'edd_commission_status',
+				'terms'    => 'revoked',
+				'field'    => 'slug'
+			)
+		)
+	);
+
+	if ( $args['user_id'] ) {
+
+		$query['meta_query'] = array(
+			array(
+				'key'   => '_user_id',
+				'value' => $args['user_id']
+			)
+		);
+
+	}
+
+	$query = array_merge( $query, $args['query_args'] );
+
+	$commissions = get_posts( $query );
+
+	if ( $commissions ) {
+		return $commissions;
+	}
+	return false; // no commissions
+}
+
 
 function eddc_count_user_commissions( $user_id = false, $status = 'unpaid' ) {
 
