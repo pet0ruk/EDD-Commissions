@@ -65,56 +65,43 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					$variation = edd_get_price_option_name( $download_id, $price_id );
 				}
 
-				for( $i = 0; $i < $download['quantity']; $i++ ) {
 
-					$recipients = eddc_get_recipients( $download_id );
+				$recipients = eddc_get_recipients( $download_id );
 
-					// Record a commission for each user
-					foreach( $recipients as $recipient ) {
+				// Record a commission for each user
+				foreach( $recipients as $recipient ) {
 
-						$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+					$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+					$commission_amount 	= eddc_calc_commission_amount( $price, $rate, $type ); // calculate the commission amount to award
+					$currency    		= $payment_data['currency'];
 
-						$args               = array(
-							'price'         => $price,
-							'rate'          => $rate,
-							'type'          => $type,
-							'download_id'   => $download_id,
-							'recipient'     => $recipient,
-							'payment_id'    => $payment_id
-						);
+					$commission = array(
+						'post_type'  	=> 'edd_commission',
+						'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
+						'post_status'  	=> 'publish'
+					);
 
-						$commission_amount 	= eddc_calc_commission_amount( $args ); // calculate the commission amount to award
-						$currency    		= $payment_data['currency'];
+					$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
 
-						$commission = array(
-							'post_type'  	=> 'edd_commission',
-							'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
-							'post_status'  	=> 'publish'
-						);
+					$commission_info = apply_filters( 'edd_commission_info', array(
+						'user_id'  	=> $recipient,
+						'rate'   	=> $rate,
+						'amount'  	=> $commission_amount,
+						'currency'  => $currency
+					), $commission_id, $payment_id, $download_id );
 
-						$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
+					eddc_set_commission_status( $commission_id, 'unpaid' );
 
-						$commission_info = apply_filters( 'edd_commission_info', array(
-							'user_id'  	=> $recipient,
-							'rate'   	=> $rate,
-							'amount'  	=> $commission_amount,
-							'currency'  => $currency
-						), $commission_id );
-
-						eddc_set_commission_status( $commission_id, 'unpaid' );
-
-						update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
-						update_post_meta( $commission_id, '_download_id', $download_id );
-						update_post_meta( $commission_id, '_user_id', $recipient );
-						update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
-
-						//if we are dealing with a variation, then save variation info
-						if ( isset( $variation ) ) {
-							update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
-						}
-
-						do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
+					update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
+					update_post_meta( $commission_id, '_download_id', $download_id );
+					update_post_meta( $commission_id, '_user_id', $recipient );
+					update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
+					//if we are dealing with a variation, then save variation info
+					if ( isset( $variation ) ) {
+						update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
 					}
+
+					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
 				}
 			}
 		}
@@ -435,7 +422,7 @@ function eddc_get_unpaid_totals( $user_id = 0 ) {
 			$total += $commission_info['amount'];
 		}
 	}
-	return $total;
+	return edd_sanitize_amount( $total );
 }
 
 
@@ -449,7 +436,7 @@ function eddc_get_paid_totals( $user_id = 0 ) {
 			$total += $commission_info['amount'];
 		}
 	}
-	return $total;
+	return edd_sanitize_amount( $total );
 }
 
 function edd_get_commissions_by_date( $day = null, $month = null, $year = null, $hour = null, $user = 0  ) {
@@ -486,7 +473,7 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 			$total  = $total + $amount;
 		}
 	}
-	return $total;
+	return edd_sanitize_amount( $total );
 }
 
 

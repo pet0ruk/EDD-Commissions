@@ -85,10 +85,10 @@ function eddc_upgrade_commission_statuses() {
 		set_time_limit( 0 );
 	}
 
-	$step   = isset( $_GET['step'] )  ? absint( $_GET['step'] )  : 1;
+	$step = isset( $_GET['step'] ) ? absint( $_GET['step'] )  : 1;
 
 	$args = array(
-		'posts_per_page' => 100,
+		'posts_per_page' => 20,
 		'paged'          => $step,
 		'status'         => 'any',
 		'order'          => 'ASC',
@@ -100,6 +100,8 @@ function eddc_upgrade_commission_statuses() {
 
 	if( $commissions ) {
 
+		// Commissions found so upgrade them
+
 		foreach( $commissions as $commission_id ) {
 			
 			$status = get_post_meta( $commission_id, '_commission_status', true );
@@ -110,18 +112,21 @@ function eddc_upgrade_commission_statuses() {
 
 		}
 
-		// Payments found so upgrade them
 		$step++;
+
 		$redirect = add_query_arg( array(
 			'page'        => 'edd-upgrades',
 			'edd-upgrade' => 'upgrade_commission_statuses',
 			'step'        => $step
 		), admin_url( 'index.php' ) );
+
 		wp_redirect( $redirect ); exit;
 
 	} else {
 
-		update_option( 'eddc_version', '2.8' );
+		// No more commissions found, finish up
+
+		update_option( 'eddc_version', EDD_COMMISSIONS_VERSION );
 
 		// No more commissions found, finish up
 		wp_redirect( admin_url() ); exit;
