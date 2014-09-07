@@ -464,7 +464,15 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 		'post_type'      => 'edd_commission',
 		'posts_per_page' => -1,
 		'year'           => $year,
-		'monthnum'       => $month
+		'monthnum'       => $month,
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'edd_commission_status',
+				'terms'    => 'revoked',
+				'field'    => 'slug',
+				'operator' => 'NOT IN'
+			)
+		)
 	);
 
 	if ( ! empty( $day ) ) {
