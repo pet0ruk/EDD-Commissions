@@ -722,7 +722,7 @@ function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id, $c
 	$message  .= __( 'Amount: ', 'eddc' ) . " " . html_entity_decode( edd_currency_filter( edd_format_amount( $commission_amount ) ) ) . "\n\n";
 	$message  .= __( 'Commission Rate: ', 'eddc' ) . $rate . "%\n\n";
 	$message  .= __( 'Thank you', 'eddc' );
-	$message   = apply_filters( 'eddc_sale_alert_email', $message, $user_id, $commission_amount, $rate, $download_id );
+	$message   = apply_filters( 'eddc_sale_alert_email', $message, $user_id, $commission_amount, $rate, $download_id, $commission_id );
 
 	if( class_exists( 'EDD_Emails' ) ) {
 
