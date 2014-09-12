@@ -5,18 +5,79 @@ class EDDC_REST_API {
 
 	public function __construct() {
 
-		add_filter( 'edd_api_valid_query_modes', array( $this, 'query_mode'  ) );
-		add_filter( 'edd_api_output_data',       array( $this, 'output_data' ), 10, 3 );
+		add_filter( 'edd_api_valid_query_modes', array( $this, 'query_modes'  ) );
+		add_filter( 'edd_api_output_data',       array( $this, 'user_commission_data' ), 10, 3 );
+		add_filter( 'edd_api_output_data',       array( $this, 'store_commission_data' ), 10, 3 );
 	}
 
-	public function query_mode( $query_modes ) {
+	public function query_modes( $query_modes ) {
 
 		$query_modes[] = 'commissions';
+		$query_modes[] = 'store-commissions';
 
 		return $query_modes;
 	}
 
-	public function output_data( $data, $query_mode, $api_object ) {
+	public function store_commission_data( $data, $query_mode, $api_object ) {
+
+		if( 'store-commissions' != $query_mode ) {
+			return $data;
+		}
+
+		$user_id = $api_object->get_user();
+
+		if( ! user_can( $user_id, 'view_shop_reports' ) ) {
+			return $data;
+		}
+
+		$data   = array( 'commissions' => array() );
+		$paged  = $api_object->get_paged();
+		$status = isset( $_REQUEST['status'] ) ? sanitize_text_field( $_REQUEST['status'] ) : 'unpaid';
+
+        $commission_args = array(
+            'post_type'      => 'edd_commission',
+            'post_status'    => 'publish',
+            'posts_per_page' => $api_object->per_page(),
+            'paged'          => $paged
+        );
+
+        if( $status ) {
+        	$commission_args['tax_query'] = array( array(
+                'taxonomy' => 'edd_commission_status',
+                'terms'    => $status,
+                'field'    => 'slug'
+            ) );
+        }
+
+        $commissions = get_posts( $commission_args );
+
+        if ( $commissions ) {
+
+            foreach( $commissions as $commission ) {
+
+                $commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+                $download_id     = get_post_meta( $commission->ID, '_download_id', true );
+               
+                $data['commissions'][] = array(
+                    'amount'   => edd_sanitize_amount( $commission_meta['amount'] ),
+					'rate'     => $commission_meta['rate'],
+					'currency' => $commission_meta['currency'],
+					'item'     => get_the_title( $download_id ),
+					'status'   => eddc_get_commission_status( $commission->ID ),
+					'date'     => $commission->post_date
+                );
+            }
+
+            wp_reset_postdata();
+        }
+
+		$data['total_unpaid'] = eddc_get_unpaid_totals();
+
+		return $data;
+
+	}
+
+	public function user_commission_data( $data, $query_mode, $api_object ) {
 
 		if( 'commissions' != $query_mode )
 			return $data;
@@ -83,7 +144,7 @@ class EDDC_REST_API {
 
 		return $data;
 
-	}
+	}	
 
 }
 new EDDC_REST_API;
