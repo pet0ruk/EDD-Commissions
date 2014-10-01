@@ -30,9 +30,6 @@ function edd_commissions_page() {
     ?>
     <div class="wrap">
 
-        <div id="icon-edit" class="icon32"><br/></div>
-        <h2><?php _e('Easy Digital Download Commissions', 'eddc'); ?></h2>
-
         <?php
 
         if( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
@@ -55,6 +52,10 @@ function edd_commissions_page() {
             $total_unpaid = edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $user_id ) ) );
 
             ?>
+
+            <h2>
+                <?php _e('Easy Digital Download Commissions', 'eddc'); ?> -  <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=download&page=edd-commissions&action=add' ) ); ?>" class="add-new-h2"><?php _e( 'Add Commission', 'eddc' ); ?></a>
+            </h2>
 
             <script type="text/javascript">
                 jQuery(document).ready(function($) {

@@ -1,3 +1,4 @@
+<h2><?php _e('Add Commission', 'eddc'); ?></h2>
 <form id="add-commission" method="post">
 	<table class="form-table">
 		<tbody>

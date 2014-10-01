@@ -3,6 +3,7 @@
 $commission = absint( $_GET['commission'] );
 $commission_info = get_post_meta( $commission, '_edd_commission_info', true);
 ?>
+<h2><?php _e('Edit Commission', 'eddc'); ?></h2>
 <form id="edit-field" method="post">
 	<table class="form-table">
 		<tbody>
