@@ -74,11 +74,11 @@ if( is_admin() ) {
 	//include_once(EDDC_PLUGIN_DIR . 'includes/masspay/class-paypal-masspay.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/reports.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/settings.php');
-	include_once(EDDC_PLUGIN_DIR . 'includes/admin-page.php');
-	include_once(EDDC_PLUGIN_DIR . 'includes/metabox.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/admin/list.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/admin/metabox.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/admin/widgets.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/admin/upgrades.php');
 	include_once(EDDC_PLUGIN_DIR . 'includes/EDD_C_List_Table.php');
-	include_once(EDDC_PLUGIN_DIR . 'includes/upgrades.php');
-	include_once(EDDC_PLUGIN_DIR . 'includes/widgets.php');
 } else {
 	include_once(EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php');
 }

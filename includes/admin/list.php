@@ -36,7 +36,13 @@ function edd_commissions_page() {
         <?php
 
         if( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
-            include( EDDC_PLUGIN_DIR . 'includes/edit-commission.php' );
+         
+            include( EDDC_PLUGIN_DIR . 'includes/admin/edit.php' );
+        
+        } elseif( isset( $_GET['action'] ) && $_GET['action'] == 'add' ) {
+        
+            include( EDDC_PLUGIN_DIR . 'includes/admin/add.php' );
+        
         } else {
 
             $commissions_table = new EDD_C_List_Table();
@@ -96,3 +102,93 @@ function edd_commissions_page() {
     <?php
 
 }
+
+
+/**
+ * Update a Commission
+ *
+ * @access      private
+ * @since       1.2.0
+ * @return      void
+ */
+
+function eddc_update_commission( $data ) {
+    if ( wp_verify_nonce( $data['eddc_edit_nonce'], 'eddc_edit_nonce' ) ) {
+
+        $id = absint( $data['commission'] );
+
+        $commission_data = get_post_meta( $id, '_edd_commission_info', true );
+
+        $rate = str_replace( '%', '', $data['rate'] );
+        if ( $rate < 1 )
+            $rate = $rate * 100;
+
+        $amount = str_replace( '%', '', $data['amount'] );
+
+        $commission_data['rate'] = (float)$rate;
+        $commission_data['amount'] = (float) $amount;
+        $commission_data['user_id'] = absint( $data['user_id'] );
+
+        update_post_meta( $id, '_edd_commission_info', $commission_data );
+        update_post_meta( $id, '_user_id', absint( $data['user_id'] ) );
+        update_post_meta( $id, '_download_id', absint( $data['download_id'] ) );
+
+        wp_redirect( admin_url( 'edit.php?post_type=download&page=edd-commissions' ) ); exit;
+
+    }
+}
+add_action( 'edd_edit_commission', 'eddc_update_commission' );
+
+
+/**
+ * Add a Commission
+ *
+ * @access      private
+ * @since       2.9
+ * @return      void
+ */
+
+function eddc_add_manual_commission( $data ) {
+
+    if ( ! wp_verify_nonce( $data['eddc_add_nonce'], 'eddc_add_nonce' ) ) {
+        return;
+    }
+
+    if( ! current_user_can( 'edit_shop_payments' ) ) {
+        wp_die( __( 'You do not have permission to record commissions', 'eddc' ) );
+    }
+
+    $user_info   = get_userdata( $data['user_id'] );
+    $download_id = absint( $data['download_id'] );
+    $payment_id  = absint( $data['payment_id'] );
+    $amount      = edd_sanitize_amount( $data['amount'] );
+    $rate        = sanitize_text_field( $data['rate'] );
+
+    $commission = array(
+        'post_type'     => 'edd_commission',
+        'post_title'    => $user_info->user_email . ' - ' . get_the_title( $download_id ),
+        'post_status'   => 'publish'
+    );
+
+    $commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
+
+    $commission_info = apply_filters( 'edd_commission_info', array(
+        'user_id'   => absint( $data['user_id'] ),
+        'rate'      => $rate,
+        'amount'    => $amount,
+        'currency'  => $currency
+    ), $commission_id, $payment_id, $download_id );
+
+    eddc_set_commission_status( $commission_id, 'unpaid' );
+
+    update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
+    update_post_meta( $commission_id, '_download_id', $download_id );
+    update_post_meta( $commission_id, '_user_id', absint( $data['user_id'] ) );
+    update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
+
+    do_action( 'eddc_insert_commission', absint( $data['user_id'] ), $amount, $rate, $download_id, $commission_id, $payment_id );
+
+    wp_redirect( admin_url( 'edit.php?post_type=download&page=edd-commissions' ) ); exit;
+
+}
+add_action( 'edd_add_commission', 'eddc_add_manual_commission' );
