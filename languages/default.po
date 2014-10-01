@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Easy Digital Downloads Commissions\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-23 10:06-0600\n"
-"PO-Revision-Date: 2014-09-23 10:06-0600\n"
+"POT-Creation-Date: 2014-10-01 11:24-0600\n"
+"PO-Revision-Date: 2014-10-01 11:24-0600\n"
 "Last-Translator: Pippin Williamson <pippin@pippinsplugins.com>\n"
 "Language-Team: Easy Digital Downloads <pippin@pippinsplugins.com>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: ../includes/settings.php:17 ../includes/reports.php:13
 #: ../includes/reports.php:150 ../includes/post-type.php:19
-#: ../includes/post-type.php:31 ../includes/admin-page.php:14
+#: ../includes/post-type.php:31 ../includes/admin/list.php:14
 msgid "Commissions"
 msgstr ""
 
@@ -60,44 +60,44 @@ msgid ""
 "installed, EDD will automatically pay commissions at the time of purchase"
 msgstr ""
 
-#: ../includes/commission-functions.php:640
+#: ../includes/commission-functions.php:641
 msgid "No commissions to be paid"
 msgstr ""
 
-#: ../includes/commission-functions.php:640
+#: ../includes/commission-functions.php:641
 msgid "Error"
 msgstr ""
 
-#: ../includes/commission-functions.php:718
+#: ../includes/commission-functions.php:683
 msgid "New Sale!"
 msgstr ""
 
-#: ../includes/commission-functions.php:719
+#: ../includes/commission-functions.php:684
 msgid "Hello"
 msgstr ""
 
-#: ../includes/commission-functions.php:719
+#: ../includes/commission-functions.php:684
 #, php-format
 msgid "You have made a new sale on %s!"
 msgstr ""
 
-#: ../includes/commission-functions.php:721
+#: ../includes/commission-functions.php:686
 msgid "Item sold: "
 msgstr ""
 
-#: ../includes/commission-functions.php:722
+#: ../includes/commission-functions.php:687
 msgid "Amount: "
 msgstr ""
 
-#: ../includes/commission-functions.php:723
+#: ../includes/commission-functions.php:688
 msgid "Commission Rate: "
 msgstr ""
 
-#: ../includes/commission-functions.php:724
+#: ../includes/commission-functions.php:689
 msgid "Thank you"
 msgstr ""
 
-#: ../includes/commission-functions.php:761
+#: ../includes/commission-functions.php:726
 #, php-format
 msgid "Commission of %s recorded for %s &ndash; <a href=\"%s\">View</a>"
 msgstr ""
@@ -164,66 +164,18 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: ../includes/class-commissions-export.php:99 ../includes/widgets.php:58
-#: ../includes/widgets.php:112 ../includes/EDD_C_List_Table.php:101
-#: ../includes/short-codes.php:91 ../includes/short-codes.php:147
-#: ../includes/short-codes.php:202 ../includes/edit-commission.php:38
+#: ../includes/class-commissions-export.php:99
+#: ../includes/EDD_C_List_Table.php:101 ../includes/short-codes.php:91
+#: ../includes/short-codes.php:147 ../includes/short-codes.php:202
+#: ../includes/admin/widgets.php:58 ../includes/admin/widgets.php:112
+#: ../includes/admin/edit.php:39 ../includes/admin/add.php:43
 msgid "Amount"
 msgstr ""
 
-#: ../includes/class-commissions-export.php:100 ../includes/widgets.php:60
-#: ../includes/widgets.php:114 ../includes/EDD_C_List_Table.php:103
-#: ../includes/short-codes.php:93
+#: ../includes/class-commissions-export.php:100
+#: ../includes/EDD_C_List_Table.php:103 ../includes/short-codes.php:93
+#: ../includes/admin/widgets.php:60 ../includes/admin/widgets.php:114
 msgid "Date"
-msgstr ""
-
-#: ../includes/widgets.php:14
-msgid "Commissions Summary"
-msgstr ""
-
-#: ../includes/widgets.php:53 ../includes/short-codes.php:85
-msgid "Unpaid Commissions"
-msgstr ""
-
-#: ../includes/widgets.php:57 ../includes/widgets.php:111
-#: ../includes/short-codes.php:21 ../includes/short-codes.php:90
-#: ../includes/short-codes.php:146 ../includes/short-codes.php:201
-msgid "Item"
-msgstr ""
-
-#: ../includes/widgets.php:59 ../includes/widgets.php:113
-#: ../includes/EDD_C_List_Table.php:100 ../includes/short-codes.php:92
-#: ../includes/short-codes.php:148 ../includes/short-codes.php:203
-#: ../includes/edit-commission.php:29
-msgid "Rate"
-msgstr ""
-
-#: ../includes/widgets.php:83 ../includes/short-codes.php:118
-msgid "No unpaid commissions"
-msgstr ""
-
-#: ../includes/widgets.php:89 ../includes/short-codes.php:123
-msgid "Total unpaid:"
-msgstr ""
-
-#: ../includes/widgets.php:107 ../includes/short-codes.php:141
-msgid "Paid Commissions"
-msgstr ""
-
-#: ../includes/widgets.php:137 ../includes/short-codes.php:173
-msgid "No paid commissions"
-msgstr ""
-
-#: ../includes/widgets.php:143 ../includes/short-codes.php:178
-msgid "Total paid:"
-msgstr ""
-
-#: ../includes/widgets.php:159 ../includes/short-codes.php:249
-msgid "Export Paid Commissions"
-msgstr ""
-
-#: ../includes/widgets.php:164 ../includes/short-codes.php:254
-msgid "Download CSV"
 msgstr ""
 
 #: ../includes/EDD_C_List_Table.php:49
@@ -270,6 +222,13 @@ msgstr ""
 msgid "Payment"
 msgstr ""
 
+#: ../includes/EDD_C_List_Table.php:100 ../includes/short-codes.php:92
+#: ../includes/short-codes.php:148 ../includes/short-codes.php:203
+#: ../includes/admin/widgets.php:59 ../includes/admin/widgets.php:113
+#: ../includes/admin/edit.php:30 ../includes/admin/add.php:34
+msgid "Rate"
+msgstr ""
+
 #: ../includes/EDD_C_List_Table.php:102
 msgid "Status"
 msgstr ""
@@ -294,7 +253,7 @@ msgstr ""
 msgid "Mark as Revoked"
 msgstr ""
 
-#: ../includes/post-type.php:20 ../includes/metabox.php:6
+#: ../includes/post-type.php:20 ../includes/admin/metabox.php:6
 msgid "Commission"
 msgstr ""
 
@@ -306,7 +265,7 @@ msgstr ""
 msgid "Add New Commission"
 msgstr ""
 
-#: ../includes/post-type.php:23
+#: ../includes/post-type.php:23 ../includes/admin/edit.php:6
 msgid "Edit Commission"
 msgstr ""
 
@@ -334,48 +293,14 @@ msgstr ""
 msgid "No Commissions found in Trash"
 msgstr ""
 
-#: ../includes/metabox.php:41
-msgid "Check to enable commissions"
-msgstr ""
-
-#: ../includes/metabox.php:46
-msgid "Type"
-msgstr ""
-
-#: ../includes/metabox.php:48
-msgid "Percentage"
-msgstr ""
-
-#: ../includes/metabox.php:49
-msgid "Flat"
-msgstr ""
-
-#: ../includes/metabox.php:50
-msgid "Select the type of commission(s) to record."
-msgstr ""
-
-#: ../includes/metabox.php:55
-msgid "User(s)"
-msgstr ""
-
-#: ../includes/metabox.php:58
-msgid ""
-"Enter the user ID that should receive a commission of each sale. Separate "
-"user IDs by a comma."
-msgstr ""
-
-#: ../includes/metabox.php:63
-msgid "Rate(s)"
-msgstr ""
-
-#: ../includes/metabox.php:66
-msgid ""
-"Enter the amount the user(s) should receive of each sale. Separate rates by "
-"a comma."
-msgstr ""
-
 #: ../includes/short-codes.php:16
 msgid "Your Items"
+msgstr ""
+
+#: ../includes/short-codes.php:21 ../includes/short-codes.php:90
+#: ../includes/short-codes.php:146 ../includes/short-codes.php:201
+#: ../includes/admin/widgets.php:57 ../includes/admin/widgets.php:111
+msgid "Item"
 msgstr ""
 
 #: ../includes/short-codes.php:22
@@ -386,6 +311,30 @@ msgstr ""
 msgid "No item"
 msgstr ""
 
+#: ../includes/short-codes.php:85 ../includes/admin/widgets.php:53
+msgid "Unpaid Commissions"
+msgstr ""
+
+#: ../includes/short-codes.php:118 ../includes/admin/widgets.php:83
+msgid "No unpaid commissions"
+msgstr ""
+
+#: ../includes/short-codes.php:123 ../includes/admin/widgets.php:89
+msgid "Total unpaid:"
+msgstr ""
+
+#: ../includes/short-codes.php:141 ../includes/admin/widgets.php:107
+msgid "Paid Commissions"
+msgstr ""
+
+#: ../includes/short-codes.php:173 ../includes/admin/widgets.php:137
+msgid "No paid commissions"
+msgstr ""
+
+#: ../includes/short-codes.php:178 ../includes/admin/widgets.php:143
+msgid "Total paid:"
+msgstr ""
+
 #: ../includes/short-codes.php:196
 msgid "Revoked Commissions"
 msgstr ""
@@ -394,58 +343,127 @@ msgstr ""
 msgid "No revoked commissions"
 msgstr ""
 
-#: ../includes/edit-commission.php:11
-msgid "User ID"
+#: ../includes/short-codes.php:249 ../includes/admin/widgets.php:159
+msgid "Export Paid Commissions"
 msgstr ""
 
-#: ../includes/edit-commission.php:15
-msgid "The ID of the user that received this commission"
+#: ../includes/short-codes.php:254 ../includes/admin/widgets.php:164
+msgid "Download CSV"
 msgstr ""
 
-#: ../includes/edit-commission.php:20
-msgid "Download ID"
-msgstr ""
-
-#: ../includes/edit-commission.php:24
-msgid "The ID of the product this commission was for"
-msgstr ""
-
-#: ../includes/edit-commission.php:33
-msgid "The percentage rate of this commission"
-msgstr ""
-
-#: ../includes/edit-commission.php:42
-msgid "The total amount of this commission"
-msgstr ""
-
-#: ../includes/edit-commission.php:51
-msgid "Update"
-msgstr ""
-
-#: ../includes/admin-page.php:14 ../includes/admin-page.php:34
+#: ../includes/admin/list.php:14 ../includes/admin/list.php:57
 msgid "Easy Digital Download Commissions"
 msgstr ""
 
-#: ../includes/admin-page.php:56
+#: ../includes/admin/list.php:57 ../includes/admin/add.php:1
+#: ../includes/admin/add.php:55
+msgid "Add Commission"
+msgstr ""
+
+#: ../includes/admin/list.php:63
 msgid ""
 "Generating a payout file will mark all unpaid commissions as paid. Do you "
 "want to continue?"
 msgstr ""
 
-#: ../includes/admin-page.php:70
+#: ../includes/admin/list.php:77
 msgid "From - mm/dd/yyyy"
 msgstr ""
 
-#: ../includes/admin-page.php:71
+#: ../includes/admin/list.php:78
 msgid "To - mm/dd/yyyy"
 msgstr ""
 
-#: ../includes/admin-page.php:76
+#: ../includes/admin/list.php:83
 msgid "Generate Mass Payment File"
 msgstr ""
 
-#: ../includes/admin-page.php:90
+#: ../includes/admin/list.php:97
 msgid "Total Unpaid:"
+msgstr ""
+
+#: ../includes/admin/list.php:159
+msgid "You do not have permission to record commissions"
+msgstr ""
+
+#: ../includes/admin/widgets.php:14
+msgid "Commissions Summary"
+msgstr ""
+
+#: ../includes/admin/edit.php:12 ../includes/admin/add.php:7
+msgid "User ID"
+msgstr ""
+
+#: ../includes/admin/edit.php:16 ../includes/admin/add.php:11
+msgid "The ID of the user that received this commission"
+msgstr ""
+
+#: ../includes/admin/edit.php:21 ../includes/admin/add.php:16
+msgid "Download ID"
+msgstr ""
+
+#: ../includes/admin/edit.php:25 ../includes/admin/add.php:20
+msgid "The ID of the product this commission was for"
+msgstr ""
+
+#: ../includes/admin/edit.php:34 ../includes/admin/add.php:38
+msgid "The percentage rate of this commission"
+msgstr ""
+
+#: ../includes/admin/edit.php:43 ../includes/admin/add.php:47
+msgid "The total amount of this commission"
+msgstr ""
+
+#: ../includes/admin/edit.php:52
+msgid "Update"
+msgstr ""
+
+#: ../includes/admin/metabox.php:41
+msgid "Check to enable commissions"
+msgstr ""
+
+#: ../includes/admin/metabox.php:46
+msgid "Type"
+msgstr ""
+
+#: ../includes/admin/metabox.php:48
+msgid "Percentage"
+msgstr ""
+
+#: ../includes/admin/metabox.php:49
+msgid "Flat"
+msgstr ""
+
+#: ../includes/admin/metabox.php:50
+msgid "Select the type of commission(s) to record."
+msgstr ""
+
+#: ../includes/admin/metabox.php:55
+msgid "User(s)"
+msgstr ""
+
+#: ../includes/admin/metabox.php:58
+msgid ""
+"Enter the user ID that should receive a commission of each sale. Separate "
+"user IDs by a comma."
+msgstr ""
+
+#: ../includes/admin/metabox.php:63
+msgid "Rate(s)"
+msgstr ""
+
+#: ../includes/admin/metabox.php:66
+msgid ""
+"Enter the amount the user(s) should receive of each sale. Separate rates by "
+"a comma."
+msgstr ""
+
+#: ../includes/admin/add.php:25
+msgid "Payment ID"
+msgstr ""
+
+#: ../includes/admin/add.php:29
+msgid "The payment ID this commission is related to (optional)."
 msgstr ""
 
 #: ../includes/masspay/class-paypal-masspay.php:87
