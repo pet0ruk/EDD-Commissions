@@ -161,7 +161,7 @@ function eddc_add_manual_commission( $data ) {
 
     $user_info   = get_userdata( $data['user_id'] );
     $download_id = absint( $data['download_id'] );
-    $payment_id  = absint( $data['payment_id'] );
+    $payment_id  = isset( $data['payment_id'] ) ? absint( $data['payment_id'] ) : 0;
     $amount      = edd_sanitize_amount( $data['amount'] );
     $rate        = sanitize_text_field( $data['rate'] );
 
@@ -177,7 +177,7 @@ function eddc_add_manual_commission( $data ) {
         'user_id'   => absint( $data['user_id'] ),
         'rate'      => $rate,
         'amount'    => $amount,
-        'currency'  => $currency
+        'currency'  => edd_get_currency()
     ), $commission_id, $payment_id, $download_id );
 
     eddc_set_commission_status( $commission_id, 'unpaid' );
