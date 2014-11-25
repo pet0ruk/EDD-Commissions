@@ -47,24 +47,28 @@ function eddc_user_product_list() {
 }
 add_shortcode( 'edd_commissioned_products', 'eddc_user_product_list' );
 
-function eddc_user_commissions( ) {
+function eddc_user_commissions( $user_id = 0 ) {
 
-	global $user_ID;
+	if( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
 
-	if( !is_user_logged_in() )
+	// If still empty, exit
+	if( empty( $user_id ) ) {
 		return;
+	}
 
 	$unpaid_paged  = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
 	$paid_paged    = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
 	$revoked_paged = isset( $_GET['eddcrp'] ) ? absint( $_GET['eddcrp'] ) : 1;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $unpaid_paged ) );
-	$paid_commissions   = eddc_get_paid_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $paid_paged ) );
-	$revoked_commissions= eddc_get_revoked_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $paid_paged ) );
+	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => 20, 'paged' => $unpaid_paged ) );
+	$paid_commissions   = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => 20, 'paged' => $paid_paged ) );
+	$revoked_commissions= eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => 20, 'paged' => $paid_paged ) );
 
-	$total_unpaid       = eddc_count_user_commissions( $user_ID, 'unpaid' );
-	$total_paid         = eddc_count_user_commissions( $user_ID, 'paid' );
-	$total_revoked      = eddc_count_user_commissions( $user_ID, 'revoked' );
+	$total_unpaid       = eddc_count_user_commissions( $user_id, 'unpaid' );
+	$total_paid         = eddc_count_user_commissions( $user_id, 'paid' );
+	$total_revoked      = eddc_count_user_commissions( $user_id, 'revoked' );
 
 	$unpaid_offset      = 20 * ( $unpaid_paged - 1 );
 	$unpaid_total_pages = ceil( $total_unpaid / 20 );
@@ -120,7 +124,7 @@ function eddc_user_commissions( ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
-					<div id="edd_user_commissions_unpaid_total"><?php _e('Total unpaid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $user_ID ) ) ); ?></div>
+					<div id="edd_user_commissions_unpaid_total"><?php _e('Total unpaid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $user_id ) ) ); ?></div>
 
 					<div id="edd_commissions_unpaid_pagination" class="navigation">
 					<?php
@@ -175,7 +179,7 @@ function eddc_user_commissions( ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
-					<div id="edd_user_commissions_paid_total"><?php _e('Total paid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_paid_totals( $user_ID ) ) ); ?></div>
+					<div id="edd_user_commissions_paid_total"><?php _e('Total paid:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_paid_totals( $user_id ) ) ); ?></div>
 
 					<div id="edd_commissions_paid_pagination" class="navigation">
 					<?php
