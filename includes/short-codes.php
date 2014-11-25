@@ -80,7 +80,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 	$revoked_total_pages   = ceil( $total_revoked / 20 );
 
 	$stats 				= '';
-	if( eddc_user_has_commissions() ) : // only show tables if user has commission data
+	if( eddc_user_has_commissions( $user_id ) ) : // only show tables if user has commission data
 		ob_start(); ?>
 			<div id="edd_user_commissions">
 
