@@ -100,3 +100,47 @@ function eddc_parse_template_tags( $message, $download_id, $commission_id, $comm
 
     return $message;
 }
+
+
+/**
+ * Email Sale Alert
+ *
+ * Email an alert about the sale to the user receiving a commission
+ *
+ * @access      private
+ * @since       1.1.0
+ * @return      void
+ */
+
+function eddc_email_alert( $user_id, $commission_amount, $rate, $download_id, $commission_id ) {
+	global $edd_options;
+
+	/* send an email alert of the sale */
+	$user      = get_userdata( $user_id );
+    $email     = $user->user_email; // set address here
+    $subject   = edd_get_option( 'edd_commissions_email_subject', __( 'New Sale!', 'eddc' ) );
+    $message   = edd_get_option( 'edd_commissions_email_message', eddc_get_email_default_body() );
+    
+    // Parse template tags
+    $message   = eddc_parse_template_tags( $message, $download_id, $commission_id, $commission_amount, $rate );
+    $message   = apply_filters( 'eddc_sale_alert_email', $message, $user_id, $commission_amount, $rate, $download_id, $commission_id );
+
+	if( class_exists( 'EDD_Emails' ) ) {
+
+		EDD()->emails->__set( 'heading', $subject );
+		EDD()->emails->send( $email, $subject, $message );
+
+	} else {
+
+		$from_name = apply_filters( 'eddc_email_from_name', $from_name, $user_id, $commission_amount, $rate, $download_id );
+
+		$from_email = isset( $edd_options['from_email'] ) ? $edd_options['from_email'] : get_option( 'admin_email' );
+		$from_email = apply_filters( 'eddc_email_from_email', $from_email, $user_id, $commission_amount, $rate, $download_id );
+
+		$headers = "From: " . stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) . " <$from_email>\r\n";
+
+		wp_mail( $email, $subject, $message, $headers );
+
+	}
+}
+add_action( 'eddc_insert_commission', 'eddc_email_alert', 10, 5 );
