@@ -60,6 +60,7 @@ register_activation_hook( __FILE__, 'edd_commissions__install' );
 
 
 include_once(EDDC_PLUGIN_DIR . 'includes/commission-functions.php');
+include_once(EDDC_PLUGIN_DIR . 'includes/email-functions.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/post-type.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
