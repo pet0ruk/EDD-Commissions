@@ -82,136 +82,61 @@ function edd_show_commissions_graph() {
 	ob_start(); ?>
 	<div class="tablenav top">
 		<div class="alignleft actions"><?php edd_report_views(); ?></div>
-	</div>
-	<script type="text/javascript">
-	   jQuery( document ).ready( function($) {
-	   		$.plot(
-	   			$("#commissions_chart_div"),
-	   			[{
-   					data: [
-	   					<?php
+    </div>
+    <?php
+    $data = array();
 
-	   					if( $dates['range'] == 'today' ) {
+	if( $dates['range'] == 'today' ) {
+        // Hour by hour
+	   	$hour  = 1;
+	   	$month = date( 'n' );
+		while ( $hour <= 23 ) :
+			$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour, $user );
+			$totals += $commissions;
+            $date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] );
+            $data[] = array( $date * 1000, (int) $commissions );
+			$hour++;
+		endwhile;
+	} elseif( $dates['range'] == 'this_week' || $dates['range'] == 'last_week' ) {
+		//Day by day
+		$day     = $dates['day'];
+		$day_end = $dates['day_end'];
+		$month   = $dates['m_start'];
+		while ( $day <= $day_end ) :
+			$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'], null, $user );
+			$totals += $commissions;
+            $date = mktime( 0, 0, 0, $month, $day, $dates['year'] );
+            $data[] = array( $date * 1000, (int) $commissions );
+			$day++;
+		endwhile;
+	} else {
+		$i = $dates['m_start'];
+		while ( $i <= $dates['m_end'] ) :
+			if ( $day_by_day ) :
+				$num_of_days 	= cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
+				$d 				= 1;
+				while ( $d <= $num_of_days ) :
+					$date = mktime( 0, 0, 0, $i, $d, $dates['year'] );
+					$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
+                    $totals += $commissions;
+                    $data[] = array( $date * 1000, (int) $commissions );
+					$d++;
+                endwhile;
+			else :
+				$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
+				$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
+                $totals += $commissions;
+                $data[] = array( $date * 1000, (int) $commissions );
+			endif;
+			$i++;
+		endwhile;
+    }
 
-	   						// Hour by hour
-	   						$hour  = 1;
-	   						$month = date( 'n' );
-							while ( $hour <= 23 ) :
-								$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour, $user );
-								$totals += $commissions;
-								$date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] ); ?>
-								[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
-								<?php
-								$hour++;
-							endwhile;
+    $data = array(
+        __( 'Commissions', 'eddc' ) => $data
+    );
+    ?>                    
 
-						} elseif( $dates['range'] == 'this_week' || $dates['range'] == 'last_week' ) {
-
-							//Day by day
-							$day     = $dates['day'];
-							$day_end = $dates['day_end'];
-	   						$month   = $dates['m_start'];
-							while ( $day <= $day_end ) :
-								$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'], null, $user );
-								$totals += $commissions;
-								$date = mktime( 0, 0, 0, $month, $day, $dates['year'] ); ?>
-								[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
-								<?php
-								$day++;
-							endwhile;
-
-	   					} else {
-
-		   					$i = $dates['m_start'];
-							while ( $i <= $dates['m_end'] ) :
-								if ( $day_by_day ) :
-									$num_of_days 	= cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
-									$d 				= 1;
-									while ( $d <= $num_of_days ) :
-										$date = mktime( 0, 0, 0, $i, $d, $dates['year'] );
-										$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
-										$totals += $commissions; ?>
-										[<?php echo $date * 1000; ?>, <?php echo $commissions ?>],
-									<?php $d++; endwhile;
-								else :
-									$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
-									$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
-									$totals += $commissions;
-									?>
-									[<?php echo $date * 1000; ?>, <?php echo $commissions; ?>],
-								<?php
-								endif;
-								$i++;
-							endwhile;
-
-						}
-	   					?>,
-	   				],
-   					label: "<?php _e( 'Commissions', 'eddc' ); ?>",
-   					id: 'commissions'
-   				}],
-	   		{
-               	series: {
-                   lines: { show: true },
-                   points: { show: true }
-            	},
-            	grid: {
-           			show: true,
-					aboveData: false,
-					color: '#ccc',
-					backgroundColor: '#fff',
-					borderWidth: 2,
-					borderColor: '#ccc',
-					clickable: false,
-					hoverable: true
-           		},
-            	xaxis: {
-	   				mode: "time",
-	   				timeFormat: "<?php echo $time_format; ?>",
-	   				minTickSize: [1, "<?php echo $tick_size; ?>"]
-   				}
-            });
-
-			function edd_flot_tooltip(x, y, contents) {
-		        $('<div id="edd-flot-tooltip">' + contents + '</div>').css( {
-		            position: 'absolute',
-		            display: 'none',
-		            top: y + 5,
-		            left: x + 5,
-		            border: '1px solid #fdd',
-		            padding: '2px',
-		            'background-color': '#fee',
-		            opacity: 0.80
-		        }).appendTo("body").fadeIn(200);
-		    }
-
-		    var previousPoint = null;
-		    $("#commissions_chart_div").bind("plothover", function (event, pos, item) {
-		        $("#x").text(pos.x.toFixed(2));
-		        $("#y").text(pos.y.toFixed(2));
-	            if (item) {
-	                if (previousPoint != item.dataIndex) {
-	                    previousPoint = item.dataIndex;
-	                    $("#edd-flot-tooltip").remove();
-	                    var x = item.datapoint[0].toFixed(2),
-	                        y = item.datapoint[1].toFixed(2);
-	                    if( item.series.id == 'commissions' ) {
-	                    	if( edd_vars.currency_pos == 'before' ) {
-								edd_flot_tooltip( item.pageX, item.pageY, item.series.label + ' ' + edd_vars.currency_sign + y );
-	                    	} else {
-								edd_flot_tooltip( item.pageX, item.pageY, item.series.label + ' ' + y + edd_vars.currency_sign );
-	                    	}
-	                    } else {
-		                    edd_flot_tooltip( item.pageX, item.pageY, item.series.label + ' ' + y.replace( '.00', '' ) );
-	                    }
-	                }
-	            } else {
-	                $("#edd-flot-tooltip").remove();
-	                previousPoint = null;
-	            }
-		    });
-	   });
-    </script>
     <div class="metabox-holder" style="padding-top: 0;">
 		<div class="postbox">
 			<h3><span><?php _e('Commissions Paid Over Time', 'edd'); ?></span></h3>
@@ -223,12 +148,16 @@ function edd_show_commissions_graph() {
 					&nbsp;&ndash;&nbsp;<a href="<?php echo esc_url( remove_query_arg( 'user' ) ); ?>"><?php _e( 'clear', 'eddc' ); ?></a>
 				</p>
 				<?php endif; ?>
-				<?php edd_reports_graph_controls(); ?>
-   				<div id="commissions_chart_div" style="height: 300px;"></div>
+                <?php
+                    edd_reports_graph_controls();
+                    $graph = new EDD_Graph( $data );
+                    $graph->set( 'x_mode', 'time' );
+                    $graph->display();
+                ?>
+	            <p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
    			</div>
    		</div>
    	</div>
-	<p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
 	<?php
 	echo ob_get_clean();
 }
