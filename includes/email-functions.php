@@ -69,6 +69,14 @@ function eddc_get_email_template_tags() {
         array(
             'tag'           => 'rate',
             'description'   => __( 'The commission rate of the user', 'eddc' ),
+        ),
+        array(
+            'tag'           => 'name',
+            'description'   => __( 'The first name of the user', 'eddc' ),
+        ),
+        array(
+            'tag'           => 'fullname',
+            'description'   => __( 'The full name of the user', 'eddc' ),
         )
     );
 
@@ -88,15 +96,32 @@ function eddc_get_email_template_tags() {
  * @return      string $message The email body
  */
 function eddc_parse_template_tags( $message, $download_id, $commission_id, $commission_amount, $rate ) {
+    $meta      = get_post_meta( $commission_id, '_edd_commission_info', true );
     $variation = get_post_meta( $commission_id, '_edd_commission_download_variation', true );
     $download  = get_the_title( $download_id ) . ( ! empty( $variation ) ? ' - ' . $variation : '' );
     $amount    = html_entity_decode( edd_currency_filter( edd_format_amount( $commission_amount ) ) );
     $date      = date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $commission_id ) ) );
+    $user      = get_userdata( $meta['user_id'] );
 
+    if( ! empty( $user->first_name ) ) {
+        $name = $user->first_name;
+
+        if( ! empty( $user->last_name ) ) {
+            $fullname = $name . ' ' . $user->last_name;
+        } else {
+            $fullname = $name;
+        }
+    } else {
+        $name = $user->display_name;
+        $fullname = $name;
+    }
+        
     $message   = str_replace( '{download}', $download, $message );
     $message   = str_replace( '{amount}', $amount, $message );
     $message   = str_replace( '{date}', $date, $message );
     $message   = str_replace( '{rate}', $rate, $message );
+    $message   = str_replace( '{name}', $name, $message );
+    $message   = str_replace( '{fullname}', $fullname, $message );
 
     return $message;
 }
