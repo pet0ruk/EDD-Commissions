@@ -18,7 +18,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
  */
 function eddc_get_email_default_body() {
     $from_name = edd_get_option( 'from_name', get_bloginfo( 'name' ) );
-	$message   = __( 'Hello', 'eddc' ) . "\n\n" . sprintf( __( 'You have made a new sale on %s!', 'eddc' ), stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) ) . "\n\n";
+	$message   = __( 'Hello {name},', 'eddc' ) . "\n\n" . sprintf( __( 'You have made a new sale on %s!', 'eddc' ), stripslashes_deep( html_entity_decode( $from_name, ENT_COMPAT, 'UTF-8' ) ) ) . "\n\n";
 	$message  .= __( 'Item sold: ', 'eddc' ) . "{download}\n\n";
 	$message  .= __( 'Amount: ', 'eddc' ) . "{amount}\n\n";
 	$message  .= __( 'Commission Rate: ', 'eddc' ) . "{rate}%\n\n";
