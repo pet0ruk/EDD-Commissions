@@ -506,7 +506,7 @@ function eddc_get_paid_totals( $user_id = 0 ) {
 
 function eddc_get_revoked_totals( $user_id = 0 ) {
 
-	$revoked = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => -1 ) );
+	$revoked = eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => -1 ) );
 	$total = (float) 0;
 	if ( $revoked ) {
 		foreach ( $revoked as $commission ) {
