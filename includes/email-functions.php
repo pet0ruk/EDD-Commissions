@@ -2,7 +2,7 @@
 /**
  * Email functions
  *
- * @since 2.9.2
+ * @since 3.0
  */
 
 
@@ -13,7 +13,7 @@ if( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Retrieve default email body
  *
- * @since       2.9.2
+ * @since       3.0
  * @return      string $body The default email
  */
 function eddc_get_email_default_body() {
@@ -31,7 +31,7 @@ function eddc_get_email_default_body() {
 /**
  * Parse template tags for display
  *
- * @since       2.9.2
+ * @since       3.0
  * @return      string $tags The parsed template tags
  */
 function eddc_display_email_template_tags() {
@@ -49,7 +49,7 @@ function eddc_display_email_template_tags() {
 /**
  * Retrieve email template tags
  *
- * @since       2.9.2
+ * @since       3.0
  * @return      array $tags The email template tags
  */
 function eddc_get_email_template_tags() {
@@ -87,7 +87,7 @@ function eddc_get_email_template_tags() {
 /**
  * Parse email template tags
  *
- * @since       2.9.2
+ * @since       3.0
  * @param       string $message The email body
  * @param       int $download_id The ID for a given download
  * @param       int $commission_id The ID of this commission
