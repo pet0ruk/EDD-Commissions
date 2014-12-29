@@ -27,57 +27,26 @@ add_filter( 'edd_report_views', 'eddc_add_commissions_view' );
 function edd_show_commissions_graph() {
 
 	// retrieve the queried dates
-	$dates = edd_get_report_dates();
+	$dates      = edd_get_report_dates();
+	$day_by_day = true;
 
 	// Determine graph options
 	switch( $dates['range'] ) :
-		case 'today' :
-			$time_format 	= '%d/%b';
-			$tick_size		= 'hour';
-			$day_by_day		= true;
-			break;
 		case 'last_year' :
-			$time_format 	= '%b';
-			$tick_size		= 'month';
-			$day_by_day		= false;
-			break;
 		case 'this_year' :
-			$time_format 	= '%b';
-			$tick_size		= 'month';
-			$day_by_day		= false;
-			break;
 		case 'last_quarter' :
-			$time_format	= '%b';
-			$tick_size		= 'month';
-			$day_by_day 	= false;
-			break;
 		case 'this_quarter' :
-			$time_format	= '%b';
-			$tick_size		= 'month';
-			$day_by_day 	= false;
+			$day_by_day		= false;
 			break;
 		case 'other' :
 			if( ( $dates['m_end'] - $dates['m_start'] ) >= 2 ) {
-				$time_format	= '%b';
-				$tick_size		= 'month';
 				$day_by_day 	= false;
-			} else {
-				$time_format 	= '%d/%b';
-				$tick_size		= 'day';
-				$day_by_day 	= true;
 			}
-			break;
-		default:
-			$time_format 	= '%d/%b'; 	// Show days by default
-			$tick_size		= 'day'; 	// Default graph interval
-			$day_by_day 	= true;
 			break;
 	endswitch;
 
-	$time_format 	= apply_filters( 'edd_graph_timeformat', $time_format );
-	$tick_size 		= apply_filters( 'edd_graph_ticksize', $tick_size );
-	$user           = isset( $_GET['user'] ) ? absint( $_GET['user'] ) : 0;
-	$totals 		= (float) 0.00; // Total commissions for time period shown
+	$user  = isset( $_GET['user'] ) ? absint( $_GET['user'] ) : 0;
+	$total = (float) 0.00; // Total commissions for time period shown
 
 	ob_start(); ?>
 	<div class="tablenav top">
@@ -90,45 +59,65 @@ function edd_show_commissions_graph() {
 		// Hour by hour
 	   	$hour  = 1;
 	   	$month = date( 'n' );
+
 		while ( $hour <= 23 ) :
+
 			$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour, $user );
-			$totals += $commissions;
-			$date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] );
-			$data[] = array( $date * 1000, (int) $commissions );
+			$totals     += $commissions;
+			$date        = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] );
+			$data[]      = array( $date * 1000, (int) $commissions );
 			$hour++;
+
 		endwhile;
+
 	} elseif( $dates['range'] == 'this_week' || $dates['range'] == 'last_week' ) {
+
 		//Day by day
 		$day     = $dates['day'];
 		$day_end = $dates['day_end'];
 		$month   = $dates['m_start'];
+
 		while ( $day <= $day_end ) :
+
 			$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'], null, $user );
-			$totals += $commissions;
-			$date = mktime( 0, 0, 0, $month, $day, $dates['year'] );
-			$data[] = array( $date * 1000, (int) $commissions );
+			$totals     += $commissions;
+			$date        = mktime( 0, 0, 0, $month, $day, $dates['year'] );
+			$data[]      = array( $date * 1000, (int) $commissions );
 			$day++;
+
 		endwhile;
+
 	} else {
+
 		$i = $dates['m_start'];
+
 		while ( $i <= $dates['m_end'] ) :
+
 			if ( $day_by_day ) :
-				$num_of_days 	= cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
-				$d 				= 1;
+
+				$num_of_days = cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
+				$d           = 1;
+
 				while ( $d <= $num_of_days ) :
-					$date = mktime( 0, 0, 0, $i, $d, $dates['year'] );
+
+					$date        = mktime( 0, 0, 0, $i, $d, $dates['year'] );
 					$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
-					$totals += $commissions;
-					$data[] = array( $date * 1000, (int) $commissions );
+					$totals     += $commissions;
+					$data[]      = array( $date * 1000, (int) $commissions );
 					$d++;
+
 				endwhile;
+
 			else :
-				$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
+				$date        = mktime( 0, 0, 0, $i, 1, $dates['year'] );
 				$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
-				$totals += $commissions;
-				$data[] = array( $date * 1000, (int) $commissions );
+				$totals     += $commissions;
+				$data[]      = array( $date * 1000, (int) $commissions );
+			
 			endif;
+			
 			$i++;
+
 		endwhile;
 	}
 
