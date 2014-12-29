@@ -82,19 +82,19 @@ function edd_show_commissions_graph() {
 	ob_start(); ?>
 	<div class="tablenav top">
 		<div class="alignleft actions"><?php edd_report_views(); ?></div>
-    </div>
-    <?php
-    $data = array();
+	</div>
+	<?php
+	$data = array();
 
 	if( $dates['range'] == 'today' ) {
-        // Hour by hour
+		// Hour by hour
 	   	$hour  = 1;
 	   	$month = date( 'n' );
 		while ( $hour <= 23 ) :
 			$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour, $user );
 			$totals += $commissions;
-            $date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] );
-            $data[] = array( $date * 1000, (int) $commissions );
+			$date = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] );
+			$data[] = array( $date * 1000, (int) $commissions );
 			$hour++;
 		endwhile;
 	} elseif( $dates['range'] == 'this_week' || $dates['range'] == 'last_week' ) {
@@ -105,8 +105,8 @@ function edd_show_commissions_graph() {
 		while ( $day <= $day_end ) :
 			$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'], null, $user );
 			$totals += $commissions;
-            $date = mktime( 0, 0, 0, $month, $day, $dates['year'] );
-            $data[] = array( $date * 1000, (int) $commissions );
+			$date = mktime( 0, 0, 0, $month, $day, $dates['year'] );
+			$data[] = array( $date * 1000, (int) $commissions );
 			$day++;
 		endwhile;
 	} else {
@@ -118,26 +118,26 @@ function edd_show_commissions_graph() {
 				while ( $d <= $num_of_days ) :
 					$date = mktime( 0, 0, 0, $i, $d, $dates['year'] );
 					$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
-                    $totals += $commissions;
-                    $data[] = array( $date * 1000, (int) $commissions );
+					$totals += $commissions;
+					$data[] = array( $date * 1000, (int) $commissions );
 					$d++;
-                endwhile;
+				endwhile;
 			else :
 				$date = mktime( 0, 0, 0, $i, 1, $dates['year'] );
 				$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
-                $totals += $commissions;
-                $data[] = array( $date * 1000, (int) $commissions );
+				$totals += $commissions;
+				$data[] = array( $date * 1000, (int) $commissions );
 			endif;
 			$i++;
 		endwhile;
-    }
+	}
 
-    $data = array(
-        __( 'Commissions', 'eddc' ) => $data
-    );
-    ?>                    
+	$data = array(
+		__( 'Commissions', 'eddc' ) => $data
+	);
+	?>
 
-    <div class="metabox-holder" style="padding-top: 0;">
+	<div class="metabox-holder" style="padding-top: 0;">
 		<div class="postbox">
 			<h3><span><?php _e('Commissions Paid Over Time', 'edd'); ?></span></h3>
 
@@ -148,13 +148,13 @@ function edd_show_commissions_graph() {
 					&nbsp;&ndash;&nbsp;<a href="<?php echo esc_url( remove_query_arg( 'user' ) ); ?>"><?php _e( 'clear', 'eddc' ); ?></a>
 				</p>
 				<?php endif; ?>
-                <?php
-                    edd_reports_graph_controls();
-                    $graph = new EDD_Graph( $data );
-                    $graph->set( 'x_mode', 'time' );
-                    $graph->display();
-                ?>
-	            <p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
+				<?php
+					edd_reports_graph_controls();
+					$graph = new EDD_Graph( $data );
+					$graph->set( 'x_mode', 'time' );
+					$graph->display();
+				?>
+				<p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
    			</div>
    		</div>
    	</div>
