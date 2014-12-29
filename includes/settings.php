@@ -66,7 +66,7 @@ add_filter( 'edd_settings_extensions', 'eddc_settings_extensions' );
  * Registers the new Commissions options in Emails
  *
  * @access      private
- * @since       1.2.1
+ * @since       3.0
  * @param 		$settings array the existing plugin settings
  * @return      array
 */
