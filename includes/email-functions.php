@@ -56,11 +56,11 @@ function eddc_get_email_template_tags() {
     $tags = array(
         array(
             'tag'           => 'download',
-            'description'   => __( 'The name of the purchased download', 'eddc' ),
+            'description'   => sprintf( __( 'The name of the purchased %s', 'eddc' ), edd_get_label_singular() ),
         ),
         array(
             'tag'           => 'amount',
-            'description'   => __( 'The value of the purchased download', 'eddc' ),
+            'description'   => sprintf( __( 'The value of the purchased %s', 'eddc' ), edd_get_label_singular() ),
         ),
         array(
             'tag'           => 'date',
