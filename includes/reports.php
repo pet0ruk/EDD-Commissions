@@ -109,13 +109,14 @@ function edd_show_commissions_graph() {
 				endwhile;
 
 			else :
+
 				$date        = mktime( 0, 0, 0, $i, 1, $dates['year'] );
 				$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
 				$totals     += $commissions;
 				$data[]      = array( $date * 1000, (int) $commissions );
-			
+
 			endif;
-			
+
 			$i++;
 
 		endwhile;
