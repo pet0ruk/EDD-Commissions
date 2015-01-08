@@ -6,7 +6,7 @@ Description: Record commisions automatically for users in your site when downloa
 Author: Pippin Williamson
 Author URI: http://pippinsplugins.com
 Contributors: mordauk
-Version: 2.9.1
+Version: 3.0
 */
 
 
@@ -29,7 +29,7 @@ if(!defined('EDDC_PLUGIN_FILE')) {
 	define('EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMMISSIONS_VERSION', '2.9.1' );
+define( 'EDD_COMMISSIONS_VERSION', '3.0' );
 
 
 /*
@@ -60,6 +60,7 @@ register_activation_hook( __FILE__, 'edd_commissions__install' );
 
 
 include_once(EDDC_PLUGIN_DIR . 'includes/commission-functions.php');
+include_once(EDDC_PLUGIN_DIR . 'includes/email-functions.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/post-type.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
