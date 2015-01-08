@@ -63,7 +63,7 @@ function edd_show_commissions_graph() {
 		while ( $hour <= 23 ) :
 
 			$commissions = edd_get_commissions_by_date( $dates['day'], $month, $dates['year'], $hour, $user );
-			$totals     += $commissions;
+			$total      += $commissions;
 			$date        = mktime( $hour, 0, 0, $month, $dates['day'], $dates['year'] );
 			$data[]      = array( $date * 1000, (int) $commissions );
 			$hour++;
@@ -80,7 +80,7 @@ function edd_show_commissions_graph() {
 		while ( $day <= $day_end ) :
 
 			$commissions = edd_get_commissions_by_date( $day, $month, $dates['year'], null, $user );
-			$totals     += $commissions;
+			$total      += $commissions;
 			$date        = mktime( 0, 0, 0, $month, $day, $dates['year'] );
 			$data[]      = array( $date * 1000, (int) $commissions );
 			$day++;
@@ -102,7 +102,7 @@ function edd_show_commissions_graph() {
 
 					$date        = mktime( 0, 0, 0, $i, $d, $dates['year'] );
 					$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
-					$totals     += $commissions;
+					$total      += $commissions;
 					$data[]      = array( $date * 1000, (int) $commissions );
 					$d++;
 
@@ -112,7 +112,7 @@ function edd_show_commissions_graph() {
 
 				$date        = mktime( 0, 0, 0, $i, 1, $dates['year'] );
 				$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
-				$totals     += $commissions;
+				$total      += $commissions;
 				$data[]      = array( $date * 1000, (int) $commissions );
 
 			endif;
@@ -144,7 +144,7 @@ function edd_show_commissions_graph() {
 					$graph->set( 'x_mode', 'time' );
 					$graph->display();
 				?>
-				<p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $totals ) ); ?></strong></p>
+				<p id="edd_graph_totals"><strong><?php _e( 'Total commissions for period shown: ', 'edd' ); echo edd_currency_filter( edd_format_amount( $total ) ); ?></strong></p>
    			</div>
    		</div>
    	</div>
