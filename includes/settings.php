@@ -32,8 +32,9 @@ function eddc_settings( $settings ) {
 			'desc'    => __( 'Should commissions be calculated from the subtotal (before taxes and discounts) or from the total purchase amount (after taxes and discounts)? ', 'eddc' ),
 			'type'    => 'select',
 			'options' => array(
-				'subtotal' => __( 'Subtotal (default)', 'eddc' ),
-				'total'    => __( 'Total', 'eddc' )
+				'subtotal'      => __( 'Subtotal (default)', 'eddc' ),
+				'total'         => __( 'Total with Taxes', 'eddc' ),
+				'total_pre_tax' => __( 'Total without Taxes', 'eddc' ),
 			)
 		),
 		array(

@@ -37,7 +37,16 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 		} else {
 
-			$price = $download['price'];
+			if ( 'total_pre_tax' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
+	
+				$price = $download['price'] - $download['tax'];
+
+			} else {
+
+				$price = $download['price'];
+	
+			}
+
 
 		}
 
