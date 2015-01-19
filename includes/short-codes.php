@@ -132,9 +132,11 @@ function eddc_user_commissions( $user_id = 0 ) {
 					<div id="edd_commissions_unpaid_pagination" class="navigation">
 					<?php
 						$big = 999999;
+						$search_for   = array( $big, '#038;' );
+						$replace_with = array( '%#%', '&' );
 						echo paginate_links( array(
-							'base'    => remove_query_arg( 'eddcup', edd_get_current_page_url() ) . '%_%#edd_user_commissions_unpaid',
-							'format'  => '?eddcup=%#%',
+							'base'    => remove_query_arg( 'eddcup', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) . '%_%',
+							'format'  => $page_prefix . 'eddcup=%#%',
 							'current' => max( 1, $unpaid_paged ),
 							'total'   => $unpaid_total_pages
 						) );
@@ -187,8 +189,10 @@ function eddc_user_commissions( $user_id = 0 ) {
 					<div id="edd_commissions_paid_pagination" class="navigation">
 					<?php
 						$big = 999999;
+						$search_for   = array( $big, '#038;' );
+						$replace_with = array( '%#%', '&' );
 						echo paginate_links( array(
-							'base'    => remove_query_arg( 'eddcp', edd_get_current_page_url() ) . '%_%#edd_user_commissions_paid',
+							'base'    => remove_query_arg( 'eddcp', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) . '%_%',
 							'format'  => $page_prefix . 'eddcp=%#%',
 							'current' => max( 1, $paid_paged ),
 							'total'   => $paid_total_pages
@@ -241,8 +245,10 @@ function eddc_user_commissions( $user_id = 0 ) {
 					<div id="edd_commissions_revoked_pagination" class="navigation">
 					<?php
 						$big = 999999;
+						$search_for   = array( $big, '#038;' );
+						$replace_with = array( '%#%', '&' );
 						echo paginate_links( array(
-							'base'    => remove_query_arg( 'eddcrp', edd_get_current_page_url() ) . '%_%#edd_user_commissions_revoked',
+							'base'    => remove_query_arg( 'eddcrp', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) . '%_%',
 							'format'  => $page_prefix . 'eddcrp=%#%',
 							'current' => max( 1, $revoked_paged ),
 							'total'   => $revoked_total_pages
