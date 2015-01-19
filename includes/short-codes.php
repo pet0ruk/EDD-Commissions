@@ -58,26 +58,29 @@ function eddc_user_commissions( $user_id = 0 ) {
 		return;
 	}
 
+	$per_page      = 20;
 	$unpaid_paged  = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
 	$paid_paged    = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
 	$revoked_paged = isset( $_GET['eddcrp'] ) ? absint( $_GET['eddcrp'] ) : 1;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => 20, 'paged' => $unpaid_paged ) );
-	$paid_commissions   = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => 20, 'paged' => $paid_paged ) );
-	$revoked_commissions= eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => 20, 'paged' => $paid_paged ) );
+	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $unpaid_paged ) );
+	$paid_commissions   = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
+	$revoked_commissions= eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
 
 	$total_unpaid       = eddc_count_user_commissions( $user_id, 'unpaid' );
 	$total_paid         = eddc_count_user_commissions( $user_id, 'paid' );
 	$total_revoked      = eddc_count_user_commissions( $user_id, 'revoked' );
 
-	$unpaid_offset      = 20 * ( $unpaid_paged - 1 );
-	$unpaid_total_pages = ceil( $total_unpaid / 20 );
+	$unpaid_offset      = $per_page * ( $unpaid_paged - 1 );
+	$unpaid_total_pages = ceil( $total_unpaid / $per_page );
 
-	$paid_offset        = 20 * ( $paid_paged - 1 );
-	$paid_total_pages   = ceil( $total_paid / 20 );
+	$paid_offset        = $per_page * ( $paid_paged - 1 );
+	$paid_total_pages   = ceil( $total_paid / $per_page );
 
-	$revoked_offset        = 20 * ( $revoked_paged - 1 );
-	$revoked_total_pages   = ceil( $total_revoked / 20 );
+	$revoked_offset     = $per_page * ( $revoked_paged - 1 );
+	$revoked_total_pages= ceil( $total_revoked / $per_page );
+
+	$page_prefix        = false !== strpos( edd_get_current_page_url(), '?' ) ? '&' : '?';
 
 	$stats 				= '';
 	if( eddc_user_has_commissions( $user_id ) ) : // only show tables if user has commission data
@@ -186,7 +189,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 						$big = 999999;
 						echo paginate_links( array(
 							'base'    => remove_query_arg( 'eddcp', edd_get_current_page_url() ) . '%_%#edd_user_commissions_paid',
-							'format'  => '?eddcp=%#%',
+							'format'  => $page_prefix . 'eddcp=%#%',
 							'current' => max( 1, $paid_paged ),
 							'total'   => $paid_total_pages
 						) );
@@ -240,7 +243,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 						$big = 999999;
 						echo paginate_links( array(
 							'base'    => remove_query_arg( 'eddcrp', edd_get_current_page_url() ) . '%_%#edd_user_commissions_revoked',
-							'format'  => '?eddcrp=%#%',
+							'format'  => $page_prefix . 'eddcrp=%#%',
 							'current' => max( 1, $revoked_paged ),
 							'total'   => $revoked_total_pages
 						) );

@@ -27,20 +27,21 @@ add_action('wp_dashboard_setup', 'eddc_register_dashboard_commission_widgets', 1
 function eddc_dashboard_commissions_widget() {
 	global $user_ID;
 
+	$per_page     = 20;
 	$unpaid_paged = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
 	$paid_paged   = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $unpaid_paged ) );
-	$paid_commissions 	= eddc_get_paid_commissions( array( 'user_id' => $user_ID, 'number' => 20, 'paged' => $paid_paged ) );
+	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_ID, 'number' => $per_page, 'paged' => $unpaid_paged ) );
+	$paid_commissions 	= eddc_get_paid_commissions( array( 'user_id' => $user_ID, 'number' => $per_page, 'paged' => $paid_paged ) );
 
 	$total_unpaid       = eddc_count_user_commissions( $user_ID, 'unpaid' );
 	$total_paid         = eddc_count_user_commissions( $user_ID, 'paid' );
 
-	$unpaid_offset      = 20 * ( $unpaid_paged - 1 );
-	$unpaid_total_pages = ceil( $total_unpaid / 20 );
+	$unpaid_offset      = $per_page * ( $unpaid_paged - 1 );
+	$unpaid_total_pages = ceil( $total_unpaid / $per_page );
 
-	$paid_offset        = 20 * ( $paid_paged - 1 );
-	$paid_total_pages   = ceil( $total_paid / 20 );
+	$paid_offset        = $per_page * ( $paid_paged - 1 );
+	$paid_total_pages   = ceil( $total_paid / $per_page );
 
 	$stats 				= '';
 
