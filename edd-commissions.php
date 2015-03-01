@@ -66,7 +66,7 @@ include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
 if ( class_exists( 'EDD_Front_End_Submissions' ) ){
-	include_once(EDDC_PLUGIN_DIR . 'includes/commissions_email_field.php');
+	include_once(EDDC_PLUGIN_DIR . 'includes/commissions-email-field.php');
 	add_filter(  'fes_load_fields_array', 'eddc_add_commissions_email');
 	function eddc_add_commissions_email( $fields ){
 		$fields[ 'eddc_user_paypal' ] = 'FES_Commissions_Email_Field';
