@@ -87,7 +87,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 		$removable = isset( $this->supports[ 'permissions' ][ 'can_remove_from_formbuilder' ] ) ? $this->supports[ 'permissions' ][ 'can_remove_from_formbuilder' ] : true;
 		ob_start(); ?>
         <li class="eddc_user_paypal">
-            <?php FES_Formbuilder_Templates::legend( $this->characteristics[ 'label' ], $this->characteristics, $removeable ); ?>
+            <?php FES_Formbuilder_Templates::legend( $this->characteristics[ 'label' ], $this->characteristics, $removable ); ?>
             <?php FES_Formbuilder_Templates::hidden_field( "[$index][input_type]", 'eddc_user_paypal' ); ?>
             <?php FES_Formbuilder_Templates::hidden_field( "[$index][template]", 'eddc_user_paypal' ); ?>
 
@@ -98,11 +98,5 @@ class FES_Commissions_Email_Field extends FES_Field {
         </li>
         <?php
 		return ob_get_clean();
-	}
-
-	/** Validates field */
-	public function validate(  $save_id = -2, $values = array(), $user_id = -2 ) {
-		// todo: for email fields, let's validate required entry, min/max length
-		return true; // we'll return an error object in the future when we implement validation
 	}
 }
