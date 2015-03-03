@@ -22,7 +22,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 			'can_add_to_formbuilder'      => true,
 		),
 		'input_type'  => 'eddc_user_paypal',
-		'title'       => 'Commissions Email', // l10n on output
+		'title'       => 'PayPal Email', // l10n on output
 	);
 
 	/** @var array Characteristics are things that can change from field to field of the same field type. Like the placeholder between two email fields. Stored in db. */

@@ -58,19 +58,22 @@ register_activation_hook( __FILE__, 'edd_commissions__install' );
 |--------------------------------------------------------------------------
 */
 
-
 include_once(EDDC_PLUGIN_DIR . 'includes/commission-functions.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/email-functions.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/post-type.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/user-meta.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/rest-api.php');
 include_once(EDDC_PLUGIN_DIR . 'includes/short-codes.php');
-if ( class_exists( 'EDD_Front_End_Submissions' ) ){
-	include_once(EDDC_PLUGIN_DIR . 'includes/commissions-email-field.php');
-	add_filter(  'fes_load_fields_array', 'eddc_add_commissions_email');
-	function eddc_add_commissions_email( $fields ){
-		$fields[ 'eddc_user_paypal' ] = 'FES_Commissions_Email_Field';
-		return $fields;
+
+add_action( 'fes_load_fields_require', 'eddc_add_fes_functionality' );
+function eddc_add_fes_functionality(){
+	if ( class_exists( 'EDD_Front_End_Submissions' ) ){
+		include_once(EDDC_PLUGIN_DIR . 'includes/commissions-email-field.php');
+		add_filter(  'fes_load_fields_array', 'eddc_add_commissions_email', 10, 1 );
+		function eddc_add_commissions_email( $fields ){
+			$fields[ 'eddc_user_paypal' ] = 'FES_Commissions_Email_Field';
+			return $fields;
+		}
 	}
 }
 
