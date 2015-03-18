@@ -21,23 +21,23 @@ class FES_Commissions_Email_Field extends FES_Field {
 			'can_change_meta_key'         => false,
 			'can_add_to_formbuilder'      => true,
 		),
-		'input_type'  => 'eddc_user_paypal',
+		'template'	  => 'eddc_user_paypal',
 		'title'       => 'PayPal Email', // l10n on output
 	);
 
 	/** @var array Characteristics are things that can change from field to field of the same field type. Like the placeholder between two email fields. Stored in db. */
 	public $characteristics = array(
 		'name'        => '',
+		'template'	  => 'eddc_user_paypal',
 		'is_meta'     => true,  // in object as public (bool) $meta;
 		'public'      => true,
 		'required'    => false,
-		'label'       => '',
+		'label'       => 'PayPal Email',
 		'css'         => '',
 		'default'     => '',
 		'size'        => '',
 		'help'        => '',
 		'placeholder' => '',
-		'class'       => 'FES_Commissions_Email_Field', /** we don't use this yet, but future, store the name of the class used for a field on the field in the db */
 	);
 
 	/** Returns the HTML to render a field in admin */
@@ -88,11 +88,10 @@ class FES_Commissions_Email_Field extends FES_Field {
 		ob_start(); ?>
         <li class="eddc_user_paypal">
             <?php FES_Formbuilder_Templates::legend( $this->characteristics[ 'label' ], $this->characteristics, $removable ); ?>
-            <?php FES_Formbuilder_Templates::hidden_field( "[$index][input_type]", 'eddc_user_paypal' ); ?>
-            <?php FES_Formbuilder_Templates::hidden_field( "[$index][template]", 'eddc_user_paypal' ); ?>
+            <?php FES_Formbuilder_Templates::hidden_field( "[$index][template]", $this->characteristics['template'] ); ?>
 
             <div class="fes-form-holder">
-                <?php FES_Formbuilder_Templates::common( $index, 'eddc_user_paypal', true, $this->characteristics, !$removable, 'eddc_user_paypal' ); ?>
+                <?php FES_Formbuilder_Templates::common( $index, '', false, $this->characteristics, !$removable, 'eddc_user_paypal' ); ?>
                 <?php FES_Formbuilder_Templates::common_text( $index, $this->characteristics ); ?>
             </div> <!-- .fes-form-holder -->
         </li>
