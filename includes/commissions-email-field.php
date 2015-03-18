@@ -27,7 +27,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 
 	/** @var array Characteristics are things that can change from field to field of the same field type. Like the placeholder between two email fields. Stored in db. */
 	public $characteristics = array(
-		'name'        => '',
+		'name'        => 'eddc_user_paypal',
 		'template'	  => 'eddc_user_paypal',
 		'is_meta'     => true,  // in object as public (bool) $meta;
 		'public'      => true,
@@ -87,7 +87,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 		$removable = isset( $this->supports[ 'permissions' ][ 'can_remove_from_formbuilder' ] ) ? $this->supports[ 'permissions' ][ 'can_remove_from_formbuilder' ] : true;
 		ob_start(); ?>
         <li class="eddc_user_paypal">
-            <?php FES_Formbuilder_Templates::legend( $this->characteristics[ 'label' ], $this->characteristics, $removable ); ?>
+            <?php $this->legend( $this->supports['title'], $this->characteristics['label'], $removable ); ?>
             <?php FES_Formbuilder_Templates::hidden_field( "[$index][template]", $this->characteristics['template'] ); ?>
 
             <div class="fes-form-holder">
