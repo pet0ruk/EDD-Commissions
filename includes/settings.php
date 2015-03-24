@@ -12,7 +12,7 @@ function eddc_settings_extensions( $settings ) {
 	$commission_settings = array(
 		array(
 			'id'      => 'eddc_header',
-			'name'    => '<strong>' . __( 'Commissions', 'eddc' ) . '</strong>',
+			'name'    => '<strong>' . __( 'Commissions Settings', 'eddc' ) . '</strong>',
 			'desc'    => '',
 			'type'    => 'header',
 			'size'    => 'regular'
