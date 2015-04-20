@@ -103,7 +103,7 @@ function eddc_upgrade_commission_statuses() {
 		// Commissions found so upgrade them
 
 		foreach( $commissions as $commission_id ) {
-			
+
 			$status = get_post_meta( $commission_id, '_commission_status', true );
 			if( 'paid' !== $status ) {
 				$status = 'unpaid';
@@ -120,7 +120,7 @@ function eddc_upgrade_commission_statuses() {
 			'step'        => $step
 		), admin_url( 'index.php' ) );
 
-		wp_redirect( $redirect ); exit;
+		wp_safe_redirect( $redirect ); exit;
 
 	} else {
 

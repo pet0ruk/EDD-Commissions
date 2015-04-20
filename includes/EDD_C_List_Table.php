@@ -46,10 +46,10 @@ class EDD_C_List_Table extends WP_List_Table {
                 return date_i18n( get_option( 'date_format' ), strtotime( get_post_field( 'post_date', $item['ID'] ) ) );
             case 'download':
                 $download = ! empty( $item['download'] ) ? $item['download'] : false;
-                return $download ? '<a href="' . add_query_arg( 'download', $download ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' . (!empty($item['variation']) ? ' - ' . $item['variation'] : '') : '';
+                return $download ? '<a href="' . esc_url( add_query_arg( 'download', $download ) ) . '" title="' . __( 'View all commissions for this item', 'eddc' ) . '">' . get_the_title( $download ) . '</a>' . (!empty($item['variation']) ? ' - ' . $item['variation'] : '') : '';
             case 'payment':
                 $payment = get_post_meta( $item['ID'], '_edd_commission_payment_id', true );
-                return $payment ? '<a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . $payment ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
+                return $payment ? '<a href="' . esc_url( admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . $payment ) ) . '" title="' . __( 'View payment details', 'eddc' ) . '">#' . $payment . '</a> - ' . edd_get_payment_status( get_post( $payment ), true  ) : '';
             default:
                 return print_r( $item, true ); //Show the whole array for troubleshooting purposes
         }
@@ -76,7 +76,7 @@ class EDD_C_List_Table extends WP_List_Table {
 
         //Return the title contents
         return sprintf( '%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
-            /*$1%s*/ '<a href="' . add_query_arg( 'user', $user->ID ) . '" title="' . __( 'View all commissions for this user', 'eddc' ) . '"">' . $user->display_name . '</a>',
+            /*$1%s*/ '<a href="' . esc_url( add_query_arg( 'user', $user->ID ) ) . '" title="' . __( 'View all commissions for this user', 'eddc' ) . '"">' . $user->display_name . '</a>',
             /*$2%s*/ $item['ID'],
             /*$3%s*/ $this->row_actions( $actions )
         );
@@ -109,10 +109,10 @@ class EDD_C_List_Table extends WP_List_Table {
         $base = admin_url( 'edit.php?post_type=download&page=edd-commissions' );
         $current = isset( $_GET['view'] ) ? $_GET['view'] : '';
         $views = array(
-            'all'       => sprintf( '<a href="%s"%s>%s</a>', remove_query_arg( 'view', $base ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ) ),
-            'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'unpaid', $base ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ) ),
-            'revoked'   => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'revoked', $base ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ) ),
-            'paid'      => sprintf( '<a href="%s"%s>%s</a>', add_query_arg( 'view', 'paid', $base ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ) )
+            'all'       => sprintf( '<a href="%s"%s>%s</a>', esc_url( remove_query_arg( 'view', $base ) ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ) ),
+            'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'unpaid', $base ) ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ) ),
+            'revoked'   => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'revoked', $base ) ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ) ),
+            'paid'      => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'paid', $base ) ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ) )
         );
         return $views;
     }
@@ -237,7 +237,7 @@ class EDD_C_List_Table extends WP_List_Table {
 
         $tax_query = array();
         $view       = isset( $_GET['view'] ) ? $_GET['view'] : false;
-       
+
         if ( $view ) {
 
             // Show only commissions of a specific status
