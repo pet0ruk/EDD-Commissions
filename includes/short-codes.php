@@ -155,6 +155,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<th class="edd_commission_item"><?php _e('Item', 'eddc'); ?></th>
 								<th class="edd_commission_amount"><?php _e('Amount', 'eddc'); ?></th>
 								<th class="edd_commission_rate"><?php _e('Rate', 'eddc'); ?></th>
+								<th class="edd_commission_date"><?php _e('Date', 'eddc'); ?></th>
 								<?php do_action( 'eddc_user_commissions_paid_head_row_end' ); ?>
 							</tr>
 						</thead>
@@ -212,6 +213,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<th class="edd_commission_item"><?php _e('Item', 'eddc'); ?></th>
 								<th class="edd_commission_amount"><?php _e('Amount', 'eddc'); ?></th>
 								<th class="edd_commission_rate"><?php _e('Rate', 'eddc'); ?></th>
+								<th class="edd_commission_date"><?php _e('Date', 'eddc'); ?></th>
 								<?php do_action( 'eddc_user_commissions_revoked_head_row_end' ); ?>
 							</tr>
 						</thead>
