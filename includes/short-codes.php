@@ -135,7 +135,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 						$search_for   = array( $big, '#038;' );
 						$replace_with = array( '%#%', '&' );
 						echo paginate_links( array(
-							'base'    => esc_url( remove_query_arg( 'eddcup', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) ) . '%_%',
+							'base'    => remove_query_arg( 'eddcup', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) . '%_%',
 							'format'  => $page_prefix . 'eddcup=%#%',
 							'current' => max( 1, $unpaid_paged ),
 							'total'   => $unpaid_total_pages
@@ -193,7 +193,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 						$search_for   = array( $big, '#038;' );
 						$replace_with = array( '%#%', '&' );
 						echo paginate_links( array(
-							'base'    => esc_url( remove_query_arg( 'eddcp', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) ) . '%_%',
+							'base'    => remove_query_arg( 'eddcp', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) . '%_%',
 							'format'  => $page_prefix . 'eddcp=%#%',
 							'current' => max( 1, $paid_paged ),
 							'total'   => $paid_total_pages
@@ -250,7 +250,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 						$search_for   = array( $big, '#038;' );
 						$replace_with = array( '%#%', '&' );
 						echo paginate_links( array(
-							'base'    => esc_url( remove_query_arg( 'eddcrp', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) ) . '%_%',
+							'base'    => remove_query_arg( 'eddcrp', str_replace( $search_for, $replace_with, edd_get_current_page_url() ) ) . '%_%',
 							'format'  => $page_prefix . 'eddcrp=%#%',
 							'current' => max( 1, $revoked_paged ),
 							'total'   => $revoked_total_pages
