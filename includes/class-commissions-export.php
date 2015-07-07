@@ -122,7 +122,7 @@ class EDD_Commissions_Export extends EDD_Export {
 
 		if ( $commissions ) {
 			foreach ( $commissions as $commission ) {
-				
+
 				$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
 
 				$data[]        = array(

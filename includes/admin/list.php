@@ -24,9 +24,12 @@ function edd_commissions_page() {
 	// Use minified libraries if SCRIPT_DEBUG is turned off
 	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 	wp_enqueue_script( 'jquery-ui-datepicker' );
+	wp_register_script( 'eddc-admin-scripts', EDDC_PLUGIN_URL . 'assets/js/admin-scripts' . $suffix . '.js', array( 'jquery' ), EDD_COMMISSIONS_VERSION, true );
+	wp_enqueue_script( 'eddc-admin-scripts' );
+
 	$ui_style = ( 'classic' == get_user_option( 'admin_color' ) ) ? 'classic' : 'fresh';
 	wp_enqueue_style( 'jquery-ui-css', $css_dir . 'jquery-ui-' . $ui_style . $suffix . '.css' );
-
+	wp_enqueue_style( 'eddc-admin-styles', EDDC_PLUGIN_URL . 'assets/css/admin-styles' . $suffix . '.css', EDD_COMMISSIONS_VERSION );
 	?>
 	<div class="wrap">
 
@@ -56,32 +59,24 @@ function edd_commissions_page() {
 			<h2>
 				<?php _e('Easy Digital Download Commissions', 'eddc'); ?> -  <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=download&page=edd-commissions&action=add' ) ); ?>" class="add-new-h2"><?php _e( 'Add Commission', 'eddc' ); ?></a>
 			</h2>
+			<div id="edd-commissions-export-wrap">
+				<button class="button-primary eddc-commissions-export-toggle"><?php _e( 'Generate Payout File', 'eddc' ); ?></button>
+				<button class="button-primary eddc-commissions-export-toggle" style="display:none"><?php _e( 'Close', 'eddc' ); ?></button>
 
-			<script type="text/javascript">
-				jQuery(document).ready(function($) {
-					$('#commission-payouts').submit(function() {
-						if( confirm( "<?php _e('Generating a payout file will mark all unpaid commissions as paid. Do you want to continue?', 'eddc'); ?>" ) ) {
-							return true;
-						}
-						return false;
-					});
-					if ($('.edd_datepicker').length > 0) {
-						var dateFormat = 'mm/dd/yy';
-						$('.edd_datepicker').datepicker({
-							dateFormat: dateFormat
-						});
-					}
-				});
-			</script>
-			<form id="commission-payouts" method="get" style="float:right;margin:0;">
-				<input type="text" name="from" class="edd_datepicker" placeholder="<?php _e( 'From - mm/dd/yyyy', 'eddc' ); ?>"/>
-				<input type="text" name="to" class="edd_datepicker" placeholder="<?php _e( 'To - mm/dd/yyyy', 'eddc' ); ?>"/>
-				<input type="hidden" name="post_type" value="download" />
-				<input type="hidden" name="page" value="edd-commissions" />
-				<input type="hidden" name="edd_action" value="generate_payouts" />
-				<?php echo wp_nonce_field( 'eddc-payout-nonce', 'eddc-payout-nonce' ); ?>
-				<?php echo submit_button( __('Generate Mass Payment File', 'eddc'), 'secondary', '', false ); ?>
-			</form>
+				<?php do_action( 'eddc_commissions_page_buttons' ); ?>
+
+				<form id="eddc-export-commissions" class="edd-export-form" method="post" style="display:none;">
+					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-start', 'name' => 'start', 'placeholder' => __( 'Choose start date', 'eddc' ) )); ?>
+					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-end','name' => 'end', 'placeholder' => __( 'Choose end date', 'eddc' ) )); ?>
+					<?php wp_nonce_field( 'edd_ajax_export', 'edd_ajax_export' ); ?>
+					<input type="hidden" name="edd-export-class" value="EDD_Batch_Commissions_Payout"/>
+					<span>
+						<input type="submit" value="<?php _e( 'Generate File', 'eddc' ); ?>" class="button-secondary"/>
+						<span class="spinner"></span>
+					</span>
+				</form>
+
+			</div>
 
 			<form id="commissions-filter" method="get">
 
@@ -96,14 +91,13 @@ function edd_commissions_page() {
 			<div class="commission-totals">
 				<?php _e('Total Unpaid:', 'eddc'); ?>&nbsp;<strong><?php echo $total_unpaid; ?></strong>
 			</div>
-		   <?php
+			<?php
 		}
 		?>
 	</div>
 	<?php
 
 }
-
 
 /**
  * Update a Commission
@@ -193,3 +187,27 @@ function eddc_add_manual_commission( $data ) {
 
 }
 add_action( 'edd_add_commission', 'eddc_add_manual_commission' );
+
+/**
+ * Register the payouts batch exporter
+ * @since  2.4.2
+ */
+function eddc_register_payouts_batch_export() {
+	add_action( 'edd_batch_export_class_include', 'eddc_include_payouts_batch_processer', 10, 1 );
+}
+add_action( 'edd_register_batch_exporter', 'eddc_register_payouts_batch_export', 10 );
+
+/**
+ * Loads the commissions payouts batch process if needed
+ *
+ * @since  2.4.2
+ * @param  string $class The class being requested to run for the batch export
+ * @return void
+ */
+function eddc_include_payouts_batch_processer( $class ) {
+
+	if ( 'EDD_Batch_Commissions_Payout' === $class ) {
+		require_once EDDC_PLUGIN_DIR . 'includes/admin/class-batch-commissions-payout.php';
+	}
+
+}

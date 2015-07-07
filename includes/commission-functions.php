@@ -42,13 +42,13 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		} else {
 
 			if ( 'total_pre_tax' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-	
+
 				$price = $download['price'] - $download['tax'];
 
 			} else {
 
 				$price = $download['price'];
-	
+
 			}
 
 
@@ -318,13 +318,14 @@ function eddc_user_has_commissions( $user_id = false ) {
 	return apply_filters( 'eddc_user_has_commissions', $return, $user_id );
 }
 
-function eddc_get_unpaid_commissions( $args = array() ) {
+function eddc_get_commissions( $args = array() ) {
 
 	$defaults = array(
 		'user_id'    => false,
 		'number'     => 30,
 		'paged'      => 1,
-		'query_args' => array()
+		'query_args' => array(),
+		'status'     => false,
 	);
 
 	$args = wp_parse_args( $args, $defaults );
@@ -333,14 +334,39 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 		'post_type'      => 'edd_commission',
 		'posts_per_page' => $args['number'],
 		'paged'          => $args['paged'],
-		'tax_query'      => array(
-			array(
-				'taxonomy' => 'edd_commission_status',
-				'terms'    => 'unpaid',
-				'field'    => 'slug'
-			)
-		)
 	);
+
+	if ( ! empty( $args['status'] ) ) {
+
+		$tax_query = array();
+
+		if ( is_array( $args['status'] ) ) {
+
+			$tax_query['relation'] = 'OR';
+
+			foreach( $args['status'] as $status ) {
+
+				$tax_query[] = array(
+					'taxonomy' => 'edd_commission_status',
+					'terms'    => $status,
+					'field'    => 'slug',
+				);
+
+			}
+
+		} else {
+			$tax_query[] = array(
+					'taxonomy' => 'edd_commission_status',
+					'terms'    => $args['status'],
+					'field'    => 'slug',
+			);
+		}
+
+		if ( ! empty( $tax_query ) ) {
+			$query['tax_query'] = $tax_query;
+		}
+
+	}
 
 	if ( $args['user_id'] ) {
 
@@ -355,14 +381,34 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 
 	$query = array_merge( $query, $args['query_args'] );
 
-	//echo '<pre>';print_r( $query ); echo '</pre>';exit;
-
 	$commissions = get_posts( $query );
 
 	if ( $commissions ) {
 		return $commissions;
 	}
 	return false; // no commissions
+
+}
+
+function eddc_get_unpaid_commissions( $args = array() ) {
+
+	$defaults = array(
+		'user_id'    => false,
+		'number'     => 30,
+		'paged'      => 1,
+		'query_args' => array(),
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+	$args['status'] = 'unpaid';
+
+	$commissions = eddc_get_commissions( $args );
+
+	if ( $commissions ) {
+		return $commissions;
+	}
+	return false; // no commissions
+
 }
 
 function eddc_get_paid_commissions( $args = array() ) {
@@ -371,43 +417,19 @@ function eddc_get_paid_commissions( $args = array() ) {
 		'user_id'    => false,
 		'number'     => 30,
 		'paged'      => 1,
-		'query_args' => array()
+		'query_args' => array(),
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+	$args['status'] = 'paid';
 
-	$query = array(
-		'post_type'      => 'edd_commission',
-		'posts_per_page' => $args['number'],
-		'paged'          => $args['paged'],
-		'tax_query'      => array(
-			array(
-				'taxonomy' => 'edd_commission_status',
-				'terms'    => 'paid',
-				'field'    => 'slug'
-			)
-		)
-	);
-
-	if ( $args['user_id'] ) {
-
-		$query['meta_query'] = array(
-			array(
-				'key'   => '_user_id',
-				'value' => $args['user_id']
-			)
-		);
-
-	}
-
-	$query = array_merge( $query, $args['query_args'] );
-
-	$commissions = get_posts( $query );
+	$commissions = eddc_get_commissions( $args );
 
 	if ( $commissions ) {
 		return $commissions;
 	}
 	return false; // no commissions
+
 }
 
 function eddc_get_revoked_commissions( $args = array() ) {
@@ -416,43 +438,19 @@ function eddc_get_revoked_commissions( $args = array() ) {
 		'user_id'    => false,
 		'number'     => 30,
 		'paged'      => 1,
-		'query_args' => array()
+		'query_args' => array(),
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+	$args['status'] = 'revoked';
 
-	$query = array(
-		'post_type'      => 'edd_commission',
-		'posts_per_page' => $args['number'],
-		'paged'          => $args['paged'],
-		'tax_query'      => array(
-			array(
-				'taxonomy' => 'edd_commission_status',
-				'terms'    => 'revoked',
-				'field'    => 'slug'
-			)
-		)
-	);
-
-	if ( $args['user_id'] ) {
-
-		$query['meta_query'] = array(
-			array(
-				'key'   => '_user_id',
-				'value' => $args['user_id']
-			)
-		);
-
-	}
-
-	$query = array_merge( $query, $args['query_args'] );
-
-	$commissions = get_posts( $query );
+	$commissions = eddc_get_commissions( $args );
 
 	if ( $commissions ) {
 		return $commissions;
 	}
 	return false; // no commissions
+
 }
 
 
