@@ -279,3 +279,50 @@ function eddc_user_commissions( $user_id = 0 ) {
 	return $stats;
 }
 add_shortcode( 'edd_commissions', 'eddc_user_commissions' );
+
+// Hooks into the EDD Profile Editor Shortcode
+/**
+ * Display the field to edit the PayPal email address in the profile editor
+ *
+ * @since  3.2
+ * @return void
+ */
+function eddc_profile_editor_paypal() {
+	$user_id = get_current_user_id();
+	if ( ! eddc_user_has_commissions( $user_id ) ) {
+		return;
+	}
+
+	$custom_paypal = get_user_meta( $user_id, 'eddc_user_paypal', true );
+	$email         = is_email( $custom_paypal ) ? $custom_paypal : '';
+	?>
+	<p>
+		<strong><?php _e( 'Commissions', 'eddc' ); ?></strong><br />
+		<label for="eddc-paypal-email"><?php _e( 'PayPal Email Address', 'eddc' ); ?></label>
+		<input name="eddc_paypal_email" id="eddc-paypal-email" class="text edd-input" type="email" value="<?php echo esc_attr( $email ); ?>" />
+	</p>
+	<?php
+}
+add_action( 'edd_profile_editor_after_password', 'eddc_profile_editor_paypal', 9999 );
+
+/**
+ * Save and sanitize the PayPal email address from the profile editor
+ *
+ * @since  3.2
+ * @param  int $user_id  The User ID being edited
+ * @param  array $userdata The array of user info
+ * @return void
+ */
+function eddc_update_paypal_email( $user_id, $userdata ) {
+	if ( ! empty( $_POST['eddc_paypal_email'] ) ) {
+		$email = sanitize_text_field( $_POST['eddc_paypal_email'] );
+		if ( ! is_email( $email ) ) {
+			edd_set_error( 'eddc-invalid-paypal-email', __( 'PayPal email address must be a valid email address', 'eddc' ) );
+		} else {
+			$success = update_user_meta( $user_id, 'eddc_user_paypal', $email );
+		}
+	} else {
+		delete_user_meta( $user_id, 'eddc_user_paypal' );
+	}
+}
+add_action( 'edd_pre_update_user_profile', 'eddc_update_paypal_email', 10, 2 );
