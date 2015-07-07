@@ -74,24 +74,26 @@ function eddc_customer_commissions_view( $customer ) {
 	<div id="customer-stats-wrapper" class="customer-section">
 		<ul>
 			<li>
-				<a title="<?php _e( 'View All Paid Commissions', 'edd' ); ?>" href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions&view=paid&id=' . $customer->user_id ); ?>">
-					<span class="dashicons dashicons-cart"></span>
-					<?php printf( _n( '%d Paid Sale', '%d Paid Sales', eddc_count_user_commissions( $customer->user_id, 'paid', 'eddc' ) ), eddc_count_user_commissions( $customer->user_id, 'paid' ) ); ?>
-				</a>
-			</li>
-			<li>
-				<a title="<?php _e( 'View All Unpaid Commissions', 'edd' ); ?>" href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions&view=unpaid&id=' . $customer->user_id ); ?>">
-					<span class="dashicons dashicons-cart"></span>
-					<?php printf( _n( '%d Unpaid Sale', '%d Unpaid Sales', eddc_count_user_commissions( $customer->user_id, 'paid', 'eddc' ) ), eddc_count_user_commissions( $customer->user_id, 'unpaid' ) ); ?>
-				</a>
-			</li>
-			<li>
 				<span class="dashicons dashicons-chart-area"></span>
 				<?php echo edd_currency_filter( edd_format_amount( eddc_get_paid_totals( $customer->user_id ) ) ); ?> <?php _e( 'Paid Commissions', 'eddc' ); ?>
+				<?php $paid_sales = eddc_count_user_commissions( $customer->user_id, 'paid' ); ?>
+				<?php if ( ! empty( $paid_sales ) ) : ?>
+				<br />
+				<a title="<?php _e( 'View All Paid Commissions', 'edd' ); ?>" href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions&view=paid&id=' . $customer->user_id ); ?>">
+					<?php printf( _n( 'via %d sale', 'via %d sales', $paid_sales, 'eddc' ), $paid_sales  ); ?>
+				</a>
+				<?php endif; ?>
 			</li>
 			<li>
 				<span class="dashicons dashicons-chart-area"></span>
 				<?php echo edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $customer->user_id ) ) ); ?> <?php _e( 'Unpaid Commissions', 'eddc' ); ?>
+				<?php $unpaid_sales = eddc_count_user_commissions( $customer->user_id, 'unpaid' ); ?>
+				<?php if ( ! empty( $unpaid_sales ) ) : ?>
+				<br />
+				<a title="<?php _e( 'View All Unpaid Commissions', 'edd' ); ?>" href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions&view=unpaid&id=' . $customer->user_id ); ?>">
+					<?php printf( _n( 'via %d sale', 'via %d sales', $unpaid_sales, 'eddc' ), $unpaid_sales  ); ?>
+				</a>
+				<?php endif; ?>
 			</li>
 		</ul>
 	</div>
