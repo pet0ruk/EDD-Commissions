@@ -60,29 +60,29 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 	$per_page      = 20;
 	$unpaid_paged  = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
-	$paid_paged    = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
+	$paid_paged    = isset( $_GET['eddcp'] )  ? absint( $_GET['eddcp'] )  : 1;
 	$revoked_paged = isset( $_GET['eddcrp'] ) ? absint( $_GET['eddcrp'] ) : 1;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $unpaid_paged ) );
-	$paid_commissions   = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
-	$revoked_commissions= eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
+	$unpaid_commissions  = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $unpaid_paged ) );
+	$paid_commissions    = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
+	$revoked_commissions = eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
 
-	$total_unpaid       = eddc_count_user_commissions( $user_id, 'unpaid' );
-	$total_paid         = eddc_count_user_commissions( $user_id, 'paid' );
-	$total_revoked      = eddc_count_user_commissions( $user_id, 'revoked' );
+	$total_unpaid        = eddc_count_user_commissions( $user_id, 'unpaid' );
+	$total_paid          = eddc_count_user_commissions( $user_id, 'paid' );
+	$total_revoked       = eddc_count_user_commissions( $user_id, 'revoked' );
 
-	$unpaid_offset      = $per_page * ( $unpaid_paged - 1 );
-	$unpaid_total_pages = ceil( $total_unpaid / $per_page );
+	$unpaid_offset       = $per_page * ( $unpaid_paged - 1 );
+	$unpaid_total_pages  = ceil( $total_unpaid / $per_page );
 
-	$paid_offset        = $per_page * ( $paid_paged - 1 );
-	$paid_total_pages   = ceil( $total_paid / $per_page );
+	$paid_offset         = $per_page * ( $paid_paged - 1 );
+	$paid_total_pages    = ceil( $total_paid / $per_page );
 
-	$revoked_offset     = $per_page * ( $revoked_paged - 1 );
-	$revoked_total_pages= ceil( $total_revoked / $per_page );
+	$revoked_offset      = $per_page * ( $revoked_paged - 1 );
+	$revoked_total_pages = ceil( $total_revoked / $per_page );
 
-	$page_prefix        = false !== strpos( edd_get_current_page_url(), '?' ) ? '&' : '?';
+	$page_prefix         = false !== strpos( edd_get_current_page_url(), '?' ) ? '&' : '?';
 
-	$stats 				= '';
+	$stats = '';
 	if( eddc_user_has_commissions( $user_id ) ) : // only show tables if user has commission data
 		ob_start(); ?>
 			<div id="edd_user_commissions">
@@ -108,10 +108,10 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<tr class="edd_user_commission_row">
 									<?php
 									do_action( 'eddc_user_commissions_unpaid_row_begin', $commission );
-									$item_name 			= get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
-									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
-									$amount 			= $commission_info['amount'];
-									$rate 				= $commission_info['rate'];
+									$item_name       = get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
+									$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+									$amount          = $commission_info['amount'];
+									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
 									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
@@ -166,10 +166,10 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<tr class="edd_user_commission_row">
 									<?php
 									do_action( 'eddc_user_commissions_paid_row_begin', $commission );
-									$item_name 			= get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
-									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
-									$amount 			= $commission_info['amount'];
-									$rate 				= $commission_info['rate'];
+									$item_name       = get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
+									$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+									$amount          = $commission_info['amount'];
+									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
 									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
@@ -224,10 +224,10 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<tr class="edd_user_commission_row">
 									<?php
 									do_action( 'eddc_user_commissions_revoked_row_begin', $commission );
-									$item_name 			= get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
-									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
-									$amount 			= $commission_info['amount'];
-									$rate 				= $commission_info['rate'];
+									$item_name       = get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
+									$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+									$amount          = $commission_info['amount'];
+									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
 									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
@@ -260,15 +260,29 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 				</div><!--end #edd_user_commissions_revoked-->
 
+				<?php if ( ! empty( $total_paid ) ) : ?>
 				<div id="edd_commissions_export">
+					<?php
+					$args = array(
+						'user_id' => $user_id,
+						'number'  => 1,
+						'orderby' => 'date',
+						'order'   => 'ASC',
+					);
+
+					$first_commission = eddc_get_paid_commissions( $args );
+					$first_year       = date( 'Y', strtotime( $first_commission[0]->post_date ) );
+					$years_back       = date( 'Y', current_time( 'timestamp' ) ) - $first_year;
+					?>
 					<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
 					<form method="post" action="<?php echo home_url(); ?>">
 						<?php echo EDD()->html->month_dropdown(); ?>
-						<?php echo EDD()->html->year_dropdown(); ?>
+						<?php echo EDD()->html->year_dropdown( 'year', 0, $years_back, 0 ); ?>
 						<input type="hidden" name="edd_action" value="generate_commission_export"/>
 						<input type="submit" class="edd-submit button" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
 					</form><br/>
 				</div>
+				<?php endif; ?>
 
 
 			</div><!--end #edd_user_commissions-->
