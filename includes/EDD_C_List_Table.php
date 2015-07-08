@@ -106,13 +106,18 @@ class EDD_C_List_Table extends WP_List_Table {
 	}
 
 	function get_views() {
-		$base = admin_url( 'edit.php?post_type=download&page=edd-commissions' );
+		$base    = admin_url( 'edit.php?post_type=download&page=edd-commissions' );
+		$user_id = $this->get_filtered_user();
+		if ( ! empty( $user_id ) ) {
+			$base = add_query_arg( array( 'user' => $user_id, $base ) );
+		}
 		$current = isset( $_GET['view'] ) ? $_GET['view'] : '';
+		$status_counts = $this->get_commission_status_counts();
 		$views = array(
-			'all'       => sprintf( '<a href="%s"%s>%s</a>', esc_url( remove_query_arg( 'view', $base ) ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ) ),
-			'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'unpaid', $base ) ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ) ),
-			'revoked'   => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'revoked', $base ) ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ) ),
-			'paid'      => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'paid', $base ) ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ) )
+			'all'       => sprintf( '<a href="%s"%s>%s</a>', esc_url( remove_query_arg( 'view', $base ) ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ), $status_counts['all'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['all'] ),
+			'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'unpaid', $base ) ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ), $status_counts['unpaid'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['unpaid'] ),
+			'revoked'   => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'revoked', $base ) ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ), $status_counts['revoked'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['revoked'] ),
+			'paid'      => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'paid', $base ) ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ), $status_counts['paid'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['paid'] ),
 		);
 		return $views;
 	}
@@ -149,7 +154,13 @@ class EDD_C_List_Table extends WP_List_Table {
 	 * @return      mixed Int if user ID, string if email or login
 	 */
 	function get_filtered_user() {
-		return isset( $_GET['user'] ) ? absint( $_GET['user'] ) : false;
+		$user_id = isset( $_GET['user'] ) ? sanitize_text_field( $_GET['user'] ) : 0;
+		if ( ! is_numeric( $user_id ) ) {
+			$user    = get_user_by( 'login', $_GET['user'] );
+			$user_id = $user->data->ID;
+		}
+
+		return ! empty( $user_id ) ? absint( $user_id ) : false;
 	}
 
 
@@ -286,7 +297,7 @@ class EDD_C_List_Table extends WP_List_Table {
 		$commissions_data = array();
 
 		$paged    = $this->get_paged();
-		$user     = $this-> get_filtered_user();
+		$user     = $this->get_filtered_user();
 
 		$commission_args = array(
 			'post_type'      => 'edd_commission',
@@ -323,19 +334,22 @@ class EDD_C_List_Table extends WP_List_Table {
 		$terms  = get_terms( 'edd_commission_status' );
 		$counts = array();
 
-		$init_array = array(
-			'all'     => '0',
-			'paid'    => '0',
-			'unpaid'  => '0',
-			'revoked' => '0',
+		$args = array(
+			'number'  => -1,
+			'user_id' => $this->get_filtered_user(),
 		);
 
-		$counts['all'] = wp_count_posts( 'edd_commission' )->publish;
-		foreach ( $terms as $term ) {
-			$counts[ $term->slug ] = $term->count;
-		}
+		$all     = eddc_get_commissions( $args );
+		$paid    = eddc_get_paid_commissions( $args );
+		$unpaid  = eddc_get_unpaid_commissions( $args );
+		$revoked = eddc_get_revoked_commissions( $args );
 
-		$counts = wp_parse_args( $counts, $init_array );
+		$counts = array(
+			'all'     => ! empty( $all ) ? count( $all ) : 0,
+			'paid'    => ! empty( $paid ) ? count( $paid ) : 0,
+			'unpaid'  => ! empty( $unpaid ) ? count( $unpaid ) : 0,
+			'revoked' => ! empty( $revoked ) ? count( $revoked ) : 0,
+		);
 
 		return $counts;
 	}
