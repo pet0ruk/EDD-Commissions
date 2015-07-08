@@ -85,6 +85,11 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 
 			foreach ( $commissions as $commission ) {
 
+				$commission_status = eddc_get_commission_status( $commission->ID );
+				if ( 'paid' === $commission_status ) {
+					continue;
+				}
+
 				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
 
 				$user_id       = $commission_meta['user_id'];
@@ -95,15 +100,15 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 
 				if ( array_key_exists( $key, $payouts ) ) {
 					$payouts[ $key ]['amount'] += $commission_meta['amount'];
+					$payouts[ $key ]['ids'][]   = $commission->ID;
 				} else {
 					$payouts[ $key ] = array(
 						'email'      => $email,
 						'amount'     => $commission_meta['amount'],
-						'currency'   => $commission_meta['currency']
+						'currency'   => $commission_meta['currency'],
+						'ids'        => array( $commission->ID ),
 					);
 				}
-
-				eddc_set_commission_status( $commission->ID, 'paid' );
 
 			}
 
@@ -185,12 +190,19 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 			foreach ( $data as $key => $entry ) {
 				if ( array_key_exists( $key, $current_data ) ) {
 					$current_data[ $key ]['amount'] += $entry['amount'];
+					$current_data[ $key ]['ids']     = $entry['ids'];
 				} else {
 					$current_data[ $key ] = array(
 						'email'    => $entry['email'],
 						'amount'   => $entry['amount'],
-						'currenty' => $entry['currency'],
+						'currency' => $entry['currency'],
 					);
+
+					$current_ids = ! empty( $current_data[ $key ]['ids'] ) ? $current_data[ $key ]['ids'] : array();
+					$new_ids     = $entry['ids'];
+					$all_ids     = array_unique( array_merge( $current_ids, $new_ids ) );
+
+					$current_data[ $key ]['ids'] = $all_ids;
 				}
 			}
 
@@ -243,18 +255,34 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 
 				// Output each row
 				foreach ( $data as $row ) {
+
+					if ( ! empty( $this->minimum ) && $this->minimum > $row->amount ) {
+						continue;
+					}
+
 					$i = 1;
 					foreach ( $row as $col_id => $column ) {
+
+						if ( 'ids' === $col_id ) {
+							continue;
+						}
+
 						switch( $col_id ) {
 							case 'amount':
 								$column = edd_format_amount( $column, 2 );
 								break;
 						}
+
 						$row_data .= '"' . addslashes( $column ) . '"';
 						$row_data .= $i == 3 ? '' : ',';
 						$i++;
 					}
 					$row_data .= "\r\n";
+
+					foreach ( $row->ids as $id ) {
+						eddc_set_commission_status( $id, 'paid' );
+					}
+
 				}
 
 				$this->stash_step_data( $row_data );
@@ -295,8 +323,9 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	 * @param array $request The Form data sent in from the export request
 	 */
 	public function set_properties( $request ) {
-		$this->start = isset( $request['start'] ) ? sanitize_text_field( $request['start'] ) : '';
-		$this->end   = isset( $request['end']  )  ? sanitize_text_field( $request['end']  )  : '';
+		$this->start   = isset( $request['start'] )   ? sanitize_text_field( $request['start'] )   : '';
+		$this->end     = isset( $request['end']  )    ? sanitize_text_field( $request['end']  )    : '';
+		$this->minimum = isset( $request['minimum'] ) ? sanitize_text_field( $request['minimum'] ) : 0;
 	}
 
 }
