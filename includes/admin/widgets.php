@@ -74,7 +74,12 @@ function eddc_dashboard_commissions_widget() {
 									$total 				+= $amount;
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( $amount ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 								</tr>
@@ -128,7 +133,12 @@ function eddc_dashboard_commissions_widget() {
 									$total 				+= $amount;
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( $amount ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 								</tr>
