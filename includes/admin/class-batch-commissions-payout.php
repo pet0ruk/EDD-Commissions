@@ -56,10 +56,6 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 		$args = array(
 			'number'         => 25,
 			'paged'          => $this->step,
-			'status'         => array(
-				'paid',
-				'unpaid',
-			),
 			'query_args'     => array(
 				'date_query' => array(
 					'after'       => array(
@@ -77,18 +73,13 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 			)
 		);
 
-		$commissions = eddc_get_commissions( $args );
+		$commissions = eddc_get_unpaid_commissions( $args );
 
 		if ( $commissions ) {
 
 			$payouts = array();
 
 			foreach ( $commissions as $commission ) {
-
-				$commission_status = eddc_get_commission_status( $commission->ID );
-				if ( 'paid' === $commission_status ) {
-					continue;
-				}
 
 				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
 
@@ -132,10 +123,6 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 
 		$args = array(
 			'number'         => -1,
-			'status'         => array(
-				'paid',
-				'unpaid',
-			),
 			'query_args'     => array(
 				'date_query' => array(
 					'after'       => array(
@@ -153,7 +140,7 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 			),
 		);
 
-		$commissions = eddc_get_commissions( $args );
+		$commissions = eddc_get_unpaid_commissions( $args );
 		$total       = count( $commissions );
 
 		$percentage = 100;
@@ -189,20 +176,24 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 		if ( is_array( $data ) ) {
 			foreach ( $data as $key => $entry ) {
 				if ( array_key_exists( $key, $current_data ) ) {
+
 					$current_data[ $key ]['amount'] += $entry['amount'];
-					$current_data[ $key ]['ids']     = $entry['ids'];
-				} else {
-					$current_data[ $key ] = array(
-						'email'    => $entry['email'],
-						'amount'   => $entry['amount'],
-						'currency' => $entry['currency'],
-					);
 
 					$current_ids = ! empty( $current_data[ $key ]['ids'] ) ? $current_data[ $key ]['ids'] : array();
 					$new_ids     = $entry['ids'];
 					$all_ids     = array_unique( array_merge( $current_ids, $new_ids ) );
 
 					$current_data[ $key ]['ids'] = $all_ids;
+
+				} else {
+
+					$current_data[ $key ] = array(
+						'email'    => $entry['email'],
+						'amount'   => $entry['amount'],
+						'currency' => $entry['currency'],
+						'ids'      => $entry['ids'],
+					);
+
 				}
 			}
 
