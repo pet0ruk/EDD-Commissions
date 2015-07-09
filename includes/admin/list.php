@@ -66,8 +66,9 @@ function edd_commissions_page() {
 				<?php do_action( 'eddc_commissions_page_buttons' ); ?>
 
 				<form id="eddc-export-commissions" class="edd-export-form" method="post" style="display:none;">
-					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-start', 'name' => 'start', 'placeholder' => __( 'Choose start date', 'eddc' ) )); ?>
-					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-end','name' => 'end', 'placeholder' => __( 'Choose end date', 'eddc' ) )); ?>
+					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-start', 'name' => 'start', 'placeholder' => __( 'Choose start date', 'eddc' ) ) ); ?>
+					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-end','name' => 'end', 'placeholder' => __( 'Choose end date', 'eddc' ) ) ); ?>
+					<input type="number" increment="0.01" class="eddc-medium-text" id="minimum" name="minimum" placeholder=" <?php _e( 'Minimum', 'eddc' ); ?>" />
 					<?php wp_nonce_field( 'edd_ajax_export', 'edd_ajax_export' ); ?>
 					<input type="hidden" name="edd-export-class" value="EDD_Batch_Commissions_Payout"/>
 					<span>
