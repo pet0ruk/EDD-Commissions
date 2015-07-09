@@ -81,6 +81,7 @@ if ( is_admin() ) {
 	include_once EDDC_PLUGIN_DIR . 'includes/admin/metabox.php';
 	include_once EDDC_PLUGIN_DIR . 'includes/admin/widgets.php';
 	include_once EDDC_PLUGIN_DIR . 'includes/admin/upgrades.php';
+	include_once EDDC_PLUGIN_DIR . 'includes/admin/customers.php';
 	include_once EDDC_PLUGIN_DIR . 'includes/EDD_C_List_Table.php';
 } else {
 	include_once EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php';
