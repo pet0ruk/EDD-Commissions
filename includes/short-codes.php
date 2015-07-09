@@ -352,3 +352,133 @@ function eddc_user_commissions( $user_id = 0 ) {
 	return $stats;
 }
 add_shortcode( 'edd_commissions', 'eddc_user_commissions' );
+
+function eddc_user_commissions_graph( $user_id ) {
+
+	if( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	// If still empty, exit
+	if( empty( $user_id ) ) {
+		return;
+	}
+
+	$graph = '';
+	if( eddc_user_has_commissions( $user_id ) ) :
+		include_once( EDD_PLUGIN_DIR . 'includes/admin/reporting/class-edd-graph.php' );
+		global $post;
+		$month = ! isset( $_GET['month'] ) ? date( 'n' ) : absint( $_GET['month'] );
+		$year  = ! isset( $_GET['year'] )  ? date( 'Y' ) : absint( $_GET['year' ] );
+		$num_of_days = cal_days_in_month( CAL_GREGORIAN, $month, $year );
+
+		ob_start(); ?>
+		<script>
+		if ( typeof( edd_vars ) === 'undefined' ) {
+			edd_vars = {
+				"currency": "<?php echo edd_get_currency(); ?>",
+				"currency_sign": "<?php echo edd_currency_filter(""); ?>",
+				"currency_pos": "<?php echo edd_get_option( 'currency_position', 'before' ); ?>",
+				"currency_decimals": "<?php echo edd_currency_decimal_filter(); ?>",
+			};
+		}
+		</script>
+		<style>
+		.tickLabel {
+			width: 30px;
+		}
+		.legend > table {
+			width: auto;
+		}
+		</style>
+		<div id="eddc-dashboard-graphs">
+
+			<h4><?php _e( 'Commission Stats', 'eddc' ); ?></h4>
+			<form id="edd-graphs-filter" method="get" action="<?php echo get_the_permalink( $post->ID ); ?>#eddc-dashboard-graphs">
+				<div class="tablenav top">
+					<div class="actions">
+						<?php echo EDD()->html->month_dropdown( 'month', $month ); ?>
+						<?php echo EDD()->html->year_dropdown( 'year', $year ); ?>
+
+						<input type="hidden" name="edd_action" value="filter_reports" />
+						<input type="submit" class="button-secondary" value="<?php _e( 'Filter', 'eddc' ); ?>"/>
+					</div>
+				</div>
+			</form>
+			<?php
+
+			$args = array(
+				'number'         => -1,
+				'query_args'     => array(
+					'date_query' => array(
+						'after'       => array(
+							'year'    => $year,
+							'month'   => $month,
+							'day'     => 1,
+						),
+						'before'      => array(
+							'year'    => $year,
+							'month'   => $month,
+							'day'     => $num_of_days,
+						),
+						'inclusive' => true
+					)
+				)
+			);
+
+			$commissions = eddc_get_commissions( $args );
+
+			$grouped_data = array();
+			if ( ! empty( $commissions ) ) {
+				foreach ( $commissions as $commission ) {
+					$key             = date( 'njY', strtotime( $commission->post_date ) );
+					$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+
+					if ( ! isset( $grouped_data[ $key ] ) ) {
+						$grouped_data[ $key ] = array();
+						$grouped_data[ $key ]['earnings'] = (float) $commission_meta['amount'];
+						$grouped_data[ $key ]['sales']    = 1;
+					} else {
+						$grouped_data[ $key ]['earnings'] += (float) $commission_meta['amount'];
+						$grouped_data[ $key ]['sales']++;
+					}
+
+				}
+			}
+
+			$d = 1;
+			while ( $d <= $num_of_days ) {
+
+				$key      = $month . $d . $year;
+				$date     = mktime( 0, 0, 0, $month, $d, $year ) * 1000;
+				$sales    = isset( $grouped_data[ $key ]['sales'] )    ? $grouped_data[ $key ]['sales']    : 0;
+				$earnings = isset( $grouped_data[ $key ]['earnings'] ) ? round( $grouped_data[ $key ]['earnings'], edd_currency_decimal_filter() ) : 0;
+
+				$sales_data[]    = array( $date, $sales );
+				$earnings_data[] = array( $date, $earnings );
+				$d++;
+
+			}
+
+			$data = array(
+				__( 'Earnings', 'edd' ) => $earnings_data,
+				__( 'Sales', 'edd' )    => $sales_data
+			);
+			?>
+
+			<div class="inside">
+				<?php
+				$graph = new EDD_Graph( $data );
+				$graph->set( 'x_mode', 'time' );
+				$graph->set( 'multiple_y_axes', true );
+				$graph->display();
+				?>
+			</div>
+
+		</div>
+		<?php
+		$graph = apply_filters( 'edd_user_commissions_graph_display', ob_get_clean() );
+	endif;
+	return $graph;
+}
+add_shortcode( 'edd_commissions_graph', 'eddc_user_commissions_graph' );
