@@ -187,7 +187,12 @@ function eddc_user_commissions( $user_id = 0 ) {
 									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 									<?php do_action( 'eddc_user_commissions_unpaid_row_end', $commission ); ?>
@@ -245,7 +250,12 @@ function eddc_user_commissions( $user_id = 0 ) {
 									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 									<?php do_action( 'eddc_user_commissions_paid_row_end', $commission ); ?>
@@ -303,7 +313,12 @@ function eddc_user_commissions( $user_id = 0 ) {
 									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 									<?php do_action( 'eddc_user_commissions_revoked_row_end', $commission ); ?>
