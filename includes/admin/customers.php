@@ -172,7 +172,7 @@ function eddc_customer_commissions_view( $customer ) {
 						</tr>
 					<?php endforeach; ?>
 				<?php else: ?>
-					<tr><td colspan="5"><?php _e( 'No Payments Found', 'edd' ); ?></td></tr>
+					<tr><td colspan="5"><?php _e( 'No unpaid commissions', 'edd' ); ?></td></tr>
 				<?php endif; ?>
 			</tbody>
 		</table>
