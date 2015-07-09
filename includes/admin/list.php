@@ -75,6 +75,7 @@ function edd_commissions_page() {
 						<input type="submit" value="<?php _e( 'Generate File', 'eddc' ); ?>" class="button-secondary"/>
 						<span class="spinner"></span>
 					</span>
+					<p><?php _e( 'This will mark all unpaid commissions in this timeframe as paid.', 'eddc' ); ?></p>
 				</form>
 
 			</div>
