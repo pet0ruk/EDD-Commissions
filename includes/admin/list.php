@@ -50,7 +50,7 @@ function edd_commissions_page() {
 			//Fetch, prepare, sort, and filter our data...
 			$commissions_table->prepare_items();
 
-			$user_id = isset( $_GET['user'] ) ? absint( $_GET['user'] ) : 0;
+			$user_id = $commissions_table->get_filtered_user();
 
 			$total_unpaid = edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( $user_id ) ) );
 
@@ -84,7 +84,15 @@ function edd_commissions_page() {
 				<input type="hidden" name="page" value="edd-commissions" />
 				<!-- Now we can render the completed list table -->
 				<?php $commissions_table->views() ?>
-
+				<div class="eddc-user-search-wrapper">
+					<?php if ( ! empty( $user_id ) ) : ?>
+						<?php $user = get_userdata( $user_id ); ?>
+						<?php printf( __( 'Showing commissions for: %s', 'eddc' ), $user->user_nicename ); ?> <a class="eddc-clear-search" href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions' ); ?>">&times;</a>
+					<?php else: ?>
+						<?php echo EDD()->html->ajax_user_search( array( 'name' => 'user', 'placeholder' => __( 'Search Users', 'eddc' ) ) ); ?>
+						<input type="submit" class="button-secondary" value="Filter" />
+					<?php endif; ?>
+				</div>
 				<?php $commissions_table->display() ?>
 			</form>
 

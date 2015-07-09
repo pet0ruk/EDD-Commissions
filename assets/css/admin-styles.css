@@ -26,3 +26,15 @@
 	margin-top: 5px;
 	bottom: 0px;
 }
+
+.eddc-user-search-wrapper {
+	float: right;
+}
+
+.eddc-clear-search {
+	text-decoration: none;
+}
+
+.eddc-user-search-wrapper .edd_user_search_results ul {
+	width: 200px;
+}

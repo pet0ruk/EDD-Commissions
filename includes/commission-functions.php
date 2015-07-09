@@ -487,7 +487,6 @@ function eddc_count_user_commissions( $user_id = false, $status = 'unpaid' ) {
 	return false; // no commissions
 }
 
-
 function eddc_get_unpaid_totals( $user_id = 0 ) {
 
 	$unpaid = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => -1 ) );
