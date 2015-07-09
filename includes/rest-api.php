@@ -56,7 +56,8 @@ class EDDC_REST_API {
             foreach( $commissions as $commission ) {
 
                 $commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
-                $download_id     = get_post_meta( $commission->ID, '_download_id', true );
+                $commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+                $renewal         = (bool) get_post_meta( $commission->ID, '_edd_commission_is_renewal', true );
                
                 $data['commissions'][] = array(
                     'amount'   => edd_sanitize_amount( $commission_meta['amount'] ),
@@ -64,7 +65,8 @@ class EDDC_REST_API {
 					'currency' => $commission_meta['currency'],
 					'item'     => get_the_title( $download_id ),
 					'status'   => eddc_get_commission_status( $commission->ID ),
-					'date'     => $commission->post_date
+					'date'     => $commission->post_date,
+					'renewal'  => $renewal ? 1 : 0
                 );
             }
 
@@ -93,13 +95,15 @@ class EDDC_REST_API {
 			foreach( $unpaid as $commission ) {
 
 				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+				$renewal         = (bool) get_post_meta( $commission->ID, '_edd_commission_is_renewal', true );
 
 				$data['unpaid'][] = array(
 					'amount'   => edd_sanitize_amount( $commission_meta['amount'] ),
 					'rate'     => $commission_meta['rate'],
 					'currency' => $commission_meta['currency'],
 					'item'     => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
-					'date'     => $commission->post_date
+					'date'     => $commission->post_date,
+					'renewal'  => $renewal ? 1 : 0
 				);
 			}
 		}
@@ -109,13 +113,15 @@ class EDDC_REST_API {
 			foreach( $paid as $commission ) {
 
 				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+				$renewal         = (bool) get_post_meta( $commission->ID, '_edd_commission_is_renewal', true );
 
 				$data['paid'][] = array(
 					'amount'   => edd_sanitize_amount( $commission_meta['amount'] ),
 					'rate'     => $commission_meta['rate'],
 					'currency' => $commission_meta['currency'],
 					'item'     => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
-					'date'     => $commission->post_date
+					'date'     => $commission->post_date,
+					'renewal'  => $renewal ? 1 : 0
 				);
 			}
 		}
@@ -125,13 +131,15 @@ class EDDC_REST_API {
 			foreach( $revoked as $commission ) {
 
 				$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+				$renewal         = (bool) get_post_meta( $commission->ID, '_edd_commission_is_renewal', true );
 
 				$data['revoked'][] = array(
 					'amount'   => edd_sanitize_amount( $commission_meta['amount'] ),
 					'rate'     => $commission_meta['rate'],
 					'currency' => $commission_meta['currency'],
 					'item'     => get_the_title( get_post_meta( $commission->ID, '_download_id', true ) ),
-					'date'     => $commission->post_date
+					'date'     => $commission->post_date,
+					'renewal'  => $renewal ? 1 : 0
 				);
 			}
 		}
