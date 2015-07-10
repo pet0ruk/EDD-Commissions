@@ -133,7 +133,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 	$per_page      = 20;
 	$unpaid_paged  = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
-	$paid_paged    = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
+	$paid_paged    = isset( $_GET['eddcp'] )  ? absint( $_GET['eddcp'] )  : 1;
 	$revoked_paged = isset( $_GET['eddcrp'] ) ? absint( $_GET['eddcrp'] ) : 1;
 
 	$unpaid_commissions  = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $unpaid_paged ) );
@@ -349,15 +349,29 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 				</div><!--end #edd_user_commissions_revoked-->
 
+				<?php if ( ! empty( $total_paid ) ) : ?>
 				<div id="edd_commissions_export">
+					<?php
+					$args = array(
+						'user_id' => $user_id,
+						'number'  => 1,
+						'orderby' => 'date',
+						'order'   => 'ASC',
+					);
+
+					$first_commission = eddc_get_paid_commissions( $args );
+					$first_year       = date( 'Y', strtotime( $first_commission[0]->post_date ) );
+					$years_back       = date( 'Y', current_time( 'timestamp' ) ) - $first_year;
+					?>
 					<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
 					<form method="post" action="<?php echo home_url(); ?>">
 						<?php echo EDD()->html->month_dropdown(); ?>
-						<?php echo EDD()->html->year_dropdown(); ?>
+						<?php echo EDD()->html->year_dropdown( 'year', 0, $years_back, 0 ); ?>
 						<input type="hidden" name="edd_action" value="generate_commission_export"/>
 						<input type="submit" class="edd-submit button" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
 					</form><br/>
 				</div>
+				<?php endif; ?>
 
 
 			</div><!--end #edd_user_commissions-->

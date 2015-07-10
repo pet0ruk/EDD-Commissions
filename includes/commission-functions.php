@@ -359,6 +359,14 @@ function eddc_get_commissions( $args = array() ) {
 		'paged'          => $args['paged'],
 	);
 
+	if ( ! empty( $args['order'] ) ) {
+		$query['order'] = $args['order'];
+	}
+
+	if ( ! empty( $args['orderby'] ) ) {
+		$query['orderby'] = $args['orderby'];
+	}
+
 	if ( ! empty( $args['status'] ) ) {
 
 		$tax_query = array();
