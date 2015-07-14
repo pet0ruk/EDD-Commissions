@@ -80,9 +80,7 @@ function edd_commissions_page() {
 				</form>
 
 			</div>
-			<?php endif; ?>
-
-			<?php if ( defined( 'EDD_VERSION' ) && version_compare( '2.4.2', EDD_VERSION, '>' ) ) : ?>
+			<?php else: ?>
 			<p>
 				<script type="text/javascript">
 					jQuery(document).ready(function($) {
