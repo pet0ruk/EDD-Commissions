@@ -59,6 +59,7 @@ function edd_commissions_page() {
 			<h2>
 				<?php _e('Easy Digital Download Commissions', 'eddc'); ?> -  <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=download&page=edd-commissions&action=add' ) ); ?>" class="add-new-h2"><?php _e( 'Add Commission', 'eddc' ); ?></a>
 			</h2>
+			<?php if ( defined( 'EDD_VERSION' ) && version_compare( '2.4.2', EDD_VERSION, '<=' ) ) : ?>
 			<div id="edd-commissions-export-wrap">
 				<button class="button-primary eddc-commissions-export-toggle"><?php _e( 'Generate Payout File', 'eddc' ); ?></button>
 				<button class="button-primary eddc-commissions-export-toggle" style="display:none"><?php _e( 'Close', 'eddc' ); ?></button>
@@ -79,6 +80,37 @@ function edd_commissions_page() {
 				</form>
 
 			</div>
+			<?php endif; ?>
+
+			<?php if ( defined( 'EDD_VERSION' ) && version_compare( '2.4.2', EDD_VERSION, '>' ) ) : ?>
+			<p>
+				<script type="text/javascript">
+					jQuery(document).ready(function($) {
+						$('#commission-payouts').submit(function() {
+							if( confirm( "<?php _e('Generating a payout file will mark all unpaid commissions as paid. Do you want to continue?', 'eddc'); ?>" ) ) {
+								return true;
+							}
+							return false;
+						});
+						if ($('.edd_datepicker').length > 0) {
+							var dateFormat = 'mm/dd/yy';
+							$('.edd_datepicker').datepicker({
+								dateFormat: dateFormat
+							});
+						}
+					});
+				</script>
+				<form id="commission-payouts" method="get" style="float:right;margin:0;">
+					<input type="text" name="from" class="edd_datepicker" placeholder="<?php _e( 'From - mm/dd/yyyy', 'eddc' ); ?>"/>
+					<input type="text" name="to" class="edd_datepicker" placeholder="<?php _e( 'To - mm/dd/yyyy', 'eddc' ); ?>"/>
+					<input type="hidden" name="post_type" value="download" />
+					<input type="hidden" name="page" value="edd-commissions" />
+					<input type="hidden" name="edd_action" value="generate_payouts" />
+					<?php echo wp_nonce_field( 'eddc-payout-nonce', 'eddc-payout-nonce' ); ?>
+					<?php echo submit_button( __('Generate Mass Payment File', 'eddc'), 'secondary', '', false ); ?>
+				</form>
+			</p>
+			<?php endif; ?>
 
 			<form id="commissions-filter" method="get">
 
