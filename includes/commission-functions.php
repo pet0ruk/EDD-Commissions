@@ -25,15 +25,15 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		return;
 	}
 
-	$payment_data  	= edd_get_payment_meta( $payment_id );
-	$user_info   	= maybe_unserialize( $payment_data['user_info'] );
-	$cart_details  	= edd_get_payment_meta_cart_details( $payment_id );
+	$payment_data = edd_get_payment_meta( $payment_id );
+	$user_info    = maybe_unserialize( $payment_data['user_info'] );
+	$cart_details = edd_get_payment_meta_cart_details( $payment_id );
 
 	// loop through each purchased download and award commissions, if needed
 	foreach ( $cart_details as $download ) {
 
-		$download_id    		= absint( $download['id'] );
-		$commissions_enabled  	= get_post_meta( $download_id, '_edd_commisions_enabled', true );
+		$download_id         = absint( $download['id'] );
+		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
 
 		if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
 
@@ -42,13 +42,13 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		} else {
 
 			if ( 'total_pre_tax' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-	
+
 				$price = $download['price'] - $download['tax'];
 
 			} else {
 
 				$price = $download['price'];
-	
+
 			}
 
 
@@ -74,7 +74,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 				// but if we have price variations, then we need to get the name of the variation
 				if ( edd_has_variable_prices( $download_id ) ) {
-					$price_id = edd_get_cart_item_price_id ( $download );
+					$price_id  = edd_get_cart_item_price_id ( $download );
 					$variation = edd_get_price_option_name( $download_id, $price_id );
 				}
 
@@ -84,7 +84,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				// Record a commission for each user
 				foreach( $recipients as $recipient ) {
 
-					$rate           	= eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+					$rate               = eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
 					$args               = array(
 						'price'         => $price,
 						'rate'          => $rate,
@@ -94,22 +94,22 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 						'payment_id'    => $payment_id
 					);
 
-					$commission_amount 	= eddc_calc_commission_amount( $args ); // calculate the commission amount to award
-					$currency    		= $payment_data['currency'];
+					$commission_amount = eddc_calc_commission_amount( $args ); // calculate the commission amount to award
+					$currency          = $payment_data['currency'];
 
 					$commission = array(
-						'post_type'  	=> 'edd_commission',
-						'post_title'  	=> $user_info['email'] . ' - ' . get_the_title( $download_id ),
-						'post_status'  	=> 'publish'
+						'post_type'   => 'edd_commission',
+						'post_title'  => $user_info['email'] . ' - ' . get_the_title( $download_id ),
+						'post_status' => 'publish'
 					);
 
 					$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
 
 					$commission_info = apply_filters( 'edd_commission_info', array(
-						'user_id'  	=> $recipient,
-						'rate'   	=> $rate,
-						'amount'  	=> $commission_amount,
-						'currency'  => $currency
+						'user_id'  => $recipient,
+						'rate'     => $rate,
+						'amount'   => $commission_amount,
+						'currency' => $currency
 					), $commission_id, $payment_id, $download_id );
 
 					eddc_set_commission_status( $commission_id, 'unpaid' );
@@ -118,9 +118,15 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					update_post_meta( $commission_id, '_download_id', $download_id );
 					update_post_meta( $commission_id, '_user_id', $recipient );
 					update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
-					//if we are dealing with a variation, then save variation info
+
+					// If we are dealing with a variation, then save variation info
 					if ( isset( $variation ) ) {
 						update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
+					}
+
+					// If it's a renewal, save that detail
+					if ( ! empty( $download['item_number']['options']['is_renewal'] ) ) {
+						update_post_meta( $commission_id, '_edd_commission_is_renewal', true );
 					}
 
 					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
@@ -176,13 +182,30 @@ function eddc_set_commission_status( $commission_id = 0, $new_status = 'unpaid' 
 
 }
 
+/**
+ * Get if a commission was on a renewal
+ *
+ * @since  3.2
+ * @param  integer $commission_id Commission ID
+ * @return bool                   If the commission was for a renewal or not
+ */
+function eddc_commission_is_renewal( $commission_id = 0 ) {
+
+	if ( empty( $commission_id ) ) {
+		return false;
+	}
+
+	$is_renewal = get_post_meta( $commission_id, '_edd_commission_is_renewal', true );
+
+	return apply_filters( 'eddc_commission_is_renewal', $is_renewal, $commission_id );
+}
+
 
 function eddc_get_recipients( $download_id = 0 ) {
 	$settings = get_post_meta( $download_id, '_edd_commission_settings', true );
 	$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 	return (array) apply_filters( 'eddc_get_recipients', $recipients, $download_id );
 }
-
 
 function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 
@@ -318,13 +341,14 @@ function eddc_user_has_commissions( $user_id = false ) {
 	return apply_filters( 'eddc_user_has_commissions', $return, $user_id );
 }
 
-function eddc_get_unpaid_commissions( $args = array() ) {
+function eddc_get_commissions( $args = array() ) {
 
 	$defaults = array(
 		'user_id'    => false,
 		'number'     => 30,
 		'paged'      => 1,
-		'query_args' => array()
+		'query_args' => array(),
+		'status'     => false,
 	);
 
 	$args = wp_parse_args( $args, $defaults );
@@ -333,29 +357,85 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 		'post_type'      => 'edd_commission',
 		'posts_per_page' => $args['number'],
 		'paged'          => $args['paged'],
-		'tax_query'      => array(
-			array(
-				'taxonomy' => 'edd_commission_status',
-				'terms'    => 'unpaid',
-				'field'    => 'slug'
-			)
-		)
 	);
+
+	if ( ! empty( $args['order'] ) ) {
+		$query['order'] = $args['order'];
+	}
+
+	if ( ! empty( $args['orderby'] ) ) {
+		$query['orderby'] = $args['orderby'];
+	}
+
+	if ( ! empty( $args['status'] ) ) {
+
+		$tax_query = array();
+
+		if ( is_array( $args['status'] ) ) {
+
+			$tax_query['relation'] = 'OR';
+
+			foreach( $args['status'] as $status ) {
+
+				$tax_query[] = array(
+					'taxonomy' => 'edd_commission_status',
+					'terms'    => $status,
+					'field'    => 'slug',
+				);
+
+			}
+
+		} else {
+			$tax_query[] = array(
+					'taxonomy' => 'edd_commission_status',
+					'terms'    => $args['status'],
+					'field'    => 'slug',
+			);
+		}
+
+		if ( ! empty( $tax_query ) ) {
+			$query['tax_query'] = $tax_query;
+		}
+
+	}
+
+	$meta_query = array();
 
 	if ( $args['user_id'] ) {
 
-		$query['meta_query'] = array(
-			array(
-				'key'   => '_user_id',
-				'value' => $args['user_id']
-			)
+		$meta_query[] = array(
+			'key'   => '_user_id',
+			'value' => $args['user_id']
 		);
 
 	}
 
-	$query = array_merge( $query, $args['query_args'] );
+	if ( isset( $args['renewal'] ) ) {
 
-	//echo '<pre>';print_r( $query ); echo '</pre>';exit;
+		switch( $args['renewal'] ) {
+
+			case true:
+				$meta_query[] = array(
+					'key'   => '_edd_commission_is_renewal',
+					'value' => '1'
+				);
+			break;
+			case false:
+				$meta_query[] = array(
+					'key'     => '_edd_commission_is_renewal',
+					'compare' => 'NOT EXISTS',
+				);
+			break;
+
+		}
+
+	}
+
+	if ( ! empty( $meta_query ) ) {
+		$query['meta_query'] = $meta_query;
+	}
+
+	$query = array_merge( $query, $args['query_args'] );
 
 	$commissions = get_posts( $query );
 
@@ -363,6 +443,28 @@ function eddc_get_unpaid_commissions( $args = array() ) {
 		return $commissions;
 	}
 	return false; // no commissions
+
+}
+
+function eddc_get_unpaid_commissions( $args = array() ) {
+
+	$defaults = array(
+		'user_id'    => false,
+		'number'     => 30,
+		'paged'      => 1,
+		'query_args' => array(),
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+	$args['status'] = 'unpaid';
+
+	$commissions = eddc_get_commissions( $args );
+
+	if ( $commissions ) {
+		return $commissions;
+	}
+	return false; // no commissions
+
 }
 
 function eddc_get_paid_commissions( $args = array() ) {
@@ -371,43 +473,19 @@ function eddc_get_paid_commissions( $args = array() ) {
 		'user_id'    => false,
 		'number'     => 30,
 		'paged'      => 1,
-		'query_args' => array()
+		'query_args' => array(),
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+	$args['status'] = 'paid';
 
-	$query = array(
-		'post_type'      => 'edd_commission',
-		'posts_per_page' => $args['number'],
-		'paged'          => $args['paged'],
-		'tax_query'      => array(
-			array(
-				'taxonomy' => 'edd_commission_status',
-				'terms'    => 'paid',
-				'field'    => 'slug'
-			)
-		)
-	);
-
-	if ( $args['user_id'] ) {
-
-		$query['meta_query'] = array(
-			array(
-				'key'   => '_user_id',
-				'value' => $args['user_id']
-			)
-		);
-
-	}
-
-	$query = array_merge( $query, $args['query_args'] );
-
-	$commissions = get_posts( $query );
+	$commissions = eddc_get_commissions( $args );
 
 	if ( $commissions ) {
 		return $commissions;
 	}
 	return false; // no commissions
+
 }
 
 function eddc_get_revoked_commissions( $args = array() ) {
@@ -416,43 +494,19 @@ function eddc_get_revoked_commissions( $args = array() ) {
 		'user_id'    => false,
 		'number'     => 30,
 		'paged'      => 1,
-		'query_args' => array()
+		'query_args' => array(),
 	);
 
 	$args = wp_parse_args( $args, $defaults );
+	$args['status'] = 'revoked';
 
-	$query = array(
-		'post_type'      => 'edd_commission',
-		'posts_per_page' => $args['number'],
-		'paged'          => $args['paged'],
-		'tax_query'      => array(
-			array(
-				'taxonomy' => 'edd_commission_status',
-				'terms'    => 'revoked',
-				'field'    => 'slug'
-			)
-		)
-	);
-
-	if ( $args['user_id'] ) {
-
-		$query['meta_query'] = array(
-			array(
-				'key'   => '_user_id',
-				'value' => $args['user_id']
-			)
-		);
-
-	}
-
-	$query = array_merge( $query, $args['query_args'] );
-
-	$commissions = get_posts( $query );
+	$commissions = eddc_get_commissions( $args );
 
 	if ( $commissions ) {
 		return $commissions;
 	}
 	return false; // no commissions
+
 }
 
 
@@ -488,7 +542,6 @@ function eddc_count_user_commissions( $user_id = false, $status = 'unpaid' ) {
 	}
 	return false; // no commissions
 }
-
 
 function eddc_get_unpaid_totals( $user_id = 0 ) {
 

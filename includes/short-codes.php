@@ -47,6 +47,79 @@ function eddc_user_product_list() {
 }
 add_shortcode( 'edd_commissioned_products', 'eddc_user_product_list' );
 
+function eddc_user_commissions_overview( $user_id = 0 ) {
+
+	if( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	// If still empty, exit
+	if( empty( $user_id ) ) {
+		return;
+	}
+
+	$unpaid_commissions  = eddc_get_unpaid_totals( array( 'user_id' => $user_id ) );
+	$paid_commissions    = eddc_get_paid_totals( array( 'user_id' => $user_id ) );
+	$revoked_commissions = eddc_get_revoked_totals( array( 'user_id' => $user_id ) );
+
+	$total_unpaid        = eddc_count_user_commissions( $user_id, 'unpaid' );
+	$total_paid          = eddc_count_user_commissions( $user_id, 'paid' );
+	$total_revoked       = eddc_count_user_commissions( $user_id, 'revoked' );
+
+	$stats = '';
+
+	ob_start(); ?>
+		<div id="edd_user_commissions_overview">
+			<h3><?php _e( 'Commissions Overview', 'eddc' ); ?></h3>
+			<table>
+				<thead>
+					<th><?php _e( 'Unpaid Earnings', 'eddc' ); ?></th>
+					<th><?php _e( 'Paid Earnings', 'eddc' ); ?></th>
+					<th><?php _e( 'Revoked Earnings', 'eddc' ); ?></th>
+				</thead>
+				<tbody>
+					<?php if ( eddc_user_has_commissions( $user_id ) ) : ?>
+					<tr>
+						<td><?php echo edd_currency_filter( edd_format_amount( $unpaid_commissions ) ); ?></td>
+						<td><?php echo edd_currency_filter( edd_format_amount( $paid_commissions ) ); ?></td>
+						<td><?php echo edd_currency_filter( edd_format_amount( $revoked_commissions ) ); ?></td>
+					</tr>
+					<?php else: ?>
+					<tr>
+						<td colspan="3"><?php _e( 'No commissions found', 'eddc' ); ?></td>
+					</tr>
+					<?php endif; ?>
+				</tbody>
+			</table>
+			<table>
+				<thead>
+					<th><?php _e( 'Unpaid Sales', 'eddc' ); ?></th>
+					<th><?php _e( 'Paid Sales', 'eddc' ); ?></th>
+					<th><?php _e( 'Revoked Sales', 'eddc' ); ?></th>
+				</thead>
+				<tbody>
+					<?php if ( eddc_user_has_commissions( $user_id ) ) : ?>
+					<tr>
+						<td><?php echo $total_unpaid; ?></td>
+						<td><?php echo $total_paid; ?></td>
+						<td><?php echo $total_revoked; ?></td>
+					</tr>
+					<?php else: ?>
+					<tr>
+						<td colspan="3"><?php _e( 'No commissions found', 'eddc' ); ?></td>
+					</tr>
+					<?php endif; ?>
+				</tbody>
+			</table>
+		</div>
+	<?php
+
+
+	$stats = apply_filters( 'edd_user_commissions_overview_display', ob_get_clean() );
+	return $stats;
+}
+add_shortcode( 'edd_commissions_overview', 'eddc_user_commissions_overview' );
+
 function eddc_user_commissions( $user_id = 0 ) {
 
 	if( empty( $user_id ) ) {
@@ -60,29 +133,29 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 	$per_page      = 20;
 	$unpaid_paged  = isset( $_GET['eddcup'] ) ? absint( $_GET['eddcup'] ) : 1;
-	$paid_paged    = isset( $_GET['eddcp'] ) ? absint( $_GET['eddcp'] ) : 1;
+	$paid_paged    = isset( $_GET['eddcp'] )  ? absint( $_GET['eddcp'] )  : 1;
 	$revoked_paged = isset( $_GET['eddcrp'] ) ? absint( $_GET['eddcrp'] ) : 1;
 
-	$unpaid_commissions = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $unpaid_paged ) );
-	$paid_commissions   = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
-	$revoked_commissions= eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
+	$unpaid_commissions  = eddc_get_unpaid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $unpaid_paged ) );
+	$paid_commissions    = eddc_get_paid_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
+	$revoked_commissions = eddc_get_revoked_commissions( array( 'user_id' => $user_id, 'number' => $per_page, 'paged' => $paid_paged ) );
 
-	$total_unpaid       = eddc_count_user_commissions( $user_id, 'unpaid' );
-	$total_paid         = eddc_count_user_commissions( $user_id, 'paid' );
-	$total_revoked      = eddc_count_user_commissions( $user_id, 'revoked' );
+	$total_unpaid        = eddc_count_user_commissions( $user_id, 'unpaid' );
+	$total_paid          = eddc_count_user_commissions( $user_id, 'paid' );
+	$total_revoked       = eddc_count_user_commissions( $user_id, 'revoked' );
 
-	$unpaid_offset      = $per_page * ( $unpaid_paged - 1 );
-	$unpaid_total_pages = ceil( $total_unpaid / $per_page );
+	$unpaid_offset       = $per_page * ( $unpaid_paged - 1 );
+	$unpaid_total_pages  = ceil( $total_unpaid / $per_page );
 
-	$paid_offset        = $per_page * ( $paid_paged - 1 );
-	$paid_total_pages   = ceil( $total_paid / $per_page );
+	$paid_offset         = $per_page * ( $paid_paged - 1 );
+	$paid_total_pages    = ceil( $total_paid / $per_page );
 
-	$revoked_offset     = $per_page * ( $revoked_paged - 1 );
-	$revoked_total_pages= ceil( $total_revoked / $per_page );
+	$revoked_offset      = $per_page * ( $revoked_paged - 1 );
+	$revoked_total_pages = ceil( $total_revoked / $per_page );
 
-	$page_prefix        = false !== strpos( edd_get_current_page_url(), '?' ) ? '&' : '?';
+	$page_prefix         = false !== strpos( edd_get_current_page_url(), '?' ) ? '&' : '?';
 
-	$stats 				= '';
+	$stats = '';
 	if( eddc_user_has_commissions( $user_id ) ) : // only show tables if user has commission data
 		ob_start(); ?>
 			<div id="edd_user_commissions">
@@ -108,13 +181,18 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<tr class="edd_user_commission_row">
 									<?php
 									do_action( 'eddc_user_commissions_unpaid_row_begin', $commission );
-									$item_name 			= get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
-									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
-									$amount 			= $commission_info['amount'];
-									$rate 				= $commission_info['rate'];
+									$item_name       = get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
+									$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+									$amount          = $commission_info['amount'];
+									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 									<?php do_action( 'eddc_user_commissions_unpaid_row_end', $commission ); ?>
@@ -166,13 +244,18 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<tr class="edd_user_commission_row">
 									<?php
 									do_action( 'eddc_user_commissions_paid_row_begin', $commission );
-									$item_name 			= get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
-									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
-									$amount 			= $commission_info['amount'];
-									$rate 				= $commission_info['rate'];
+									$item_name       = get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
+									$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+									$amount          = $commission_info['amount'];
+									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 									<?php do_action( 'eddc_user_commissions_paid_row_end', $commission ); ?>
@@ -224,13 +307,18 @@ function eddc_user_commissions( $user_id = 0 ) {
 								<tr class="edd_user_commission_row">
 									<?php
 									do_action( 'eddc_user_commissions_revoked_row_begin', $commission );
-									$item_name 			= get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
-									$commission_info 	= get_post_meta( $commission->ID, '_edd_commission_info', true );
-									$amount 			= $commission_info['amount'];
-									$rate 				= $commission_info['rate'];
+									$item_name       = get_the_title( get_post_meta( $commission->ID, '_download_id', true ) );
+									$commission_info = get_post_meta( $commission->ID, '_edd_commission_info', true );
+									$amount          = $commission_info['amount'];
+									$rate            = $commission_info['rate'];
 									?>
 									<td class="edd_commission_item"><?php echo esc_html( $item_name ); ?></td>
-									<td class="edd_commission_amount"><?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?></td>
+									<td class="edd_commission_amount">
+										<?php echo edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) ); ?>
+										<?php if ( eddc_commission_is_renewal( $commission->ID ) ) : ?>
+											&nbsp;&olarr;
+										<?php endif; ?>
+									</td>
 									<td class="edd_commission_rate"><?php echo $rate . '%'; ?></td>
 									<td class="edd_commission_date"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $commission->post_date ) ); ?></td>
 									<?php do_action( 'eddc_user_commissions_revoked_row_end', $commission ); ?>
@@ -243,6 +331,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 						<?php endif; ?>
 						</tbody>
 					</table>
+					<div id="edd_user_commissions_revoked_total"><?php _e('Total revoked:', 'eddc');?>&nbsp;<?php echo edd_currency_filter( edd_format_amount( eddc_get_revoked_totals( $user_id ) ) ); ?></div>
 
 					<div id="edd_commissions_revoked_pagination" class="navigation">
 					<?php
@@ -260,15 +349,29 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 				</div><!--end #edd_user_commissions_revoked-->
 
+				<?php if ( ! empty( $total_paid ) ) : ?>
 				<div id="edd_commissions_export">
+					<?php
+					$args = array(
+						'user_id' => $user_id,
+						'number'  => 1,
+						'orderby' => 'date',
+						'order'   => 'ASC',
+					);
+
+					$first_commission = eddc_get_paid_commissions( $args );
+					$first_year       = date( 'Y', strtotime( $first_commission[0]->post_date ) );
+					$years_back       = date( 'Y', current_time( 'timestamp' ) ) - $first_year;
+					?>
 					<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
 					<form method="post" action="<?php echo home_url(); ?>">
 						<?php echo EDD()->html->month_dropdown(); ?>
-						<?php echo EDD()->html->year_dropdown(); ?>
+						<?php echo EDD()->html->year_dropdown( 'year', 0, $years_back, 0 ); ?>
 						<input type="hidden" name="edd_action" value="generate_commission_export"/>
 						<input type="submit" class="edd-submit button" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
 					</form><br/>
 				</div>
+				<?php endif; ?>
 
 
 			</div><!--end #edd_user_commissions-->
@@ -279,3 +382,179 @@ function eddc_user_commissions( $user_id = 0 ) {
 	return $stats;
 }
 add_shortcode( 'edd_commissions', 'eddc_user_commissions' );
+
+function eddc_user_commissions_graph( $user_id ) {
+
+	if( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
+
+	// If still empty, exit
+	if( empty( $user_id ) ) {
+		return;
+	}
+
+	$graph = '';
+	if( eddc_user_has_commissions( $user_id ) ) :
+		include_once( EDD_PLUGIN_DIR . 'includes/admin/reporting/class-edd-graph.php' );
+		global $post;
+		$month = ! isset( $_GET['month'] ) ? date( 'n' ) : absint( $_GET['month'] );
+		$year  = ! isset( $_GET['year'] )  ? date( 'Y' ) : absint( $_GET['year' ] );
+		$num_of_days = cal_days_in_month( CAL_GREGORIAN, $month, $year );
+
+		ob_start(); ?>
+		<script>
+		if ( typeof( edd_vars ) === 'undefined' ) {
+			edd_vars = {
+				"currency": "<?php echo edd_get_currency(); ?>",
+				"currency_sign": "<?php echo edd_currency_filter(""); ?>",
+				"currency_pos": "<?php echo edd_get_option( 'currency_position', 'before' ); ?>",
+				"currency_decimals": "<?php echo edd_currency_decimal_filter(); ?>",
+			};
+		}
+		</script>
+		<style>
+		.tickLabel {
+			width: 30px;
+		}
+		.legend > table {
+			width: auto;
+		}
+		</style>
+		<div id="eddc-dashboard-graphs">
+
+			<h4><?php _e( 'Commission Stats', 'eddc' ); ?></h4>
+			<form id="edd-graphs-filter" method="get" action="<?php echo get_the_permalink( $post->ID ); ?>#eddc-dashboard-graphs">
+				<div class="tablenav top">
+					<div class="actions">
+						<?php echo EDD()->html->month_dropdown( 'month', $month ); ?>
+						<?php echo EDD()->html->year_dropdown( 'year', $year ); ?>
+
+						<input type="hidden" name="edd_action" value="filter_reports" />
+						<input type="submit" class="button-secondary" value="<?php _e( 'Filter', 'eddc' ); ?>"/>
+					</div>
+				</div>
+			</form>
+			<?php
+
+			$args = array(
+				'number'         => -1,
+				'query_args'     => array(
+					'date_query' => array(
+						'after'       => array(
+							'year'    => $year,
+							'month'   => $month,
+							'day'     => 1,
+						),
+						'before'      => array(
+							'year'    => $year,
+							'month'   => $month,
+							'day'     => $num_of_days,
+						),
+						'inclusive' => true
+					)
+				)
+			);
+
+			$commissions = eddc_get_commissions( $args );
+
+			$grouped_data = array();
+			if ( ! empty( $commissions ) ) {
+				foreach ( $commissions as $commission ) {
+					$key             = date( 'njY', strtotime( $commission->post_date ) );
+					$commission_meta = get_post_meta( $commission->ID, '_edd_commission_info', true );
+
+					if ( ! isset( $grouped_data[ $key ] ) ) {
+						$grouped_data[ $key ] = array();
+						$grouped_data[ $key ]['earnings'] = (float) $commission_meta['amount'];
+						$grouped_data[ $key ]['sales']    = 1;
+					} else {
+						$grouped_data[ $key ]['earnings'] += (float) $commission_meta['amount'];
+						$grouped_data[ $key ]['sales']++;
+					}
+
+				}
+			}
+
+			$d = 1;
+			while ( $d <= $num_of_days ) {
+
+				$key      = $month . $d . $year;
+				$date     = mktime( 0, 0, 0, $month, $d, $year ) * 1000;
+				$sales    = isset( $grouped_data[ $key ]['sales'] )    ? $grouped_data[ $key ]['sales']    : 0;
+				$earnings = isset( $grouped_data[ $key ]['earnings'] ) ? round( $grouped_data[ $key ]['earnings'], edd_currency_decimal_filter() ) : 0;
+
+				$sales_data[]    = array( $date, $sales );
+				$earnings_data[] = array( $date, $earnings );
+				$d++;
+
+			}
+
+			$data = array(
+				__( 'Earnings', 'edd' ) => $earnings_data,
+				__( 'Sales', 'edd' )    => $sales_data
+			);
+			?>
+
+			<div class="inside">
+				<?php
+				$graph = new EDD_Graph( $data );
+				$graph->set( 'x_mode', 'time' );
+				$graph->set( 'multiple_y_axes', true );
+				$graph->display();
+				?>
+			</div>
+
+		</div>
+		<?php
+		$graph = apply_filters( 'edd_user_commissions_graph_display', ob_get_clean() );
+	endif;
+	return $graph;
+}
+add_shortcode( 'edd_commissions_graph', 'eddc_user_commissions_graph' );
+
+/**
+ * Display the field to edit the PayPal email address in the profile editor
+ *
+ * @since  3.2
+ * @return void
+ */
+function eddc_profile_editor_paypal() {
+	$user_id = get_current_user_id();
+	if ( ! eddc_user_has_commissions( $user_id ) ) {
+		return;
+	}
+
+	$custom_paypal = get_user_meta( $user_id, 'eddc_user_paypal', true );
+	$email         = is_email( $custom_paypal ) ? $custom_paypal : '';
+	?>
+	<p>
+		<strong><?php _e( 'Commissions', 'eddc' ); ?></strong><br />
+		<label for="eddc-paypal-email"><?php _e( 'PayPal Email Address', 'eddc' ); ?></label>
+		<input name="eddc_paypal_email" id="eddc-paypal-email" class="text edd-input" type="email" value="<?php echo esc_attr( $email ); ?>" />
+	</p>
+	<?php
+}
+add_action( 'edd_profile_editor_after_password', 'eddc_profile_editor_paypal', 9999 );
+
+/**
+ * Save and sanitize the PayPal email address from the profile editor
+ *
+ * @since  3.2
+ * @param  int $user_id  The User ID being edited
+ * @param  array $userdata The array of user info
+ * @return void
+ */
+function eddc_update_paypal_email( $user_id, $userdata ) {
+	if ( ! empty( $_POST['eddc_paypal_email'] ) ) {
+		$email = sanitize_text_field( $_POST['eddc_paypal_email'] );
+		if ( ! is_email( $email ) ) {
+			edd_set_error( 'eddc-invalid-paypal-email', __( 'PayPal email address must be a valid email address', 'eddc' ) );
+		} else {
+			$success = update_user_meta( $user_id, 'eddc_user_paypal', $email );
+		}
+	} else {
+		delete_user_meta( $user_id, 'eddc_user_paypal' );
+	}
+}
+add_action( 'edd_pre_update_user_profile', 'eddc_update_paypal_email', 10, 2 );
