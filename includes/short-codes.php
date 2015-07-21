@@ -13,7 +13,7 @@ function eddc_user_product_list() {
 
 	ob_start(); ?>
 	<div id="edd_commissioned_products">
-		<h3 class="edd_commissioned_products_header"><?php _e('Your Items', 'eddc'); ?></h3>
+		<h3 class="edd_commissioned_products_header"><?php _e('Products', 'eddc'); ?></h3>
 		<table id="edd_commissioned_products_table">
 			<thead>
 				<tr>
