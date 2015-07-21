@@ -363,7 +363,7 @@ function eddc_user_commissions( $user_id = 0 ) {
 					$first_year       = date( 'Y', strtotime( $first_commission[0]->post_date ) );
 					$years_back       = date( 'Y', current_time( 'timestamp' ) ) - $first_year;
 					?>
-					<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
+					<h3 class="edd_user_commissions_header"><?php _e( 'Export Paid Commissions', 'eddc' ); ?></h3>
 					<form method="post" action="<?php echo home_url(); ?>">
 						<?php echo EDD()->html->month_dropdown(); ?>
 						<?php echo EDD()->html->year_dropdown( 'year', 0, $years_back, 0 ); ?>
