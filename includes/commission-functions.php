@@ -711,23 +711,20 @@ function eddc_generate_payout_file( $data ) {
 }
 add_action( 'edd_generate_payouts', 'eddc_generate_payout_file' );
 
-
 function eddc_generate_user_export_file( $data ) {
 	
-	$user_id = isset( $data['user_id'] ) ? intval( $data['user_id'] ) : get_current_user_id();
+	$user_id = ! empty( $data['user_id'] ) ? intval( $data['user_id'] ) : get_current_user_id();
 	
-	if ( ( ! is_user_logged_in() || ! eddc_user_has_commissions() ) && !isset( $data['user_id'] ) {
+	if ( ( empty( $user_id ) || ! eddc_user_has_commissions( $user_id ) ) ) {
 		return;
 	}
 
 	include_once EDDC_PLUGIN_DIR . 'includes/class-commissions-export.php';
-
 	$export = new EDD_Commissions_Export();
 	$export->user_id = $user_id;
 	$export->year    = $data['year'];
 	$export->month   = $data['month'];
 	$export->export();
-
 }
 add_action( 'edd_generate_commission_export', 'eddc_generate_user_export_file' );
 
