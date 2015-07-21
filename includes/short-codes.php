@@ -1,15 +1,25 @@
 <?php
 
-function eddc_user_product_list() {
+function eddc_user_product_list( $user_id = 0 ) {
 
-	$user_id  = get_current_user_id();
 	$products = eddc_get_download_ids_of_user( $user_id );
 
-	if( ! is_user_logged_in() )
-		return;
+	if( empty( $user_id ) ) {
+		$user_id = get_current_user_id();
+	}
 
-	if( empty( $products ) )
+	if ( is_array( $user_id ) ){
+		$user_id = $user_id[0];
+	}
+
+	// If still empty, exit
+	if( empty( $user_id ) ) {
 		return;
+	}
+
+	if( empty( $products ) ){
+		return;
+	}
 
 	ob_start(); ?>
 	<div id="edd_commissioned_products">
@@ -51,6 +61,10 @@ function eddc_user_commissions_overview( $user_id = 0 ) {
 
 	if( empty( $user_id ) ) {
 		$user_id = get_current_user_id();
+	}
+
+	if ( is_array( $user_id ) ){
+		$user_id = $user_id[0];
 	}
 
 	// If still empty, exit
@@ -124,6 +138,10 @@ function eddc_user_commissions( $user_id = 0 ) {
 
 	if( empty( $user_id ) ) {
 		$user_id = get_current_user_id();
+	}
+
+	if ( is_array( $user_id ) ){
+		$user_id = $user_id[0];
 	}
 
 	// If still empty, exit
@@ -383,10 +401,14 @@ function eddc_user_commissions( $user_id = 0 ) {
 }
 add_shortcode( 'edd_commissions', 'eddc_user_commissions' );
 
-function eddc_user_commissions_graph( $user_id ) {
+function eddc_user_commissions_graph( $user_id = 0 ) {
 
 	if( empty( $user_id ) ) {
 		$user_id = get_current_user_id();
+	}
+
+	if ( is_array( $user_id ) ){
+		$user_id = $user_id[0];
 	}
 
 	// If still empty, exit
