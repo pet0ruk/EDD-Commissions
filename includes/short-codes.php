@@ -429,16 +429,16 @@ function eddc_user_commissions( $user_id = 0 ) {
 					$first_commission = eddc_get_paid_commissions( $args );
 					$first_year       = date( 'Y', strtotime( $first_commission[0]->post_date ) );
 					$years_back       = date( 'Y', current_time( 'timestamp' ) ) - $first_year;
-					$url		  = is_admin() ? admin_url( 'index.php' ) : home_url();
+					$url              = is_admin() ? admin_url( 'index.php' ) : home_url();
 					?>
-					<p><strong><?php _e( 'Export Paid Commissions', 'eddc' ); ?></strong></p>
+					<h3><?php _e( 'Export Paid Commissions', 'eddc' ); ?></h3>
 					<form method="post" action="<?php echo $url; ?>">
 						<?php echo EDD()->html->month_dropdown(); ?>
 						<?php echo EDD()->html->year_dropdown( 'year', 0, $years_back, 0 ); ?>
 						<input type="hidden" name="user_id" value="<?php echo $user_id; ?>"/>
 						<input type="hidden" name="edd_action" value="generate_commission_export"/>
 						<input type="submit" class="edd-submit button" value="<?php _e( 'Download CSV', 'eddc' ); ?>"/>
-					</form><br/>
+					</form>
 				</div>
 				<?php endif; ?>
 
