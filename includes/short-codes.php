@@ -40,9 +40,14 @@ function eddc_user_product_list( $user_id = 0 ) {
 		return;
 	}
 
+	$header_text = __( 'Your Products', 'eddc' );
+	if ( $user_id != get_current_user_id() ) {
+		$user_info = get_userdata( $user_id );
+		$header_text = sprintf( __( '%s\'s Products', 'eddc' ), $user_info->display_name );
+	}
 	ob_start(); ?>
 	<div id="edd_commissioned_products">
-		<h3 class="edd_commissioned_products_header"><?php _e('Your Items', 'eddc'); ?></h3>
+		<h3 class="edd_commissioned_products_header"><?php echo $header_text; ?></h3>
 		<table id="edd_commissioned_products_table">
 			<thead>
 				<tr>
