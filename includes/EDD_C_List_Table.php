@@ -15,6 +15,12 @@ class EDD_C_List_Table extends WP_List_Table {
 	 */
 	public $per_page = 10;
 
+	/**
+	 * Term counts
+	 * @var null
+	 */
+	public $term_counts = null;
+
 
 	function __construct() {
 		global $status, $page;
@@ -111,13 +117,15 @@ class EDD_C_List_Table extends WP_List_Table {
 		if ( ! empty( $user_id ) ) {
 			$base = add_query_arg( array( 'user' => $user_id, $base ) );
 		}
-		$current = isset( $_GET['view'] ) ? $_GET['view'] : '';
+
+		$current       = isset( $_GET['view'] ) ? $_GET['view'] : '';
+		$status_counts = $this->get_commission_status_counts();
 
 		$views = array(
-			'all'       => sprintf( '<a href="%s"%s>%s</a>', esc_url( remove_query_arg( 'view', $base ) ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ) ),
-			'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'unpaid', $base ) ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ) ),
-			'revoked'   => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'revoked', $base ) ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ) ),
-			'paid'      => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'paid', $base ) ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ) ),
+			'all'       => sprintf( '<a href="%s"%s>%s</a>', esc_url( remove_query_arg( 'view', $base ) ), $current === 'all' || $current == '' ? ' class="current"' : '', __( 'All', 'eddc' ), $status_counts['all'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['all'] ),
+			'unpaid'    => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'unpaid', $base ) ), $current === 'unpaid' ? ' class="current"' : '', __( 'Unpaid', 'eddc' ), $status_counts['unpaid'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['unpaid'] ),
+			'revoked'   => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'revoked', $base ) ), $current === 'revoked' ? ' class="current"' : '', __( 'Revoked', 'eddc' ), $status_counts['revoked'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['revoked'] ),
+			'paid'      => sprintf( '<a href="%s"%s>%s</a>', esc_url( add_query_arg( 'view', 'paid', $base ) ), $current === 'paid' ? ' class="current"' : '', __( 'Paid', 'eddc' ), $status_counts['paid'] ) . sprintf( _x( '(%d)', 'post count', 'eddc' ), $status_counts['paid'] ),
 		);
 		return $views;
 	}
@@ -346,6 +354,11 @@ class EDD_C_List_Table extends WP_List_Table {
 	}
 
 	public function get_commission_status_counts() {
+
+		if ( ! is_null( $this->term_counts ) ) {
+			return $this->term_counts;
+		}
+
 		$term_counts = array(
 			'paid'    => 0,
 			'unpaid'  => 0,
@@ -385,7 +398,9 @@ class EDD_C_List_Table extends WP_List_Table {
 			$term_counts['all'] = $total_term_count;
 		}
 
-		return $term_counts;
+		$this->term_counts = $term_counts;
+
+		return $this->term_counts;
 	}
 
 
