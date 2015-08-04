@@ -346,7 +346,6 @@ class EDD_C_List_Table extends WP_List_Table {
 	}
 
 	public function get_commission_status_counts() {
-		$found_terms = get_terms( 'edd_commission_status' );
 		$term_counts = array(
 			'paid'    => 0,
 			'unpaid'  => 0,
@@ -354,14 +353,37 @@ class EDD_C_List_Table extends WP_List_Table {
 			'all'     => 0,
 		);
 
-		$total_term_count = 0;
-		foreach ( $found_terms as $term ) {
-			if ( array_key_exists( $term->slug, $term_counts ) ) {
-				$term_counts[ $term->slug ] = $term->count;
-				$total_term_count += $term->count;
+		$user = $this->get_filtered_user();
+		if ( ! empty( $user ) ) {
+			$args = array(
+				'number'  => -1,
+				'user_id' => $this->get_filtered_user(),
+			);
+
+			$paid    = eddc_get_paid_commissions( $args );
+			$unpaid  = eddc_get_unpaid_commissions( $args );
+			$revoked = eddc_get_revoked_commissions( $args );
+
+			$term_counts = array(
+				'paid'    => ! empty( $paid )    ? count( $paid )    : 0,
+				'unpaid'  => ! empty( $unpaid )  ? count( $unpaid )  : 0,
+				'revoked' => ! empty( $revoked ) ? count( $revoked ) : 0,
+			);
+
+			$term_counts['all'] = $term_counts['paid'] + $term_counts['unpaid'] + $term_counts['revoked'];
+
+		} else {
+			$found_terms = get_terms( 'edd_commission_status' );
+
+			$total_term_count = 0;
+			foreach ( $found_terms as $term ) {
+				if ( array_key_exists( $term->slug, $term_counts ) ) {
+					$term_counts[ $term->slug ] = $term->count;
+					$total_term_count += $term->count;
+				}
 			}
+			$term_counts['all'] = $total_term_count;
 		}
-		$term_counts['all'] = $total_term_count;
 
 		return $term_counts;
 	}
