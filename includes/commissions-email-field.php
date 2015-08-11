@@ -15,7 +15,6 @@ class FES_Commissions_Email_Field extends FES_Field {
 			'login'            => false,
 		),
 		'position'    => 'extension',
-		'phoenix'     => true,
 		'permissions' => array(
 			'can_remove_from_formbuilder' => true,
 			'can_change_meta_key'         => false,
@@ -23,6 +22,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 		),
 		'template'	  => 'eddc_user_paypal',
 		'title'       => 'PayPal Email', // l10n on output
+		'phoenix'	   => true,
 	);
 
 	/** @var array Characteristics are things that can change from field to field of the same field type. Like the placeholder between two email fields. Stored in db. */
@@ -30,8 +30,8 @@ class FES_Commissions_Email_Field extends FES_Field {
 		'name'        => 'eddc_user_paypal',
 		'template'	  => 'eddc_user_paypal',
 		'is_meta'     => true,  // in object as public (bool) $meta;
-		'public'      => true,
-		'required'    => false,
+		'public'      => false,
+		'required'    => true,
 		'label'       => 'PayPal Email',
 		'css'         => '',
 		'default'     => '',
