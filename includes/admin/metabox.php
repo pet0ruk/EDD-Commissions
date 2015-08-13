@@ -101,8 +101,10 @@ function eddc_download_meta_box_save( $post_id ) {
 			if( ! empty( $new['amount'] ) ) {
 				$new['amount'] = str_replace( '%', '', $new['amount'] );
 				$new['amount'] = str_replace( '$', '', $new['amount'] );
-				if ( $new['amount'] < 1 )
+
+				if ( $new['amount'] < 1 && 'percentage' === $_POST['edd_commission_settings']['type'] ) {
 					$new['amount'] = $new['amount'] * 100;
+				}
 				$new['amount'] = trim( $new['amount'] );
 			}
 		}
