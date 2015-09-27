@@ -52,6 +52,12 @@ class FES_Commissions_Email_Field extends FES_Field {
 		add_filter( 'fes_templates_to_exclude_save_registration_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
 	}
 
+	public function set_title() {
+		$title = _x( 'PayPal Email', 'FES Field title translation', 'edd_fes' );
+		$title = apply_filters( 'fes_' . $this->name() . '_field_title', $title );
+		$this->supports['title'] = $title;		
+	}
+	
 	public function exclude_from_admin( $fields ){
 		array_push( $fields, 'eddc_user_paypal' );
 		return $fields;
