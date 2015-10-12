@@ -90,13 +90,13 @@ class FES_Commissions_Email_Field extends FES_Field {
 	}
 
 	/** Returns the commissions paypal to render a field for the formbuilder */
-	public function render_formbuilder_field( $index ) {
+	public function render_formbuilder_field( $index, $insert = false ) {
 		$removable = $this->can_remove_from_formbuilder();
         ob_start(); ?>
-        <li class="user_bio">
+        <li class="eddc_user_paypal">
             <?php $this->legend( $this->title(), $this->get_label(), $removable ); ?>
             <?php FES_Formbuilder_Templates::hidden_field( "[$index][template]", $this->template() ); ?>
-            <div class="fes-form-holder">
+			<?php FES_Formbuilder_Templates::field_div( $index, $this->name(), $this->characteristics, $insert ); ?>
                 <?php FES_Formbuilder_Templates::public_radio( $index, $this->characteristics, $this->form_name ); ?>
                 <?php FES_Formbuilder_Templates::standard( $index, $this ); ?>
                 <?php FES_Formbuilder_Templates::common_text( $index, $this->characteristics ); ?>
