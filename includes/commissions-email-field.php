@@ -81,12 +81,18 @@ class FES_Commissions_Email_Field extends FES_Field {
 		$user_id   = apply_filters( 'fes_render_commissions_email_field_user_id_frontend', $user_id, $this->id );
 		$readonly  = apply_filters( 'fes_render_commissions_email_field_readonly_frontend', $readonly, $user_id, $this->id );
 		$value     = $this->get_field_value_frontend( $this->save_id, $user_id, $readonly );
-        ob_start(); ?>
+		$output        = '';
+		$output     .= sprintf( '<fieldset class="fes-el %s %s %s">', $this->template(), $this->name(), $this->css() );
+		$output    .= $this->label( $readonly );
+		$data_type = 'select';
+		ob_start(); ?>
         <div class="fes-fields">
             <input id="fes-<?php echo $this->name(); ?>" type="email" class="email" data-required="<?php echo $this->required(); ?>" data-type="text"<?php $this->required_html5( $readonly ); ?> name="<?php echo esc_attr( $this->name() ); ?>" placeholder="<?php echo esc_attr( $this->characteristics[ 'placeholder' ] ); ?>" value="<?php echo esc_attr( $value ) ?>" size="<?php echo esc_attr( $this->characteristics[ 'size' ] ) ?>" />
         </div>
         <?php
-		return ob_get_clean();
+		$output .= ob_get_clean();
+		$output .= '</fieldset>';
+		return $output;
 	}
 
 	/** Returns the commissions paypal to render a field for the formbuilder */
