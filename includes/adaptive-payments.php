@@ -42,9 +42,23 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 			$price = $item['subtotal'];
 
 		} else {
-		
-			$price = $item['price'];
 
+			if ( 'total_pre_tax' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
+
+				$price = $item['price'] - $item['tax'];
+
+			} else {
+
+				$price = $item['price'];
+
+			}
+		
+		}
+
+		if( ! empty( $item['fees'] ) ) {
+			foreach( $item['fees'] as $fee ) {
+				$price += $fee['amount'];
+			}
 		}
 
 		foreach ( $recipients as $recipient ) {
