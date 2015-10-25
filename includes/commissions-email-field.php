@@ -7,6 +7,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 	/** @var array Supports are things that are the same for all fields of a field type. Like whether or not a field type supports jQuery Phoenix. Stored in obj, not db. */
 	public $supports = array(
 		'multiple'    => false,
+		'is_meta'     => true,  // in object as public (bool) $meta;
 		'forms'       => array(
 			'registration'     => true,
 			'submission'       => false,
@@ -29,7 +30,6 @@ class FES_Commissions_Email_Field extends FES_Field {
 	public $characteristics = array(
 		'name'        => 'eddc_user_paypal',
 		'template'	  => 'eddc_user_paypal',
-		'is_meta'     => true,  // in object as public (bool) $meta;
 		'public'      => false,
 		'required'    => true,
 		'label'       => 'PayPal Email',
@@ -78,18 +78,19 @@ class FES_Commissions_Email_Field extends FES_Field {
 			$readonly = $this->readonly;
 		}
 
-		$user_id   = apply_filters( 'fes_render_commissions_email_field_user_id_frontend', $user_id, $this->id );
-		$readonly  = apply_filters( 'fes_render_commissions_email_field_readonly_frontend', $readonly, $user_id, $this->id );
+		$user_id   = apply_filters( 'fes_render_email_field_user_id_frontend', $user_id, $this->id );
+		$readonly  = apply_filters( 'fes_render_email_field_readonly_frontend', $readonly, $user_id, $this->id );
 		$value     = $this->get_field_value_frontend( $this->save_id, $user_id, $readonly );
+		$required  = $this->required( $readonly );
+		
 		$output        = '';
-		$output     .= sprintf( '<fieldset class="fes-el %s %s %s">', $this->template(), $this->name(), $this->css() );
+		$output     .= sprintf( '<fieldset class="fes-el %1s %2s %3s">', $this->template(), $this->name(), $this->css() );
 		$output    .= $this->label( $readonly );
-		$data_type = 'select';
 		ob_start(); ?>
-        <div class="fes-fields">
-            <input id="fes-<?php echo $this->name(); ?>" type="email" class="email" data-required="<?php echo $this->required(); ?>" data-type="text"<?php $this->required_html5( $readonly ); ?> name="<?php echo esc_attr( $this->name() ); ?>" placeholder="<?php echo esc_attr( $this->characteristics[ 'placeholder' ] ); ?>" value="<?php echo esc_attr( $value ) ?>" size="<?php echo esc_attr( $this->characteristics[ 'size' ] ) ?>" />
-        </div>
-        <?php
+		<div class="fes-fields">
+			<input id="<?php echo $this->name(); ?>" type="email" class="email" data-required="<?php echo $required; ?>" data-type="text"<?php $this->required_html5( $readonly ); ?> name="<?php echo esc_attr( $this->name() ); ?>" placeholder="<?php echo esc_attr( $this->placeholder() ); ?>" value="<?php echo esc_attr( $value ) ?>" size="<?php echo esc_attr( $this->size() ) ?>" />
+		</div>
+		<?php
 		$output .= ob_get_clean();
 		$output .= '</fieldset>';
 		return $output;
@@ -113,25 +114,27 @@ class FES_Commissions_Email_Field extends FES_Field {
 	}
 
 	public function validate( $values = array(), $save_id = -2, $user_id = -2 ) {
-        $name = $this->name();
-		if ( !empty( $values[ $name ] ) ){
+		$name = $this->name();
+		$return_value = false;
+		if ( !empty( $values[ $name ] ) ) {
 			// if the value is set
-			if ( filter_var($url, FILTER_VALIDATE_EMAIL) === false ){
+			if ( filter_var( $values[ $name ], FILTER_VALIDATE_EMAIL ) === false ) {
 				// if that's not a email address
-				return __( 'Please enter a valid email address', 'edd_fes' );
+				$return_value = __( 'Please enter a valid email address', 'edd_fes' );
 			}
-		} else { 
+		} else {
 			// if the url is required but isn't present
-			if ( $this->required() ){
-				return __( 'Please fill out this field.', 'edd_fes' );
+			if ( $this->required() ) {
+				$return_value = __( 'Please fill out this field.', 'edd_fes' );
 			}
 		}
-        return apply_filters( 'fes_validate_' . $this->template() . '_field', false, $values, $name, $save_id, $user_id ); 
+		return apply_filters( 'fes_validate_' . $this->template() . '_field', $return_value, $values, $name, $save_id, $user_id );
 	}
-	
-	public function sanitize( $values = array(), $save_id = -2, $user_id = -2 ){
-        $name = $this->name();
-		if ( !empty( $values[ $name ] ) ){
+
+	public function sanitize( $values = array(), $save_id = -2, $user_id = -2 ) {
+		$name = $this->name();
+		if ( !empty( $values[ $name ] ) ) {
+			$values[ $name ] = trim( $values[ $name ] );
 			$values[ $name ] = filter_var( $values[ $name ], FILTER_SANITIZE_EMAIL );
 			$values[ $name ] = sanitize_email( $values[ $name ] );
 		}
