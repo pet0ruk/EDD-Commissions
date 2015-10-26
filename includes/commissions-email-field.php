@@ -97,7 +97,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 	}
 
 	/** Returns the commissions paypal to render a field for the formbuilder */
-	public function render_formbuilder_field( $index, $insert = false ) {
+	public function render_formbuilder_field( $index = -2, $insert = false ) {
 		$removable = $this->can_remove_from_formbuilder();
         ob_start(); ?>
         <li class="eddc_user_paypal">
