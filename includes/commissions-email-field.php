@@ -40,32 +40,38 @@ class FES_Commissions_Email_Field extends FES_Field {
 		'placeholder' => '',
 	);
 
-	public function extending_constructor( ){
-		// exclude from profile form in admin
-		add_filter( 'fes_templates_to_exclude_render_profile_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
-		add_filter( 'fes_templates_to_exclude_validate_profile_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
-		add_filter( 'fes_templates_to_exclude_save_profile_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
-
-		// exclude from registration form in admin
-		add_filter( 'fes_templates_to_exclude_render_registration_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
-		add_filter( 'fes_templates_to_exclude_validate_registration_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
-		add_filter( 'fes_templates_to_exclude_save_registration_form_admin', array( $this, 'exclude_from_admin' ), 10, 1  );
-	}
-
 	public function set_title() {
 		$title = _x( 'PayPal Email', 'FES Field title translation', 'edd_fes' );
 		$title = apply_filters( 'fes_' . $this->name() . '_field_title', $title );
 		$this->supports['title'] = $title;		
 	}
 	
-	public function exclude_from_admin( $fields ){
-		array_push( $fields, 'eddc_user_paypal' );
-		return $fields;
-	}
-
 	/** Returns the HTML to render a field in admin */
 	public function render_field_admin( $user_id = -2, $readonly = -2 ) {
-		return ''; // don't render field in the admin
+		if ( $user_id === -2 ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( $readonly === -2 ) {
+			$readonly = $this->readonly;
+		}
+
+		$user_id   = apply_filters( 'fes_render_commissions_email_field_user_id_admin', $user_id, $this->id );
+		$readonly  = apply_filters( 'fes_render_commissions_email_field_readonly_admin', $readonly, $user_id, $this->id );
+		$value     = $this->get_field_value_frontend( $this->save_id, $user_id, $readonly );
+		$required  = $this->required( $readonly );
+		
+		$output        = '';
+		$output     .= sprintf( '<fieldset class="fes-el %1s %2s %3s">', $this->template(), $this->name(), $this->css() );
+		$output    .= $this->label( $readonly );
+		ob_start(); ?>
+		<div class="fes-fields">
+			<input id="<?php echo $this->name(); ?>" type="email" class="email" data-required="<?php echo $required; ?>" data-type="text"<?php $this->required_html5( $readonly ); ?> name="<?php echo esc_attr( $this->name() ); ?>" placeholder="<?php echo esc_attr( $this->placeholder() ); ?>" value="<?php echo esc_attr( $value ) ?>" size="<?php echo esc_attr( $this->size() ) ?>" />
+		</div>
+		<?php
+		$output .= ob_get_clean();
+		$output .= '</fieldset>';
+		return $output;
 	}
 
 	/** Returns the HTML to render a field in frontend */
