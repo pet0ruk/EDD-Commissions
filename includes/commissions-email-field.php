@@ -58,7 +58,7 @@ class FES_Commissions_Email_Field extends FES_Field {
 
 		$user_id   = apply_filters( 'fes_render_commissions_email_field_user_id_admin', $user_id, $this->id );
 		$readonly  = apply_filters( 'fes_render_commissions_email_field_readonly_admin', $readonly, $user_id, $this->id );
-		$value     = $this->get_field_value_frontend( $this->save_id, $user_id, $readonly );
+		$value     = $this->get_field_value_admin( $this->save_id, $user_id, $readonly );
 		$required  = $this->required( $readonly );
 		
 		$output        = '';
