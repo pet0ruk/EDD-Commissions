@@ -67,11 +67,11 @@ add_filter( 'edd_customer_views', 'eddc_customer_view', 10, 1 );
 function eddc_customer_commissions_view( $customer ) {
 
 	?>
-	<div class="customer-notes-header">
+	<div class="edd-item-notes-header">
 		<?php echo get_avatar( $customer->email, 30 ); ?> <span><?php echo $customer->name; ?></span>
 	</div>
 
-	<div id="customer-stats-wrapper" class="customer-section">
+	<div id="edd-item-stats-wrapper" class="customer-section">
 		<ul>
 			<li>
 				<span class="dashicons dashicons-chart-area"></span>
@@ -100,7 +100,7 @@ function eddc_customer_commissions_view( $customer ) {
 
 	<?php $downloads = eddc_get_download_ids_of_user( $customer->user_id ); ?>
 	<?php if ( false !== $downloads ) : ?>
-	<div id="customer-tables-wrapper" class="customer-section">
+	<div id="edd-item-tables-wrapper" class="customer-section">
 		<h3><?php printf( __( 'Commissioned %s', 'eddc' ), edd_get_label_plural() ); ?></h3>
 
 		<table class="wp-list-table widefat striped downloads">
@@ -143,7 +143,7 @@ function eddc_customer_commissions_view( $customer ) {
 	</div>
 	<?php endif; ?>
 
-	<div id="customer-tables-wrapper" class="customer-section">
+	<div id="edd-item-tables-wrapper" class="customer-section">
 
 		<h3><?php _e( 'Recent Unpaid Commissions', 'edd' ); ?></h3>
 		<?php
