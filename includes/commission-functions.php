@@ -28,6 +28,8 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	$payment_data = edd_get_payment_meta( $payment_id );
 	$user_info    = maybe_unserialize( $payment_data['user_info'] );
 	$cart_details = edd_get_payment_meta_cart_details( $payment_id );
+	$calc_base    = edd_get_option( 'edd_commissions_calc_base', 'subtotal' );
+	$shipping     = edd_get_option( 'edd_commissions_shipping', 'ignored' );
 
 	// loop through each purchased download and award commissions, if needed
 	foreach ( $cart_details as $download ) {
@@ -35,13 +37,13 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		$download_id         = absint( $download['id'] );
 		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
 
-		if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
+		if ( 'subtotal' == $calc_base ) {
 
 			$price = $download['subtotal'];
 
 		} else {
 
-			if ( 'total_pre_tax' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
+			if ( 'total_pre_tax' == $calc_base ) {
 
 				$price = $download['price'] - $download['tax'];
 
@@ -55,9 +57,23 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		}
 
 		if( ! empty( $download['fees'] ) ) {
-			foreach( $download['fees'] as $fee ) {
+
+			foreach( $download['fees'] as $fee_id => $fee ) {
+
+				if ( false !== strpos( $fee_id, 'shipping' ) ) {
+
+					// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
+					if( 'ignored' !== $shipping ) {
+
+						continue;
+
+					}
+
+				}
+
 				$price += $fee['amount'];
 			}
+
 		}
 
 		// if we need to award a commission, and the price is greater than zero
@@ -96,6 +112,26 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 					$commission_amount = eddc_calc_commission_amount( $args ); // calculate the commission amount to award
 					$currency          = $payment_data['currency'];
+
+					// If shipping is included or not included, we need to adjust the amount
+					if( ! empty( $download['fees'] ) && 'ignored' !== $shipping ) {
+
+						foreach( $download['fees'] as $fee_id => $fee ) {
+
+							if ( false !== strpos( $fee_id, 'shipping' ) ) {
+
+								// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
+								if( 'include_shipping' == $shipping ) {
+
+									$commission_amount += $fee['amount'];
+									
+								}
+
+							}
+
+						}
+
+					}
 
 					$commission = array(
 						'post_type'   => 'edd_commission',
