@@ -532,6 +532,7 @@ function eddc_user_commissions_graph( $user_id = 0 ) {
 			<?php
 
 			$args = array(
+				'user_id'        => $user_id,
 				'number'         => -1,
 				'query_args'     => array(
 					'date_query' => array(
