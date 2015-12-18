@@ -9,54 +9,57 @@
  * @return      array
 */
 function eddc_settings_extensions( $settings ) {
-	$commission_settings = array(
-		array(
-			'id'      => 'eddc_header',
-			'name'    => '<strong>' . __( 'Commissions Settings', 'eddc' ) . '</strong>',
-			'desc'    => '',
-			'type'    => 'header',
-			'size'    => 'regular'
-		),
-		array(
-			'id'      => 'edd_commissions_default_rate',
-			'name'    => __( 'Default rate', 'eddc' ),
-			'desc'    => __( 'Enter the default rate recipients should receive. This can be overwritten on a per-product basis. 10 = 10%', 'eddc' ),
-			'type'    => 'text',
-			'size'    => 'small'
-		),
-		array(
-			'id'      => 'edd_commissions_calc_base',
-			'name'    => __( 'Calculation Base', 'eddc' ),
-			'desc'    => __( 'Should commissions be calculated from the subtotal (before taxes and discounts) or from the total purchase amount (after taxes and discounts)? ', 'eddc' ),
+
+	$calc_options = array(
+		'subtotal'      => __( 'Subtotal (default)', 'eddc' ),
+		'total'         => __( 'Total with Taxes', 'eddc' ),
+		'total_pre_tax' => __( 'Total without Taxes', 'eddc' ),
+	);
+
+	$commission_settings = array();
+
+	$commission_settings[] = array(
+		'id'      => 'eddc_header',
+		'name'    => '<strong>' . __( 'Commissions Settings', 'eddc' ) . '</strong>',
+		'desc'    => '',
+		'type'    => 'header',
+		'size'    => 'regular'
+	);
+	$commission_settings[] = array(
+		'id'      => 'edd_commissions_default_rate',
+		'name'    => __( 'Default rate', 'eddc' ),
+		'desc'    => __( 'Enter the default rate recipients should receive. This can be overwritten on a per-product basis. 10 = 10%', 'eddc' ),
+		'type'    => 'text',
+		'size'    => 'small'
+	);
+	$commission_settings[] = array(
+		'id'      => 'edd_commissions_calc_base',
+		'name'    => __( 'Calculation Base', 'eddc' ),
+		'desc'    => __( 'Should commissions be calculated from the subtotal (before taxes and discounts) or from the total purchase amount (after taxes and discounts)? ', 'eddc' ),
+		'type'    => 'select',
+		'options' => $calc_options
+	);
+
+	if ( class_exists( 'EDD_Simple_Shipping' ) ) {
+		$commission_settings[] = array(
+			'id'      => 'edd_commissions_shipping',
+			'name'    => __( 'Shipping Fees', 'eddc' ),
+			'desc'    => __( 'How should shipping fees affect commission calculations?', 'eddc' ),
 			'type'    => 'select',
 			'options' => array(
-				'subtotal'      => __( 'Subtotal (default)', 'eddc' ),
-				'total'         => __( 'Total with Taxes', 'eddc' ),
-				'total_pre_tax' => __( 'Total without Taxes', 'eddc' ),
+				'ignored'          => __( 'Ignore shipping fees', 'eddc' ),
+				'include_shipping' => __( 'Shipping fee paid to recipient', 'eddc' ),
+				'exclude_shipping' => __( 'Shipping fee not paid to recipient', 'eddc' )
 			)
-		),
-		array(
-			'id' => 'edd_commissions_autopay_pa',
-			'name' => __('Instant Pay Commmissions', 'eddc'),
-			'desc' => sprintf( __('If checked and <a href="%s">PayPal Adaptive Payments</a> gateway is installed, EDD will automatically pay commissions at the time of purchase', 'eddc'), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
-			'type' => 'checkbox'
-        )
-		/*
-		array(
-			'id' => 'edd_commissions_autopay_schedule',
-			'name' => __( 'Payment schedule', 'eddc' ),
-			'desc' => sprintf( __( 'Note: Schedule will only work if Instant Pay is unchecked, and <a href="%s">PayPal Adaptive Payments</a> is installed', 'eddc' ), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
-			'type' => 'select',
-			'options' => array(
-				'weekly'   => __( 'Weekly', 'eddc' ),
-				'biweekly' => __( 'Biweekly', 'eddc' ),
-				'monthly'  => __( 'Monthly', 'eddc' ),
-				'manual'   => __( 'Manual', 'eddc' ),
-			),
-			'std' => 'manual'
-		)
-         */
-    );
+		);
+	}
+
+	$commission_settings[] = array(
+		'id' => 'edd_commissions_autopay_pa',
+		'name' => __('Instant Pay Commmissions', 'eddc'),
+		'desc' => sprintf( __('If checked and <a href="%s">PayPal Adaptive Payments</a> gateway is installed, EDD will automatically pay commissions at the time of purchase', 'eddc'), 'https://easydigitaldownloads.com/extensions/paypal-adaptive-payments/' ),
+		'type' => 'checkbox'
+	);
 
     return array_merge( $settings, $commission_settings );
 }
