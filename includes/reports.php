@@ -36,11 +36,13 @@ function edd_show_commissions_graph() {
 		case 'this_year' :
 		case 'last_quarter' :
 		case 'this_quarter' :
-			$day_by_day		= false;
+			$day_by_day = false;
 			break;
 		case 'other' :
-			if( ( $dates['m_end'] - $dates['m_start'] ) >= 2 ) {
-				$day_by_day 	= false;
+			if( $dates['m_end'] - $dates['m_start'] >= 2 || $dates['year_end'] > $dates['year'] && ( $dates['m_start'] != '12' && $dates['m_end'] != '1' ) ) {
+				$day_by_day = false;
+			} else {
+				$day_by_day = true;
 			}
 			break;
 	endswitch;
@@ -57,8 +59,8 @@ function edd_show_commissions_graph() {
 
 	if( $dates['range'] == 'today' ) {
 		// Hour by hour
-	   	$hour  = 1;
-	   	$month = date( 'n' );
+		$hour  = 1;
+		$month = date( 'n' );
 
 		while ( $hour <= 23 ) :
 
@@ -89,37 +91,87 @@ function edd_show_commissions_graph() {
 
 	} else {
 
-		$i = $dates['m_start'];
+		$y = $dates['year'];
 
-		while ( $i <= $dates['m_end'] ) :
+		while( $y <= $dates['year_end'] ) {
+			$last_year = false;
 
-			if ( $day_by_day ) :
+			if( $dates['year'] == $dates['year_end'] ) {
+				$month_start = (int) $dates['m_start'];
+				$month_end   = (int) $dates['m_end'];
+				$last_year   = true;
+			} elseif( $y == $dates['year'] ) {
+				$month_start = (int) $dates['m_start'];
+				$month_end   = 12;
+			} elseif ( $y == $dates['year_end'] ) {
+				$month_start = 1;
+				$month_end   = (int) $dates['m_end'];
+				$last_year   = true;
+			} else {
+				$month_start = 1;
+				$month_end   = 12;
+			}
 
-				$num_of_days = cal_days_in_month( CAL_GREGORIAN, $i, $dates['year'] );
-				$d           = 1;
+			$i = $month_start;
 
-				while ( $d <= $num_of_days ) :
+			while ( $i <= $month_end ) {
 
-					$date        = mktime( 0, 0, 0, $i, $d, $dates['year'] );
-					$commissions = edd_get_commissions_by_date( $d, $i, $dates['year'], null, $user );
+				if ( $day_by_day ) {
+
+					$d = $dates['day'];
+
+					if( $i == $month_end && $last_year ) {
+
+						$num_of_days = $dates['day_end'];
+
+						if ( $month_start <= $month_end ) {
+
+							$d = 1;
+
+						}
+
+					} else {
+
+						$num_of_days = cal_days_in_month( CAL_GREGORIAN, $i, $y );
+
+					}
+
+					while ( $d <= $num_of_days ) {
+
+						$date        = mktime( 0, 0, 0, $i, $d, $y );
+						$commissions = edd_get_commissions_by_date( $d, $i, $y, null, $user );
+						$total      += $commissions;
+						$data[]      = array( $date * 1000, (int) $commissions );
+						$d++;
+
+					}
+
+				} else {
+
+					if( $i == $month_end && $last_year ) {
+
+						$num_of_days = cal_days_in_month( CAL_GREGORIAN, $i, $y );
+
+					} else {
+
+						$num_of_days = 1;
+
+					}
+
+					$date        = mktime( 0, 0, 0, $i, $num_of_days, $y );
+					$commissions = edd_get_commissions_by_date( null, $i, $y, null, $user );
 					$total      += $commissions;
 					$data[]      = array( $date * 1000, (int) $commissions );
-					$d++;
 
-				endwhile;
+				}
 
-			else :
+				$i++;
 
-				$date        = mktime( 0, 0, 0, $i, 1, $dates['year'] );
-				$commissions = edd_get_commissions_by_date( null, $i, $dates['year'], null, $user );
-				$total      += $commissions;
-				$data[]      = array( $date * 1000, (int) $commissions );
+			}
 
-			endif;
+			$y++;
+		}
 
-			$i++;
-
-		endwhile;
 	}
 
 	$data = array(
