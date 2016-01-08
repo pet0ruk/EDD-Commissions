@@ -39,7 +39,7 @@ class EDD_C_List_Table extends WP_List_Table {
 		switch ( $column_name ) {
 			case 'rate':
 				$download = get_post_meta( $item['ID'], '_download_id', true );
-				$type = eddc_get_commission_type( $download );
+				$type     = eddc_get_commission_type( $download );
 				if( 'percentage' == $type )
 					return $item[ $column_name ] . '%';
 				else
@@ -80,12 +80,16 @@ class EDD_C_List_Table extends WP_List_Table {
 
 		$user = get_userdata( $item['user'] );
 
-		//Return the title contents
-		return sprintf( '%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
-			/*$1%s*/ '<a href="' . esc_url( add_query_arg( 'user', $user->ID ) ) . '" title="' . __( 'View all commissions for this user', 'eddc' ) . '"">' . $user->display_name . '</a>',
-			/*$2%s*/ $item['ID'],
-			/*$3%s*/ $this->row_actions( $actions )
-		);
+		if ( false !== $user ) {
+			//Return the title contents
+			return sprintf( '%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
+				/*$1%s*/ '<a href="' . esc_url( add_query_arg( 'user', $user->ID ) ) . '" title="' . __( 'View all commissions for this user', 'eddc' ) . '"">' . $user->display_name . '</a>',
+				/*$2%s*/ $item['ID'],
+				/*$3%s*/ $this->row_actions( $actions )
+			);
+		} else {
+			return '<em>' . __( 'Invalid User', 'eddc' ) . '</em>';
+		}
 	}
 
 	function column_cb( $item ) {
@@ -334,7 +338,12 @@ class EDD_C_List_Table extends WP_List_Table {
 				$commission_id   = get_the_ID();
 				$commission_info = get_post_meta( $commission_id, '_edd_commission_info', true );
 				$download_id     = get_post_meta( $commission_id, '_download_id', true );
-				$variation       = get_post_meta( $commission_id, '_edd_commission_download_variation', true );
+
+				$variation = '';
+				$has_variable_prices = edd_has_variable_prices( $download_id );
+				if ( $has_variable_prices ) {
+					$variation = get_post_meta( $commission_id, '_edd_commission_download_variation', true );
+				}
 
 				$commissions_data[] = array(
 					'ID'        => $commission_id,
