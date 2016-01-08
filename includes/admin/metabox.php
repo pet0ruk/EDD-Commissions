@@ -96,16 +96,39 @@ function eddc_download_meta_box_save( $post_id ) {
 
 		update_post_meta( $post_id, '_edd_commisions_enabled', true );
 
-		$new = isset( $_POST['edd_commission_settings'] ) ? $_POST['edd_commission_settings'] : false;
+		$new  = isset( $_POST['edd_commission_settings'] ) ? $_POST['edd_commission_settings'] : false;
+		$type = ! empty( $_POST['edd_commission_settings']['type'] ) ? $_POST['edd_commission_settings']['type'] : 'percentage';
+
 		if ( $new ) {
 			if( ! empty( $new['amount'] ) ) {
 				$new['amount'] = str_replace( '%', '', $new['amount'] );
 				$new['amount'] = str_replace( '$', '', $new['amount'] );
 
-				if ( $new['amount'] < 1 && 'percentage' === $_POST['edd_commission_settings']['type'] ) {
-					$new['amount'] = $new['amount'] * 100;
+				$values           = explode( ',', $new['amount'] );
+				$sanitized_values = array();
+
+				foreach ( $values as $key => $value ) {
+
+					switch( $type ) {
+						case 'flat':
+							$value = $value < 0 || ! is_numeric( $value ) ? 0 : $value;
+							break;
+						case 'percentage':
+						default:
+							if ( $value < 0 || ! is_numeric( $value ) ) {
+								$value = 0;
+							}
+
+							$value = $value < 1 ? $value * 100 : $value;
+							break;
+					}
+
+					$sanitized_values[ $key ] = round( $value, 2 );
+
 				}
-				$new['amount'] = trim( $new['amount'] );
+
+				$new_values    = implode( ',', $sanitized_values );
+				$new['amount'] = trim( $new_values );
 			}
 		}
 		update_post_meta( $post_id, '_edd_commission_settings', $new );

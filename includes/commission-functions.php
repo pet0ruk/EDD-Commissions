@@ -124,7 +124,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 								if( 'include_shipping' == $shipping ) {
 
 									$commission_amount += $fee['amount'];
-									
+
 								}
 
 							}
@@ -261,8 +261,10 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 
 	}
 
+	$rate = (float) $rate;
+
 	// Check for a user specific global rate
-	if( empty( $download_id ) || empty( $rate ) ) {
+	if( empty( $download_id ) || ( empty( $rate ) && 0 !== $rate ) ) {
 
 		$rate = get_user_meta( $user_id, 'eddc_user_rate', true );
 
@@ -273,7 +275,7 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 	}
 
 	// Check for an overall global rate
-	if( empty( $rate ) && eddc_get_default_rate() ) {
+	if( empty( $rate ) && 0 !== $rate && eddc_get_default_rate() ) {
 		$rate = eddc_get_default_rate();
 	}
 
@@ -748,9 +750,9 @@ function eddc_generate_payout_file( $data ) {
 add_action( 'edd_generate_payouts', 'eddc_generate_payout_file' );
 
 function eddc_generate_user_export_file( $data ) {
-	
+
 	$user_id = ! empty( $data['user_id'] ) ? intval( $data['user_id'] ) : get_current_user_id();
-	
+
 	if ( ( empty( $user_id ) || ! eddc_user_has_commissions( $user_id ) ) ) {
 		return;
 	}
