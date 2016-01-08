@@ -89,7 +89,9 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				$type = eddc_get_commission_type( $download_id );
 
 				// but if we have price variations, then we need to get the name of the variation
-				if ( edd_has_variable_prices( $download_id ) ) {
+				$has_variable_prices = edd_has_variable_prices( $download_id );
+
+				if ( $has_variable_prices ) {
 					$price_id  = edd_get_cart_item_price_id ( $download );
 					$variation = edd_get_price_option_name( $download_id, $price_id );
 				}
@@ -156,7 +158,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
 
 					// If we are dealing with a variation, then save variation info
-					if ( isset( $variation ) ) {
+					if ( $has_variable_prices && isset( $variation ) ) {
 						update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
 					}
 
