@@ -247,6 +247,8 @@ function eddc_get_recipients( $download_id = 0 ) {
 
 function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 
+	$rate = 0;
+
 	// Check for a rate specified on a specific product
 	if( ! empty( $download_id ) ) {
 
@@ -257,8 +259,6 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 
 		if( ! empty( $rates[ $rate_key ] ) ) {
 			$rate = $rates[ $rate_key ];
-		} else {
-			$rate = 0;
 		}
 
 	}
@@ -266,14 +266,14 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 	$rate = (float) $rate;
 
 	// Check for a user specific global rate
-	if( empty( $download_id ) || ( empty( $rate ) && 0 !== $rate ) ) {
+	if( ! empty( $user_id ) && ( empty( $download_id ) || ( empty( $rate ) && 0 !== $rate ) ) ) {
 
 		$rate = get_user_meta( $user_id, 'eddc_user_rate', true );
 
-		if( empty( $rate ) ) {
-			$rate = 0;
-		}
+	}
 
+	if( empty( $rate ) ) {
+		$rate = 0;
 	}
 
 	// Check for an overall global rate
