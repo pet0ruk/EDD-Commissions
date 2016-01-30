@@ -107,6 +107,12 @@ install_db() {
 	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
 }
 
+install_edd() {
+	wget -O /tmp/edd.zip https://github.com/easydigitaldownloads/Easy-Digital-Downloads/archive/master.zip
+	unzip -q /tmp/edd.zip -d $WP_CORE_DIR/wp-content/plugins/
+	mv $WP_CORE_DIR/wp-content/plugins/Easy-Digital-Downloads-master $WP_CORE_DIR/wp-content/plugins/Easy-Digital-Downloads
+}
 install_wp
 install_test_suite
 install_db
+install_edd

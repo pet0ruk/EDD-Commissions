@@ -6,9 +6,9 @@ build_settings:
 
 setup:
     mysql:
-        - "DROP DATABASE IF EXISTS edd_tests;"
-        - "CREATE DATABASE edd_tests;"
-        - "GRANT ALL PRIVILEGES ON edd_tests.* TO edd_tests@'localhost' IDENTIFIED BY 'edd_tests';"
+        - "DROP DATABASE IF EXISTS edd_commissions_tests;"
+        - "CREATE DATABASE edd_commissions_tests;"
+        - "GRANT ALL PRIVILEGES ON edd_commissions_tests.* TO edd_tests@'localhost' IDENTIFIED BY 'edd_commissions_tests';"
 
 test:
     php_unit:
@@ -22,4 +22,4 @@ test:
 
 complete:
     mysql:
-        - "DROP DATABASE IF EXISTS edd_tests;"
+        - "DROP DATABASE IF EXISTS edd_commissions_tests;"
