@@ -191,8 +191,29 @@ class Tests_EDD_Commissions_Functions extends WP_UnitTestCase {
 		update_user_meta( $this->_author->ID, 'eddc_user_rate', 2 );
 		$this->assertEquals( 1, eddc_get_recipient_rate( $this->_download->ID, $this->_user->ID ) );
 		$this->assertEquals( 2, eddc_get_recipient_rate( $this->_download->ID, $this->_author->ID ) );
+	}
 
+	public function test_get_recipient_rate_user_no_download() {
+		global $edd_options;
+		// Set a global rate
+		$edd_options['edd_commissions_default_rate'] = 1;
 
+		// Set a user level rate
+		update_user_meta( $this->_user->ID, 'eddc_user_rate', 2 );
+		$this->assertEquals( 2, eddc_get_recipient_rate( 0, $this->_user->ID ) );
+
+		update_user_meta( $this->_user->ID, 'eddc_user_rate', 0 );
+		$this->assertEquals( 0, eddc_get_recipient_rate( 0, $this->_user->ID ) );
+	}
+
+	public function test_get_recipient_rate_global_no_download() {
+		global $edd_options;
+		// Set a global rate
+		$edd_options['edd_commissions_default_rate'] = 1;
+
+		// Set a user level rate
+		update_user_meta( $this->_user->ID, 'eddc_user_rate', '' );
+		$this->assertEquals( 1, eddc_get_recipient_rate( 0, $this->_user->ID ) );
 	}
 
 }
