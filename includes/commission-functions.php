@@ -245,9 +245,24 @@ function eddc_get_recipients( $download_id = 0 ) {
 	return (array) apply_filters( 'eddc_get_recipients', $recipients, $download_id );
 }
 
+/**
+ *
+ * Retrieves the commission rate for a product and user
+ *
+ * If $download_id is empty, the default rate from the user account is retrieved.
+ * If no default rate is set on the user account, the global default is used.
+ *
+ * This function requires very strict typecasting to ensure the proper rates are used at all times.
+ *
+ * 0 is a permitted rate so we cannot use empty(). We always use NULL to check for non-existent values.
+ *
+ * @param  $download_id INT The ID of the download product to retrieve the commission rate for
+ * @param  $user_id     INT The user ID to retrieve commission rate for
+ * @return $rate        INT|FLOAT The commission rate
+ */
 function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 
-	$rate = 0;
+	$rate = null;
 
 	// Check for a rate specified on a specific product
 	if( ! empty( $download_id ) ) {
@@ -257,28 +272,31 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 		$recipients = array_map( 'trim', explode( ',', $settings['user_id'] ) );
 		$rate_key   = array_search( $user_id, $recipients );
 
-		if( ! empty( $rates[ $rate_key ] ) ) {
+		if( isset( $rates[ $rate_key ] ) ) {
 			$rate = $rates[ $rate_key ];
 		}
 
 	}
 
-	$rate = (float) $rate;
-
 	// Check for a user specific global rate
-	if( ! empty( $user_id ) && ( empty( $download_id ) || ( empty( $rate ) && 0 !== $rate ) ) ) {
+	if( ! empty( $user_id ) && null === $rate ) {
 
 		$rate = get_user_meta( $user_id, 'eddc_user_rate', true );
 
-	}
+		if( '' === $rate ) {
+			$rate = null;
+		}
 
-	if( empty( $rate ) ) {
-		$rate = 0;
 	}
 
 	// Check for an overall global rate
-	if( empty( $rate ) && 0 !== $rate && eddc_get_default_rate() ) {
+	if( null === $rate && eddc_get_default_rate() ) {
 		$rate = eddc_get_default_rate();
+	}
+
+	// Set rate to 0 if no rate was found
+	if( null === $rate || '' === $rate ) {
+		$rate = 0;
 	}
 
 	return apply_filters( 'eddc_get_recipient_rate', $rate, $download_id, $user_id );
