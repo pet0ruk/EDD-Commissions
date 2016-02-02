@@ -36,18 +36,23 @@ wp_update_user( array( 'ID' => 1, 'first_name' => 'Admin', 'last_name' => 'User'
 // Let's make some default users for later
 // `Author` can be used to make products that have commissions assigned to him
 $author = array(
-    'user_login'  =>  'author',
-    'roles'       =>  array( 'author' ),
-	'user_pass'   => NULL
+	'user_login'  =>  'author',
+	'roles'       =>  array( 'author' ),
+	'user_pass'   => NULL,
 );
 
 $author = wp_insert_user( $author ) ;
 
 // `Subscriber` can be used to check functions that should only work for commission recipients
 $subscriber = array(
-    'user_login'  =>  'subscriber',
-    'roles'       =>  array( 'subscriber' ),
-	'user_pass'   => NULL
+	'user_login'  =>  'subscriber',
+	'roles'       =>  array( 'subscriber' ),
+	'user_pass'   => NULL,
 );
 
 $subscriber = wp_insert_user( $subscriber ) ;
+
+
+// Include helpers
+require_once 'helpers/class-helper-download.php';
+require_once 'helpers/class-helper-payment.php';
