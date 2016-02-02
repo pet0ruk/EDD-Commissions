@@ -279,7 +279,7 @@ function eddc_get_recipient_rate( $download_id = 0, $user_id = 0 ) {
 	}
 
 	// Check for a user specific global rate
-	if( ! empty( $user_id ) && null === $rate ) {
+	if( ! empty( $user_id ) && ( null === $rate || '' === $rate ) ) {
 
 		$rate = get_user_meta( $user_id, 'eddc_user_rate', true );
 
