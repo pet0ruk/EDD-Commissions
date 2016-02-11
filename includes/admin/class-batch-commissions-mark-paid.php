@@ -112,16 +112,4 @@ class EDD_Batch_Commissions_Mark_Paid extends EDD_Batch_Export {
 		}
 	}
 
-	/**
-	 * Set the parameters necessary for this request
-	 *
-	 * @since  3.2
-	 * @param array $request The Form data sent in from the export request
-	 */
-	public function set_properties( $request ) {
-		$this->start   = isset( $request['start'] )   ? sanitize_text_field( $request['start'] )   : '';
-		$this->end     = isset( $request['end']  )    ? sanitize_text_field( $request['end']  )    : '';
-		$this->minimum = isset( $request['minimum'] ) ? sanitize_text_field( $request['minimum'] ) : 0;
-	}
-
 }
