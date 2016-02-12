@@ -29,6 +29,8 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	public $export_type = 'commissions_payout';
 	public $is_void     = true;
 
+	private $final_data = '';
+
 	/**
 	 * Set the CSV columns
 	 *
@@ -244,6 +246,11 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 
 			$this->done     = true;
 			$this->message  = '<p>' . __( 'Payout file generated successfully.', 'eddc' ) . '</p>';
+
+			foreach ( $this->final_data as $row ) {
+				$this->message .= $row['email'] . ': ' . $row['amount'] . '<br />';
+			}
+
 			$this->message .= '<p><a href="' . $download_url . '" class="eddc-download-payout-file button-primary">' . __( 'Download Payout File.', 'eddc' ) . '</a></p>';
 			return false;
 		}
@@ -280,9 +287,10 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 		}
 
 		$this->get_temp_file();
-		$temp_data = @file_get_contents( $this->temp_file );
-		$data      = json_decode( $temp_data );
-		$row_data  = '';
+		$temp_data        = @file_get_contents( $this->temp_file );
+		$data             = json_decode( $temp_data );
+		$row_data         = '';
+		$this->final_data = array();
 
 		if( $data ) {
 
@@ -312,7 +320,13 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 					$row_data .= $i == 3 ? '' : ',';
 					$i++;
 				}
+
 				$row_data .= "\r\n";
+
+				$this->final_data[] = array(
+					'email'  => $row->email,
+					'amount' => edd_currency_symbol( $row->currency ) . edd_format_amount( $row->amount, edd_currency_decimal_filter() ),
+				);
 
 				$ids_to_pay = array_merge( $ids_to_pay, $row->ids );
 

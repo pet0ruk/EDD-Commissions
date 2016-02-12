@@ -83,7 +83,8 @@ function edd_commissions_page() {
 					<?php wp_nonce_field( 'edd_ajax_export', 'edd_ajax_export' ); ?>
 					<input type="hidden" name="edd-export-class" value="EDD_Batch_Commissions_Mark_Paid"/>
 					<span>
-						<input type="submit" value="<?php _e( 'Mark as Paid', 'eddc' ); ?>" class="button-primary"/>
+						<input type="submit" value="<?php _e( 'Mark as Paid', 'eddc' ); ?>" class="button-primary"/>&nbsp;
+						<a href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions' ); ?>" class="button-secondary"><?php _e( 'Cancel', 'eddc' ); ?></a>
 						<span class="spinner"></span>
 					</span>
 					<p><?php _e( 'This will mark all unpaid commissions in the generated file as paid', 'eddc' ); ?></p>

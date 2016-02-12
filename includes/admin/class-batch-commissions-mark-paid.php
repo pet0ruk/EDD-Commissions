@@ -106,8 +106,10 @@ class EDD_Batch_Commissions_Mark_Paid extends EDD_Batch_Export {
 			return true;
 		} else {
 			delete_option( '_eddc_ids_to_pay' );
-			$this->done    = true;
-			$this->message = __( 'Commissions marked as paid.', 'eddc' );
+			$this->done     = true;
+			$this->message  = __( 'Commissions marked as paid.', 'eddc' );
+			// This allows the page to redirect to help with the UI
+			$this->message .= '<script>setTimeout(function(){ location.reload(); }, 2000);</script>';
 			return false;
 		}
 	}
