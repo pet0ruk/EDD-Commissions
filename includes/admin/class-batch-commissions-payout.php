@@ -227,6 +227,9 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 
 			// Make sure we start with a fresh file on step 1
 			@unlink( $this->file );
+
+			// Delete the ids to pay
+			delete_option( '_eddc_ids_to_pay' );
 			$this->print_csv_cols();
 		}
 
