@@ -254,7 +254,7 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 					$this->message .= $row['email'] . ': ' . $row['amount'] . '<br />';
 				}
 
-				$this->message .= '<p><a href="' . $download_url . '" class="eddc-download-payout-file button-primary">' . __( 'Download Payout File.', 'eddc' ) . '</a></p>';
+				$this->message .= '<p><a href="' . $download_url . '" class="eddc-download-payout-file button-primary">' . __( 'Download Payout File', 'eddc' ) . '</a></p>';
 			}
 
 			return false;
