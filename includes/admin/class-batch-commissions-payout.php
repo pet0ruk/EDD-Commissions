@@ -235,23 +235,28 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 		if( $rows ) {
 			return true;
 		} else {
-			$args = array_merge( $_REQUEST, array(
-				'step'       => $this->step,
-				'class'      => 'EDD_Batch_Commissions_Payout',
-				'nonce'      => wp_create_nonce( 'edd-batch-export' ),
-				'edd_action' => 'download_batch_export',
-			) );
-
-			$download_url = add_query_arg( $args, admin_url() );
-
 			$this->done     = true;
-			$this->message  = '<p>' . __( 'Payout file generated successfully.', 'eddc' ) . '</p>';
+			if ( empty( $this->final_data ) ) {
+				$this->message = __( 'No commissions found for specified dates and/or minimum', 'eddc' );
+			} else {
+				$args = array_merge( $_REQUEST, array(
+					'step'       => $this->step,
+					'class'      => 'EDD_Batch_Commissions_Payout',
+					'nonce'      => wp_create_nonce( 'edd-batch-export' ),
+					'edd_action' => 'download_batch_export',
+				) );
 
-			foreach ( $this->final_data as $row ) {
-				$this->message .= $row['email'] . ': ' . $row['amount'] . '<br />';
+				$download_url = add_query_arg( $args, admin_url() );
+
+				$this->message  = '<p>' . __( 'Payout file generated successfully.', 'eddc' ) . '</p>';
+
+				foreach ( $this->final_data as $row ) {
+					$this->message .= $row['email'] . ': ' . $row['amount'] . '<br />';
+				}
+
+				$this->message .= '<p><a href="' . $download_url . '" class="eddc-download-payout-file button-primary">' . __( 'Download Payout File.', 'eddc' ) . '</a></p>';
 			}
 
-			$this->message .= '<p><a href="' . $download_url . '" class="eddc-download-payout-file button-primary">' . __( 'Download Payout File.', 'eddc' ) . '</a></p>';
 			return false;
 		}
 
