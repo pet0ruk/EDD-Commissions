@@ -27,6 +27,9 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	 * @since 3.2
 	 */
 	public $export_type = 'commissions_payout';
+	public $is_void     = true;
+
+	private $final_data = '';
 
 	/**
 	 * Set the CSV columns
@@ -209,6 +212,60 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	}
 
 	/**
+	 * Process a step
+	 *
+	 * @since 2.5
+	 * @return bool
+	 */
+	public function process_step() {
+
+		if ( ! $this->can_export() ) {
+			wp_die( __( 'You do not have permission to export data.', 'easy-digital-downloads' ), __( 'Error', 'easy-digital-downloads' ), array( 'response' => 403 ) );
+		}
+
+		if( $this->step < 2 ) {
+
+			// Make sure we start with a fresh file on step 1
+			@unlink( $this->file );
+
+			// Delete the ids to pay
+			delete_option( '_eddc_ids_to_pay' );
+			$this->print_csv_cols();
+		}
+
+		$rows = $this->print_csv_rows();
+
+		if( $rows ) {
+			return true;
+		} else {
+			$this->done     = true;
+			if ( empty( $this->final_data ) ) {
+				$this->message = __( 'No commissions found for specified dates and/or minimum', 'eddc' );
+			} else {
+				$args = array_merge( $_REQUEST, array(
+					'step'       => $this->step,
+					'class'      => 'EDD_Batch_Commissions_Payout',
+					'nonce'      => wp_create_nonce( 'edd-batch-export' ),
+					'edd_action' => 'download_batch_export',
+				) );
+
+				$download_url = add_query_arg( $args, admin_url() );
+
+				$this->message  = '<p>' . __( 'Payout file generated successfully.', 'eddc' ) . '</p>';
+
+				foreach ( $this->final_data as $row ) {
+					$this->message .= $row['email'] . ': ' . $row['amount'] . '<br />';
+				}
+
+				$this->message .= '<p><a href="' . $download_url . '" class="eddc-download-payout-file button-primary">' . __( 'Download Payout File', 'eddc' ) . '</a></p>';
+			}
+
+			return false;
+		}
+
+	}
+
+	/**
 	 * Output the CSV columns
 	 *
 	 * @access public
@@ -232,55 +289,66 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	 * @return string|false
 	 */
 	public function print_csv_rows() {
-
 		$data = $this->get_data();
 		if ( ! empty( $data ) ) {
 			return $this->stash_temp_data( $data );
-		} else {
-			$this->get_temp_file();
-			$temp_data = @file_get_contents( $this->temp_file );
-			$data      = json_decode( $temp_data );
-			$row_data  = '';
+		}
 
-			if( $data ) {
+		$this->get_temp_file();
+		$temp_data        = @file_get_contents( $this->temp_file );
+		$data             = json_decode( $temp_data );
+		$row_data         = '';
+		$this->final_data = array();
 
-				// Output each row
-				foreach ( $data as $row ) {
+		if( $data ) {
 
-					if ( ! empty( $this->minimum ) && $this->minimum > $row->amount ) {
+			$ids_to_pay = array();
+
+			// Output each row
+			foreach ( $data as $row ) {
+
+				if ( ! empty( $this->minimum ) && $this->minimum > $row->amount ) {
+					continue;
+				}
+
+				$i = 1;
+				foreach ( $row as $col_id => $column ) {
+
+					if ( 'ids' === $col_id ) {
 						continue;
 					}
 
-					$i = 1;
-					foreach ( $row as $col_id => $column ) {
-
-						if ( 'ids' === $col_id ) {
-							continue;
-						}
-
-						switch( $col_id ) {
-							case 'amount':
-								$column = edd_format_amount( $column, 2 );
-								break;
-						}
-
-						$row_data .= '"' . addslashes( $column ) . '"';
-						$row_data .= $i == 3 ? '' : ',';
-						$i++;
-					}
-					$row_data .= "\r\n";
-
-					foreach ( $row->ids as $id ) {
-						eddc_set_commission_status( $id, 'paid' );
+					switch( $col_id ) {
+						case 'amount':
+							$column = edd_format_amount( $column, 2 );
+							break;
 					}
 
+					$row_data .= '"' . addslashes( $column ) . '"';
+					$row_data .= $i == 3 ? '' : ',';
+					$i++;
 				}
 
-				$this->stash_step_data( $row_data );
-				@unlink( $this->temp_file );
-				return false;
+				$row_data .= "\r\n";
+
+				$this->final_data[] = array(
+					'email'  => $row->email,
+					'amount' => edd_currency_symbol( $row->currency ) . edd_format_amount( $row->amount, edd_currency_decimal_filter() ),
+				);
+
+				$ids_to_pay = array_merge( $ids_to_pay, $row->ids );
 
 			}
+
+			$this->stash_step_data( $row_data );
+			@unlink( $this->temp_file );
+
+			if ( ! empty( $ids_to_pay ) ) {
+				update_option( '_eddc_ids_to_pay', $ids_to_pay );
+			}
+
+			return false;
+
 		}
 
 		return false;
