@@ -1,120 +1,132 @@
 # Copyright (C) 2015 Pippin Williamson
 # This file is distributed under the same license as the Easy Digital Downloads - Commissions package.
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Easy Digital Downloads - Commissions 3.1.2\n"
 "Report-Msgid-Bugs-To: Pippin Williamson <pippin@pippinsplugins.com>\n"
-"POT-Creation-Date: 2015-04-01 16:15:03+00:00\n"
+"POT-Creation-Date: 2016-02-15 13:00-0700\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Pippin Williamson <pippin@pippinsplugins.com>\n"
 "Language-Team: Easy Digital Downloads <support@easydigitaldownloads.com>\n"
-"X-Generator: grunt-wp-i18n 0.5.1\n"
-"X-Poedit-KeywordsList: "
-"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
-"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
+"X-Generator: Poedit 1.8.7\n"
+"X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;"
+"_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;"
+"esc_html_x:1,2c\n"
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Country: United States\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Basepath: ../\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-Bookmarks: \n"
+"X-Poedit-Basepath: ..\n"
 "X-Textdomain-Support: yes\n"
+"X-Poedit-SearchPath-0: .\n"
 
-#: includes/EDD_C_List_Table.php:49
+#: includes/EDD_C_List_Table.php:55
 msgid "View all commissions for this item"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:52
+#: includes/EDD_C_List_Table.php:58
 msgid "View payment details"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:64
+#: includes/EDD_C_List_Table.php:70
 msgid "Accept"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:66 includes/EDD_C_List_Table.php:124
+#: includes/EDD_C_List_Table.php:72 includes/EDD_C_List_Table.php:141
 msgid "Mark as Unpaid"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:68 includes/EDD_C_List_Table.php:123
+#: includes/EDD_C_List_Table.php:74 includes/EDD_C_List_Table.php:140
+#: includes/admin/list.php:86
 msgid "Mark as Paid"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:69
+#: includes/EDD_C_List_Table.php:75
 msgid "Revoke"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:71
+#: includes/EDD_C_List_Table.php:77
 msgid "Edit"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:72 includes/EDD_C_List_Table.php:126
+#: includes/EDD_C_List_Table.php:78 includes/EDD_C_List_Table.php:143
 msgid "Delete"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:79
+#: includes/EDD_C_List_Table.php:86
 msgid "View all commissions for this user"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:97
+#: includes/EDD_C_List_Table.php:91
+msgid "Invalid User"
+msgstr ""
+
+#: includes/EDD_C_List_Table.php:107
 msgid "User"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:99
+#: includes/EDD_C_List_Table.php:109
 msgid "Payment"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:100 includes/admin/add.php:34
-#: includes/admin/edit.php:30 includes/admin/widgets.php:60
-#: includes/admin/widgets.php:114 includes/short-codes.php:99
-#: includes/short-codes.php:157 includes/short-codes.php:214
+#: includes/EDD_C_List_Table.php:110 includes/admin/add.php:34
+#: includes/admin/customers.php:110 includes/admin/edit.php:30
+#: includes/admin/widgets.php:60 includes/admin/widgets.php:119
+#: includes/short-codes.php:244 includes/short-codes.php:307
+#: includes/short-codes.php:370
 msgid "Rate"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:101 includes/admin/add.php:43
-#: includes/admin/edit.php:39 includes/admin/widgets.php:59
-#: includes/admin/widgets.php:113 includes/class-commissions-export.php:99
-#: includes/short-codes.php:98 includes/short-codes.php:156
-#: includes/short-codes.php:213
+#: includes/EDD_C_List_Table.php:111 includes/admin/add.php:43
+#: includes/admin/customers.php:161 includes/admin/edit.php:39
+#: includes/admin/widgets.php:59 includes/admin/widgets.php:118
+#: includes/class-commissions-export.php:99 includes/short-codes.php:243
+#: includes/short-codes.php:306 includes/short-codes.php:369
 msgid "Amount"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:102
+#: includes/EDD_C_List_Table.php:112
 msgid "Status"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:103 includes/admin/widgets.php:61
-#: includes/admin/widgets.php:115 includes/class-commissions-export.php:100
-#: includes/short-codes.php:100
+#: includes/EDD_C_List_Table.php:113 includes/admin/widgets.php:61
+#: includes/admin/widgets.php:120 includes/class-commissions-export.php:100
+#: includes/short-codes.php:245 includes/short-codes.php:308
+#: includes/short-codes.php:371
 msgid "Date"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:112
+#: includes/EDD_C_List_Table.php:129
 msgid "All"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:113
+#: includes/EDD_C_List_Table.php:129 includes/EDD_C_List_Table.php:130
+#: includes/EDD_C_List_Table.php:131 includes/EDD_C_List_Table.php:132
+#, php-format
+msgctxt "post count"
+msgid "(%d)"
+msgstr ""
+
+#: includes/EDD_C_List_Table.php:130
 msgid "Unpaid"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:114
+#: includes/EDD_C_List_Table.php:131
 msgid "Revoked"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:115
+#: includes/EDD_C_List_Table.php:132
 msgid "Paid"
 msgstr ""
 
-#: includes/EDD_C_List_Table.php:125
+#: includes/EDD_C_List_Table.php:142
 msgid "Mark as Revoked"
 msgstr ""
 
-#: includes/admin/add.php:1 includes/admin/add.php:55
-#: includes/admin/list.php:57
+#: includes/admin/add.php:1 includes/admin/add.php:55 includes/admin/list.php:60
 msgid "Add Commission"
 msgstr ""
 
@@ -150,6 +162,103 @@ msgstr ""
 msgid "The total amount of this commission"
 msgstr ""
 
+#: includes/admin/class-batch-commissions-mark-paid.php:99
+#: includes/admin/class-batch-commissions-payout.php:227
+msgid "You do not have permission to export data."
+msgstr ""
+
+#: includes/admin/class-batch-commissions-mark-paid.php:99
+#: includes/admin/class-batch-commissions-payout.php:227
+#: includes/commission-functions.php:765
+msgid "Error"
+msgstr ""
+
+#: includes/admin/class-batch-commissions-mark-paid.php:110
+msgid "Commissions marked as paid."
+msgstr ""
+
+#: includes/admin/class-batch-commissions-payout.php:252
+msgid "No commissions found for specified dates and/or minimum amount."
+msgstr ""
+
+#: includes/admin/class-batch-commissions-payout.php:263
+msgid "Payout file generated successfully."
+msgstr ""
+
+#: includes/admin/class-batch-commissions-payout.php:269
+msgid "Download Payout File"
+msgstr ""
+
+#: includes/admin/customers.php:29 includes/admin/list.php:14
+#: includes/post-type.php:31 includes/reports.php:13 includes/reports.php:178
+#: includes/settings.php:11 includes/short-codes.php:626
+msgid "Commissions"
+msgstr ""
+
+#: includes/admin/customers.php:78 includes/admin/widgets.php:113
+#: includes/short-codes.php:300
+msgid "Paid Commissions"
+msgstr ""
+
+#: includes/admin/customers.php:82
+msgid "View All Paid Commissions"
+msgstr ""
+
+#: includes/admin/customers.php:83 includes/admin/customers.php:94
+#, php-format
+msgid "via %d sale"
+msgid_plural "via %d sales"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin/customers.php:89 includes/admin/widgets.php:54
+#: includes/short-codes.php:237
+msgid "Unpaid Commissions"
+msgstr ""
+
+#: includes/admin/customers.php:93
+msgid "View All Unpaid Commissions"
+msgstr ""
+
+#: includes/admin/customers.php:104
+#, php-format
+msgid "Commissioned %s"
+msgstr ""
+
+#: includes/admin/customers.php:111
+msgid "Actions"
+msgstr ""
+
+#: includes/admin/customers.php:131 includes/admin/customers.php:132
+#, php-format
+msgid "View %s"
+msgstr ""
+
+#: includes/admin/customers.php:138
+#, php-format
+msgid "No %s Found"
+msgstr ""
+
+#: includes/admin/customers.php:148
+msgid "Recent Unpaid Commissions"
+msgstr ""
+
+#: includes/admin/customers.php:159
+msgid "ID"
+msgstr ""
+
+#: includes/admin/customers.php:160 includes/admin/widgets.php:58
+#: includes/admin/widgets.php:117 includes/short-codes.php:55
+#: includes/short-codes.php:242 includes/short-codes.php:305
+#: includes/short-codes.php:368
+msgid "Item"
+msgstr ""
+
+#: includes/admin/customers.php:175 includes/admin/widgets.php:89
+#: includes/short-codes.php:275
+msgid "No unpaid commissions"
+msgstr ""
+
 #: includes/admin/edit.php:6 includes/post-type.php:23
 msgid "Edit Commission"
 msgstr ""
@@ -158,38 +267,78 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: includes/admin/list.php:14 includes/admin/list.php:57
+#: includes/admin/list.php:14 includes/admin/list.php:60
 msgid "Easy Digital Download Commissions"
 msgstr ""
 
-#: includes/admin/list.php:14 includes/post-type.php:31 includes/reports.php:13
-#: includes/reports.php:126
-msgid "Commissions"
+#: includes/admin/list.php:64
+msgid "Generate Payout File"
 msgstr ""
 
-#: includes/admin/list.php:63
+#: includes/admin/list.php:65
+msgid "Close"
+msgstr ""
+
+#: includes/admin/list.php:70
+msgid "Choose start date"
+msgstr ""
+
+#: includes/admin/list.php:71
+msgid "Choose end date"
+msgstr ""
+
+#: includes/admin/list.php:72
+msgid "Minimum"
+msgstr ""
+
+#: includes/admin/list.php:76
+msgid "Generate File"
+msgstr ""
+
+#: includes/admin/list.php:79
+msgid "This will generate a payout file for review."
+msgstr ""
+
+#: includes/admin/list.php:87
+msgid "Cancel"
+msgstr ""
+
+#: includes/admin/list.php:90
+msgid "This will mark all unpaid commissions in the generated file as paid"
+msgstr ""
+
+#: includes/admin/list.php:99
 msgid ""
-"Generating a payout file will mark all unpaid commissions as paid. Do you "
-"want to continue?"
+"Generating a payout file will mark all unpaid commissions as paid. Do you want "
+"to continue?"
 msgstr ""
 
-#: includes/admin/list.php:77
+#: includes/admin/list.php:113
 msgid "From - mm/dd/yyyy"
 msgstr ""
 
-#: includes/admin/list.php:78
+#: includes/admin/list.php:114
 msgid "To - mm/dd/yyyy"
 msgstr ""
 
-#: includes/admin/list.php:83
+#: includes/admin/list.php:119
 msgid "Generate Mass Payment File"
 msgstr ""
 
-#: includes/admin/list.php:97
+#: includes/admin/list.php:133
+#, php-format
+msgid "Showing commissions for: %s"
+msgstr ""
+
+#: includes/admin/list.php:135
+msgid "Search Users"
+msgstr ""
+
+#: includes/admin/list.php:143
 msgid "Total Unpaid:"
 msgstr ""
 
-#: includes/admin/list.php:159
+#: includes/admin/list.php:204
 msgid "You do not have permission to record commissions"
 msgstr ""
 
@@ -223,8 +372,8 @@ msgstr ""
 
 #: includes/admin/metabox.php:58
 msgid ""
-"Enter the user ID that should receive a commission of each sale. Separate "
-"user IDs by a comma."
+"Enter the user ID that should receive a commission of each sale. Separate user "
+"IDs by a comma."
 msgstr ""
 
 #: includes/admin/metabox.php:63
@@ -233,55 +382,38 @@ msgstr ""
 
 #: includes/admin/metabox.php:66
 msgid ""
-"Enter the amount the user(s) should receive of each sale. Separate rates by "
-"a comma."
+"Enter the amount the user(s) should receive of each sale. Separate rates by a "
+"comma."
 msgstr ""
 
 #: includes/admin/upgrades.php:25
+#, php-format
 msgid ""
-"Easy Digital Downloads needs to upgrade the commission records, click "
-"%shere%s to start the upgrade."
+"Easy Digital Downloads needs to upgrade the commission records, click %shere%s "
+"to start the upgrade."
 msgstr ""
 
 #: includes/admin/widgets.php:14
 msgid "Commissions Summary"
 msgstr ""
 
-#: includes/admin/widgets.php:54 includes/short-codes.php:92
-msgid "Unpaid Commissions"
-msgstr ""
-
-#: includes/admin/widgets.php:58 includes/admin/widgets.php:112
-#: includes/short-codes.php:21 includes/short-codes.php:97
-#: includes/short-codes.php:155 includes/short-codes.php:212
-msgid "Item"
-msgstr ""
-
-#: includes/admin/widgets.php:84 includes/short-codes.php:125
-msgid "No unpaid commissions"
-msgstr ""
-
-#: includes/admin/widgets.php:90 includes/short-codes.php:130
+#: includes/admin/widgets.php:95 includes/short-codes.php:280
 msgid "Total unpaid:"
 msgstr ""
 
-#: includes/admin/widgets.php:108 includes/short-codes.php:150
-msgid "Paid Commissions"
-msgstr ""
-
-#: includes/admin/widgets.php:138 includes/short-codes.php:182
+#: includes/admin/widgets.php:148 includes/short-codes.php:338
 msgid "No paid commissions"
 msgstr ""
 
-#: includes/admin/widgets.php:144 includes/short-codes.php:187
+#: includes/admin/widgets.php:154 includes/short-codes.php:343
 msgid "Total paid:"
 msgstr ""
 
-#: includes/admin/widgets.php:160 includes/short-codes.php:262
+#: includes/admin/widgets.php:170 includes/short-codes.php:439
 msgid "Export Paid Commissions"
 msgstr ""
 
-#: includes/admin/widgets.php:165 includes/short-codes.php:267
+#: includes/admin/widgets.php:175 includes/short-codes.php:445
 msgid "Download CSV"
 msgstr ""
 
@@ -289,16 +421,26 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: includes/commission-functions.php:654
+#: includes/commission-functions.php:765
 msgid "No commissions to be paid"
 msgstr ""
 
-#: includes/commission-functions.php:654
-msgid "Error"
+#: includes/commission-functions.php:803
+#, php-format
+msgid "Commission of %s recorded for %s &ndash; <a href=\"%s\">View</a>"
 msgstr ""
 
-#: includes/commission-functions.php:692
-msgid "Commission of %s recorded for %s &ndash; <a href=\"%s\">View</a>"
+#: includes/commissions-email-field.php:44
+msgctxt "FES Field title translation"
+msgid "PayPal Email"
+msgstr ""
+
+#: includes/commissions-email-field.php:129
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: includes/commissions-email-field.php:134
+msgid "Please fill out this field."
 msgstr ""
 
 #: includes/email-functions.php:21
@@ -306,6 +448,7 @@ msgid "Hello {name},"
 msgstr ""
 
 #: includes/email-functions.php:21
+#, php-format
 msgid "You have made a new sale on %s!"
 msgstr ""
 
@@ -326,10 +469,12 @@ msgid "Thank you"
 msgstr ""
 
 #: includes/email-functions.php:59
+#, php-format
 msgid "The name of the purchased %s"
 msgstr ""
 
 #: includes/email-functions.php:63
+#, php-format
 msgid "The value of the purchased %s"
 msgstr ""
 
@@ -349,7 +494,7 @@ msgstr ""
 msgid "The full name of the user"
 msgstr ""
 
-#: includes/email-functions.php:146 includes/settings.php:89
+#: includes/email-functions.php:146 includes/settings.php:109
 msgid "New Sale!"
 msgstr ""
 
@@ -358,6 +503,7 @@ msgid "No vendors found to pay. Maybe they haven't set a PayPal address?"
 msgstr ""
 
 #: includes/masspay/class-paypal-masspay.php:130
+#, php-format
 msgid "Error: %s"
 msgstr ""
 
@@ -374,24 +520,36 @@ msgstr ""
 
 #: includes/masspay/class-paypal-masspay.php:178
 msgid ""
-"Hello! A payment was just triggered to mass pay all vendors their due "
-"commission."
+"Hello! A payment was just triggered to mass pay all vendors their due commission."
 msgstr ""
 
 #: includes/masspay/class-paypal-masspay.php:179
+#, php-format
 msgid "Payment status: %s."
 msgstr ""
 
 #: includes/masspay/class-paypal-masspay.php:180
+#, php-format
 msgid "Payment message: %s."
 msgstr ""
 
 #: includes/masspay/class-paypal-masspay.php:183
+#, php-format
 msgid "Payment total: %s."
 msgstr ""
 
 #: includes/masspay/class-paypal-masspay.php:187
 msgid "EDD Commissions: Mass payments for vendors update"
+msgstr ""
+
+#: includes/post-type.php:19
+msgctxt "post type general name"
+msgid "Commissions"
+msgstr ""
+
+#: includes/post-type.php:20
+msgctxt "post type singular name"
+msgid "Commission"
 msgstr ""
 
 #: includes/post-type.php:21
@@ -426,19 +584,20 @@ msgstr ""
 msgid "No Commissions found in Trash"
 msgstr ""
 
-#: includes/reports.php:132
+#: includes/reports.php:184
 msgid "Commissions Paid Over Time"
 msgstr ""
 
-#: includes/reports.php:137
+#: includes/reports.php:189
+#, php-format
 msgid "Showing commissions paid to %s"
 msgstr ""
 
-#: includes/reports.php:138
+#: includes/reports.php:190
 msgid "clear"
 msgstr ""
 
-#: includes/reports.php:147
+#: includes/reports.php:199
 msgid "Total commissions for period shown: "
 msgstr ""
 
@@ -450,92 +609,174 @@ msgstr ""
 msgid "Once a month"
 msgstr ""
 
-#: includes/settings.php:15
-msgid "Commissions Settings"
-msgstr ""
-
-#: includes/settings.php:22
-msgid "Default rate"
-msgstr ""
-
-#: includes/settings.php:23
-msgid ""
-"Enter the default rate recipients should receive. This can be overwritten "
-"on a per-product basis. 10 = 10%"
-msgstr ""
-
-#: includes/settings.php:29
-msgid "Calculation Base"
-msgstr ""
-
-#: includes/settings.php:30
-msgid ""
-"Should commissions be calculated from the subtotal (before taxes and "
-"discounts) or from the total purchase amount (after taxes and discounts)? "
-msgstr ""
-
-#: includes/settings.php:33
+#: includes/settings.php:28
 msgid "Subtotal (default)"
 msgstr ""
 
-#: includes/settings.php:34
+#: includes/settings.php:29
 msgid "Total with Taxes"
 msgstr ""
 
-#: includes/settings.php:35
+#: includes/settings.php:30
 msgid "Total without Taxes"
 msgstr ""
 
-#: includes/settings.php:40
+#: includes/settings.php:36
+msgid "Commissions Settings"
+msgstr ""
+
+#: includes/settings.php:43
+msgid "Default rate"
+msgstr ""
+
+#: includes/settings.php:44
+msgid ""
+"Enter the default rate recipients should receive. This can be overwritten on a "
+"per-product basis. 10 = 10%"
+msgstr ""
+
+#: includes/settings.php:50
+msgid "Calculation Base"
+msgstr ""
+
+#: includes/settings.php:51
+msgid ""
+"Should commissions be calculated from the subtotal (before taxes and discounts) "
+"or from the total purchase amount (after taxes and discounts)? "
+msgstr ""
+
+#: includes/settings.php:57
 msgid "Instant Pay Commmissions"
 msgstr ""
 
-#: includes/settings.php:41
+#: includes/settings.php:58
+#, php-format
 msgid ""
-"If checked and <a href=\"%s\">PayPal Adaptive Payments</a> gateway is "
-"installed, EDD will automatically pay commissions at the time of purchase"
+"If checked and <a href=\"%s\">PayPal Adaptive Payments</a> gateway is installed, "
+"EDD will automatically pay commissions at the time of purchase"
 msgstr ""
 
-#: includes/settings.php:78
+#: includes/settings.php:66
+msgid "Shipping Fees"
+msgstr ""
+
+#: includes/settings.php:67
+msgid "How should shipping fees affect commission calculations?"
+msgstr ""
+
+#: includes/settings.php:70
+msgid "Ignore shipping fees"
+msgstr ""
+
+#: includes/settings.php:71
+msgid "Shipping fee paid to recipient"
+msgstr ""
+
+#: includes/settings.php:72
+msgid "Shipping fee not paid to recipient"
+msgstr ""
+
+#: includes/settings.php:98
 msgid "Commission Notifications"
 msgstr ""
 
-#: includes/settings.php:85
+#: includes/settings.php:105
 msgid "Email Subject"
 msgstr ""
 
-#: includes/settings.php:86
+#: includes/settings.php:106
 msgid "Enter the subject for commission emails."
 msgstr ""
 
-#: includes/settings.php:93
+#: includes/settings.php:113
 msgid "Email Body"
 msgstr ""
 
-#: includes/settings.php:94
+#: includes/settings.php:114
 msgid ""
-"Enter the content for commission emails. HTML is accepted. Available "
-"template tags:"
+"Enter the content for commission emails. HTML is accepted. Available template "
+"tags:"
 msgstr ""
 
-#: includes/short-codes.php:16
-msgid "Your Items"
+#: includes/short-codes.php:43
+msgid "Your Products"
 msgstr ""
 
-#: includes/short-codes.php:22
+#: includes/short-codes.php:46
+#, php-format
+msgid "%s's Products"
+msgstr ""
+
+#: includes/short-codes.php:56 includes/short-codes.php:590
 msgid "Sales"
 msgstr ""
 
-#: includes/short-codes.php:39
+#: includes/short-codes.php:73
 msgid "No item"
 msgstr ""
 
-#: includes/short-codes.php:207
+#: includes/short-codes.php:126
+msgid "Commissions Overview"
+msgstr ""
+
+#: includes/short-codes.php:129
+msgid "Unpaid Earnings"
+msgstr ""
+
+#: includes/short-codes.php:130
+msgid "Paid Earnings"
+msgstr ""
+
+#: includes/short-codes.php:131
+msgid "Revoked Earnings"
+msgstr ""
+
+#: includes/short-codes.php:142 includes/short-codes.php:162
+msgid "No commissions found"
+msgstr ""
+
+#: includes/short-codes.php:149
+msgid "Unpaid Sales"
+msgstr ""
+
+#: includes/short-codes.php:150
+msgid "Paid Sales"
+msgstr ""
+
+#: includes/short-codes.php:151
+msgid "Revoked Sales"
+msgstr ""
+
+#: includes/short-codes.php:363
 msgid "Revoked Commissions"
 msgstr ""
 
-#: includes/short-codes.php:239
+#: includes/short-codes.php:401
 msgid "No revoked commissions"
+msgstr ""
+
+#: includes/short-codes.php:406
+msgid "Total revoked:"
+msgstr ""
+
+#: includes/short-codes.php:520
+msgid "Commission Stats"
+msgstr ""
+
+#: includes/short-codes.php:528
+msgid "Filter"
+msgstr ""
+
+#: includes/short-codes.php:589
+msgid "Earnings"
+msgstr ""
+
+#: includes/short-codes.php:627
+msgid "PayPal Email Address"
+msgstr ""
+
+#: includes/short-codes.php:646
+msgid "PayPal email address must be a valid email address"
 msgstr ""
 
 #: includes/user-meta.php:5
@@ -548,8 +789,8 @@ msgstr ""
 
 #: includes/user-meta.php:12
 msgid ""
-"If the user's PayPal address is different than their account email, enter "
-"it here."
+"If the user's PayPal address is different than their account email, enter it "
+"here."
 msgstr ""
 
 #: includes/user-meta.php:16
@@ -558,8 +799,8 @@ msgstr ""
 
 #: includes/user-meta.php:19
 msgid ""
-"Enter a global commission rate for this user. If a rate is not specified "
-"for a product, this rate will be used."
+"Enter a global commission rate for this user. If a rate is not specified for a "
+"product, this rate will be used."
 msgstr ""
 
 #: includes/user-meta.php:24
@@ -570,18 +811,11 @@ msgstr ""
 msgid "If your PayPal address is different than your account email, enter it here."
 msgstr ""
 
-#. Description of the plugin/theme
-msgid ""
-"Record commisions automatically for users in your site when downloads are "
-"sold"
-msgstr ""
-
-#: includes/post-type.php:19
-msgctxt "post type general name"
-msgid "Commissions"
-msgstr ""
-
-#: includes/post-type.php:20
-msgctxt "post type singular name"
-msgid "Commission"
+#: tests/helpers/class-helper-payment.php:131
+#: tests/helpers/class-helper-payment.php:234
+#: tests/helpers/class-helper-payment.php:342
+#: tests/helpers/class-helper-payment.php:452
+#: tests/helpers/class-helper-payment.php:541
+#, php-format
+msgid "PayPal Transaction ID: %s"
 msgstr ""
