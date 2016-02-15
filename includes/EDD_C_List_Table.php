@@ -163,7 +163,7 @@ class EDD_C_List_Table extends WP_List_Table {
 	 *
 	 * @access      private
 	 * @since       1.7
-	 * @return      mixed Int if user ID, string if email or login
+	 * @return      integer Int if user ID, string if email or login
 	 */
 	function get_filtered_user() {
 		$user_id = ! empty( $_GET['user'] ) ? sanitize_text_field( $_GET['user'] ) : 0;
