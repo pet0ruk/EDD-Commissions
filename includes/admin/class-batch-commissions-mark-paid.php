@@ -8,7 +8,7 @@
  * @subpackage  Admin/Reports
  * @copyright   Copyright (c) 2015, Pippin Williamson
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
- * @since       3.2
+ * @since       3.2.8
  */
 
 // Exit if accessed directly
@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * EDD_Batch_Commissions_Mark_Paid Class
  *
- * @since 3.2
+ * @since 3.2.8
  */
 class EDD_Batch_Commissions_Mark_Paid extends EDD_Batch_Export {
 
 	/**
 	 * Our export type. Used for export-type specific filters/actions
 	 * @var string
-	 * @since 3.2
+	 * @since 3.2.8
 	 */
 	public $export_type = 'commissions_paid';
 	public $is_void     = true;
@@ -34,7 +34,7 @@ class EDD_Batch_Commissions_Mark_Paid extends EDD_Batch_Export {
 	 * Get the Export Data
 	 *
 	 * @access public
-	 * @since 3.2
+	 * @since 3.2.8
 	 * @global object $wpdb Used to query the database using the WordPress
 	 *   Database API
 	 * @return array $data The data for the CSV file
@@ -66,7 +66,7 @@ class EDD_Batch_Commissions_Mark_Paid extends EDD_Batch_Export {
 	/**
 	 * Return the calculated completion percentage
 	 *
-	 * @since 3.2
+	 * @since 3.2.8
 	 * @return int
 	 */
 	public function get_percentage_complete() {
@@ -90,7 +90,7 @@ class EDD_Batch_Commissions_Mark_Paid extends EDD_Batch_Export {
 	/**
 	 * Process a step
 	 *
-	 * @since 2.5
+	 * @since 3.2.8
 	 * @return bool
 	 */
 	public function process_step() {
