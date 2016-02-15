@@ -14,7 +14,10 @@
 	border-style: solid;
 	border-radius: 3px;
 	font-size: 13px;
-	line-height: 2.1em;
+}
+
+#edd-commissions-export-wrap .edd_datepicker {
+	height: 28px;
 }
 
 .eddc-medium-text {

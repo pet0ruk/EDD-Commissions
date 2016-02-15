@@ -28,6 +28,7 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	 */
 	public $export_type = 'commissions_payout';
 	public $is_void     = true;
+	public $is_empty    = false;
 
 	private $final_data = '';
 
@@ -120,31 +121,34 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 	 * @return int
 	 */
 	public function get_percentage_complete() {
+		$total = 0;
 
-		$from = explode( '/', $this->start );
-		$to   = explode( '/', $this->end );
+		if ( ! empty( $this->start ) && ! empty( $this->end ) ) {
+			$from  = explode( '/', $this->start );
+			$to    = explode( '/', $this->end );
 
-		$args = array(
-			'number'         => -1,
-			'query_args'     => array(
-				'date_query' => array(
-					'after'       => array(
-						'year'    => $from[2],
-						'month'   => $from[0],
-						'day'     => $from[1],
-					),
-					'before'      => array(
-						'year'    => $to[2],
-						'month'   => $to[0],
-						'day'     => $to[1],
-					),
-					'inclusive' => true
-				)
-			),
-		);
+			$args  = array(
+				'number'         => -1,
+				'query_args'     => array(
+					'date_query' => array(
+						'after'       => array(
+							'year'    => $from[2],
+							'month'   => $from[0],
+							'day'     => $from[1],
+						),
+						'before'      => array(
+							'year'    => $to[2],
+							'month'   => $to[0],
+							'day'     => $to[1],
+						),
+						'inclusive' => true
+					)
+				),
+			);
 
-		$commissions = eddc_get_unpaid_commissions( $args );
-		$total       = count( $commissions );
+			$commissions = eddc_get_unpaid_commissions( $args );
+			$total       = count( $commissions );
+		}
 
 		$percentage = 100;
 
@@ -231,6 +235,11 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 			// Delete the ids to pay
 			delete_option( '_eddc_ids_to_pay' );
 			$this->print_csv_cols();
+
+			if ( empty( $this->start ) || empty( $this->end ) ) {
+				$this->is_empty = true;
+				return false;
+			}
 		}
 
 		$rows = $this->print_csv_rows();
