@@ -249,7 +249,7 @@ class EDD_Batch_Commissions_Payout extends EDD_Batch_Export {
 		} else {
 			$this->done     = true;
 			if ( empty( $this->final_data ) ) {
-				$this->message = __( 'No commissions found for specified dates and/or minimum', 'eddc' );
+				$this->message = __( 'No commissions found for specified dates and/or minimum amount.', 'eddc' );
 			} else {
 				$args = array_merge( $_REQUEST, array(
 					'step'       => $this->step,
