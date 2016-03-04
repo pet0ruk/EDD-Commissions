@@ -66,17 +66,28 @@ function edd_commissions_page() {
 
 				<?php do_action( 'eddc_commissions_page_buttons' ); ?>
 
-				<form id="eddc-export-commissions" class="edd-export-form" method="post" style="display:none;">
-					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-start', 'name' => 'start', 'placeholder' => __( 'Choose start date', 'eddc' ) ) ); ?>
-					<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-end','name' => 'end', 'placeholder' => __( 'Choose end date', 'eddc' ) ) ); ?>
-					<input type="number" increment="0.01" class="eddc-medium-text" id="minimum" name="minimum" placeholder=" <?php _e( 'Minimum', 'eddc' ); ?>" />
+				<form id="eddc-export-commissions" class="eddc-export-form edd-export-form" method="post" style="display:none;">
+						<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-start', 'name' => 'start', 'placeholder' => __( 'Choose start date', 'eddc' ) ) ); ?>
+						<?php echo EDD()->html->date_field( array( 'id' => 'edd-payment-export-end','name' => 'end', 'placeholder' => __( 'Choose end date', 'eddc' ) ) ); ?>
+						<input type="number" increment="0.01" class="eddc-medium-text" id="minimum" name="minimum" placeholder=" <?php _e( 'Minimum', 'eddc' ); ?>" />
+						<?php wp_nonce_field( 'edd_ajax_export', 'edd_ajax_export' ); ?>
+						<input type="hidden" name="edd-export-class" value="EDD_Batch_Commissions_Payout"/>
+						<span>
+							<input type="submit" value="<?php _e( 'Generate File', 'eddc' ); ?>" class="button-secondary"/>
+							<span class="spinner"></span>
+						</span>
+						<p><?php _e( 'This will generate a payout file for review.', 'eddc' ); ?></p>
+				</form>
+
+				<form id="eddc-export-commissions-mark-as-paid" class="eddc-export-form edd-export-form" method="post" style="display: none;">
 					<?php wp_nonce_field( 'edd_ajax_export', 'edd_ajax_export' ); ?>
-					<input type="hidden" name="edd-export-class" value="EDD_Batch_Commissions_Payout"/>
+					<input type="hidden" name="edd-export-class" value="EDD_Batch_Commissions_Mark_Paid"/>
 					<span>
-						<input type="submit" value="<?php _e( 'Generate File', 'eddc' ); ?>" class="button-secondary"/>
+						<input type="submit" value="<?php _e( 'Mark as Paid', 'eddc' ); ?>" class="button-primary"/>&nbsp;
+						<a href="<?php echo admin_url( 'edit.php?post_type=download&page=edd-commissions' ); ?>" class="button-secondary"><?php _e( 'Cancel', 'eddc' ); ?></a>
 						<span class="spinner"></span>
 					</span>
-					<p><?php _e( 'This will mark all unpaid commissions in this timeframe as paid.', 'eddc' ); ?></p>
+					<p><?php _e( 'This will mark all unpaid commissions in the generated file as paid', 'eddc' ); ?></p>
 				</form>
 
 			</div>
@@ -248,6 +259,30 @@ function eddc_include_payouts_batch_processer( $class ) {
 
 	if ( 'EDD_Batch_Commissions_Payout' === $class ) {
 		require_once EDDC_PLUGIN_DIR . 'includes/admin/class-batch-commissions-payout.php';
+	}
+
+}
+
+/**
+ * Register the payouts batch exporter
+ * @since  2.4.2
+ */
+function eddc_register_mark_paid_batch_export() {
+	add_action( 'edd_batch_export_class_include', 'eddc_include_paid_batch_processer', 10, 1 );
+}
+add_action( 'edd_register_batch_exporter', 'eddc_register_mark_paid_batch_export', 10 );
+
+/**
+ * Loads the commissions payouts batch process if needed
+ *
+ * @since  2.4.2
+ * @param  string $class The class being requested to run for the batch export
+ * @return void
+ */
+function eddc_include_paid_batch_processer( $class ) {
+
+	if ( 'EDD_Batch_Commissions_Mark_Paid' === $class ) {
+		require_once EDDC_PLUGIN_DIR . 'includes/admin/class-batch-commissions-mark-paid.php';
 	}
 
 }
