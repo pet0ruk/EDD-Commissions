@@ -148,6 +148,10 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		$percentage = $val[1];
 		$remainder  = ( $percentage / 100 ) * $remaining;
 
+		if( ! $remainder > 0 ) {
+			continue;
+		}
+
 		if ( isset( $final[ $email ] ) ) {
 			$final[ $email ] = $final[ $email ] + $remainder;
 		} else {
