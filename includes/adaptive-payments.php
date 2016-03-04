@@ -24,7 +24,8 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		return $receivers;
 	}
 
-	$cart  = edd_get_payment_meta_cart_details( $payment_id );
+	$shipping = edd_get_option( 'edd_commissions_shipping', 'ignored' );
+	$cart     = edd_get_payment_meta_cart_details( $payment_id );
 	if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
 		$total = edd_get_payment_subtotal( $payment_id );
 	} else {
@@ -56,9 +57,23 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 		}
 
 		if( ! empty( $item['fees'] ) ) {
-			foreach( $item['fees'] as $fee ) {
+
+			foreach( $item['fees'] as $fee_id => $fee ) {
+
+				if ( false !== strpos( $fee_id, 'shipping' ) ) {
+
+					// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
+					if( 'ignored' !== $shipping ) {
+
+						continue;
+
+					}
+
+				}
+
 				$price += $fee['amount'];
 			}
+
 		}
 
 		foreach ( $recipients as $recipient ) {
@@ -74,7 +89,28 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 				'payment_id'  => $payment_id
 			);
 
-			$amount        = eddc_calc_commission_amount( $args );
+			$amount = eddc_calc_commission_amount( $args );
+
+			// If shipping is included or not included, we need to adjust the amount
+			if( ! empty( $item['fees'] ) && 'ignored' !== $shipping ) {
+
+				foreach( $item['fees'] as $fee_id => $fee ) {
+
+					if ( false !== strpos( $fee_id, 'shipping' ) ) {
+
+						// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
+						if( 'include_shipping' == $shipping ) {
+
+							$amount += $fee['amount'];
+
+						}
+
+					}
+
+				}
+
+			}
+
 			$percentage    = round( ( 100 / $total ) * $amount, 2 );
 			$user          = get_userdata( $recipient );
 			$custom_paypal = get_user_meta( $recipient, 'eddc_user_paypal', true );
