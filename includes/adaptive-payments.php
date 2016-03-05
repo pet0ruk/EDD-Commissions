@@ -105,6 +105,12 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 
 						}
 
+						if( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
+
+							$total += $fee['amount'];
+
+						}
+
 					}
 
 				}
@@ -125,7 +131,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 			}
 		}
 	}
-
+//	echo '<pre>'; print_r( $final ); echo '</pre>';
 	$return  = '';
 	$counter = 0;
 	$taken   = 0;
@@ -172,7 +178,7 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 
 	}
 
-	//echo '<pre>'; print_r( $return ); echo '</pre>'; exit;
+//	echo '<pre>'; print_r( $return ); echo '</pre>'; exit;
 
 	return $return;
 }
