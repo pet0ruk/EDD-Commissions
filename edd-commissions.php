@@ -5,7 +5,7 @@ Plugin URI: http://easydigitaldownloads.com/extension/commissions
 Description: Record commisions automatically for users in your site when downloads are sold
 Author: Easy Digital Downloads
 Author URI: https://easydigitaldownloads.com
-Version: 3.2.9
+Version: 3.2.10
 Text Domain: eddc
 Domain Path: languages
 */
@@ -30,7 +30,7 @@ if ( ! defined( 'EDDC_PLUGIN_FILE' ) ) {
 	define( 'EDDC_PLUGIN_FILE', __FILE__ );
 }
 
-define( 'EDD_COMMISSIONS_VERSION', '3.2.9' );
+define( 'EDD_COMMISSIONS_VERSION', '3.2.10' );
 
 
 /*
