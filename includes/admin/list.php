@@ -11,7 +11,7 @@
 function eddc_add_commissions_link() {
 	global $edd_commissions_page;
 
-	$edd_commissions_page = add_submenu_page('edit.php?post_type=download', __('Easy Digital Download Commissions', 'eddc'), __('Commissions', 'eddc'), 'shop_manager', 'edd-commissions', 'edd_commissions_page');
+	$edd_commissions_page = add_submenu_page('edit.php?post_type=download', __('Easy Digital Download Commissions', 'eddc'), __('Commissions', 'eddc'), 'view_shop_reports', 'edd-commissions', 'edd_commissions_page');
 }
 add_action('admin_menu', 'eddc_add_commissions_link', 10);
 
