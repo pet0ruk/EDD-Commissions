@@ -67,9 +67,9 @@ function eddc_settings_extensions( $settings ) {
 			'desc'    => __( 'How should shipping fees affect commission calculations?', 'eddc' ),
 			'type'    => 'select',
 			'options' => array(
-				'ignored'          => __( 'Ignore shipping fees', 'eddc' ),
-				'include_shipping' => __( 'Shipping fee paid to recipient', 'eddc' ),
-				'exclude_shipping' => __( 'Shipping fee not paid to recipient', 'eddc' ),
+				'ignored'          => __( 'Split shipping fees equally.', 'eddc' ),
+				'include_shipping' => __( 'Shipping fee paid to first user ID in product\'s Commission settings.', 'eddc' ),
+				'exclude_shipping' => __( 'Shipping fee paid to Store.', 'eddc' ),
 			),
 		);
 	}
