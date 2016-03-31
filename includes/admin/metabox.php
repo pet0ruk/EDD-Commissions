@@ -17,11 +17,12 @@ function eddc_render_commissions_meta_box() {
 
 	echo '<table class="form-table">';
 
-	$enabled = get_post_meta( $post->ID, '_edd_commisions_enabled', true ) ? true : false;
-	$meta    = get_post_meta( $post->ID, '_edd_commission_settings', true );
-	$user_id = isset( $meta['user_id'] ) ? $meta['user_id'] : '';
-	$amount  = isset( $meta['amount']  ) ? $meta['amount']  : '';
-	$type    = isset( $meta['type']    ) ? $meta['type']    : 'percentage';
+	$enabled       = get_post_meta( $post->ID, '_edd_commisions_enabled', true ) ? true : false;
+	$meta          = get_post_meta( $post->ID, '_edd_commission_settings', true );
+	$user_id       = isset( $meta['user_id']       ) ? $meta['user_id']       : '';
+	$amount        = isset( $meta['amount']        ) ? $meta['amount']        : '';
+	$type          = isset( $meta['type']          ) ? $meta['type']          : 'percentage';
+	$shipping_fee = isset( $meta['shipping_fee'] ) ? $meta['shipping_fee'] : 'site_default';
 
 	$display = $enabled ? '' : ' style="display:none";';
 
@@ -66,6 +67,26 @@ function eddc_render_commissions_meta_box() {
 			echo __( 'Enter the amount the user(s) should receive of each sale. Separate rates by a comma.', 'eddc' );
 		echo '<td>';
 	echo '</tr>';
+	
+	if ( class_exists( 'EDD_Simple_Shipping' ) ) {
+
+		echo '<tr' . $display . ' class="eddc_commission_row">';
+			echo '<th style="width:20%"><label for="edd_commission_shipping_fee">' . __ ( 'Shipping', 'eddc' ) . '</label></th>';
+			echo '<td class="edd_field_type_text">';
+				
+				echo '<select name="edd_commission_settings[shipping_fee]" id="edd_commission_shipping_fee">';
+				  echo '<option value="site_default" ' . selected( $shipping_fee, 'site_default', false ) . '>' . __( 'Use site-wide default.', 'eddc' ) . '</option>';
+				  echo '<option value="split_shipping" ' . selected( $shipping_fee, 'split_shipping', false ) . '>' . __( 'Split based on rate.', 'eddc' ) . '</option>';
+				  echo '<option value="pay_to_first_user" ' . selected( $shipping_fee, 'pay_to_first_user', false ) . '>' . __( 'Pay to 1st user.', 'eddc' ) . '</option>';
+				  echo '<option value="pay_to_store" ' . selected( $shipping_fee, 'pay_to_store', false ) . '>' . __( 'Pay to store.', 'eddc' ) . '</option>';
+				echo '</select>';
+				
+				echo __( 'How should the shipping fees be split?', 'eddc' );
+
+			echo '<td>';
+		echo '</tr>';
+	
+	}
 
 	echo '</table>';
 }
