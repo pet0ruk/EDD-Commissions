@@ -29,13 +29,40 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	$user_info    = maybe_unserialize( $payment_data['user_info'] );
 	$cart_details = edd_get_payment_meta_cart_details( $payment_id );
 	$calc_base    = edd_get_option( 'edd_commissions_calc_base', 'subtotal' );
-	$shipping     = edd_get_option( 'edd_commissions_shipping', 'ignored' );
-
+	$shipping     = edd_get_option( 'edd_commissions_shipping', 'split_shipping' );
+	
+	//Reset shipping fee value because originally they didn't make sense and are kept that way for backwards compatibility
+	if ( $shipping == 'ignored' ){
+		$shipping = 'split_shipping';	
+	}
+	elseif( $shipping == 'include_shipping' ){
+		$shipping = 'pay_to_first_user';
+	}
+	elseif( $shipping == 'exclude_shipping' ){
+		$shipping = 'pay_to_store';
+	}
+	
+	$variable_prices = array();
+	$temp_id_checker = array();
+	$current_variable_price_number = array();
+	
 	// loop through each purchased download and award commissions, if needed
 	foreach ( $cart_details as $download ) {
+		
+		if ( in_array( $download['id'], $already_purchased_ids ) ){
+			$current_variable_price_number[$download['id']] = $current_variable_price_number[$download['id']] + 1;
+		}
+		$already_purchased_ids[] = $download['id'];
+		$current_variable_price_number[$download['id']] = !isset( $current_variable_price_number[$download['id']] ) ? 0 : $current_variable_price_number[$download['id']];
 
 		$download_id         = absint( $download['id'] );
 		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
+		$commission_settings = get_post_meta( $download_id, '_edd_commission_settings', true );
+			
+		// Check if a special shipping setting has been applied to this product in particular and over-ride the site-default if so.
+		if ( isset( $commission_settings['shipping_fee'] ) && $commission_settings['shipping_fee'] !== 'site_default' ){
+			$shipping = $commission_settings['shipping_fee'];
+		}
 
 		if ( 'subtotal' == $calc_base ) {
 
@@ -56,33 +83,11 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 		}
 
-		if( ! empty( $download['fees'] ) ) {
-
-			foreach( $download['fees'] as $fee_id => $fee ) {
-
-				if ( false !== strpos( $fee_id, 'shipping' ) ) {
-
-					// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
-					if( 'ignored' !== $shipping ) {
-
-						continue;
-
-					}
-
-				}
-
-				$price += $fee['amount'];
-			}
-
-		}
-
 		// if we need to award a commission, and the price is greater than zero
 		if ( $commissions_enabled && floatval( $price ) > '0' ) {
 
 			// set a flag so downloads with commissions awarded are easy to query
 			update_post_meta( $download_id, '_edd_has_commission', true );
-
-			$commission_settings = get_post_meta( $download_id, '_edd_commission_settings', true );
 
 			if ( $commission_settings ) {
 
@@ -95,10 +100,11 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					$price_id  = edd_get_cart_item_price_id ( $download );
 					$variation = edd_get_price_option_name( $download_id, $price_id );
 				}
-
-
+								
 				$recipients = eddc_get_recipients( $download_id );
-
+				
+				$recipient_counter = 0;
+				
 				// Record a commission for each user
 				foreach( $recipients as $recipient ) {
 
@@ -115,18 +121,27 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					$commission_amount = eddc_calc_commission_amount( $args ); // calculate the commission amount to award
 					$currency          = $payment_data['currency'];
 
-					// If shipping is included or not included, we need to adjust the amount
-					if( ! empty( $download['fees'] ) && 'ignored' !== $shipping ) {
-
+					// If there are fees
+					if( !empty( $download['fees'] ) ) {
+						
+						//Loop through each fee
 						foreach( $download['fees'] as $fee_id => $fee ) {
+							
+							//If this is a shipping fee AND we are dealing with the corresponding fee to the corresponding 
+							if ( $fee_id == 'simple_shipping_' . $current_variable_price_number[$download_id] ){
+								
+								if ( 'split_shipping' == $shipping ){
+									$commission_amount += $fee['amount'] * ( $rate / 100 );
+								}
+								elseif( 'pay_to_first_user' == $shipping ) {
+									
+									if ( $recipient_counter == 0 ){
+										$commission_amount += $fee['amount'];
+									}
 
-							if ( false !== strpos( $fee_id, 'shipping' ) ) {
-
-								// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
-								if( 'include_shipping' == $shipping ) {
-
+								}
+								else{
 									$commission_amount += $fee['amount'];
-
 								}
 
 							}
@@ -168,6 +183,8 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					}
 
 					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
+					
+					$recipient_counter = $recipient_counter + 1;
 				}
 			}
 		}
