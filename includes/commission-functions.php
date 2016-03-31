@@ -42,8 +42,6 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 		$shipping = 'pay_to_store';
 	}
 	
-	$variable_prices = array();
-	$temp_id_checker = array();
 	$current_variable_price_number = array();
 	
 	// loop through each purchased download and award commissions, if needed
