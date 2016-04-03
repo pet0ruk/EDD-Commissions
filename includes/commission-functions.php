@@ -686,6 +686,40 @@ function edd_get_commissions_by_date( $day = null, $month = null, $year = null, 
 	return edd_sanitize_amount( $total );
 }
 
+function edd_get_commission_count_by_date( $day = null, $month = null, $year = null, $hour = null, $user = 0  ) {
+	$args = array(
+		'post_type'      => 'edd_commission',
+		'posts_per_page' => -1,
+		'year'           => $year,
+		'monthnum'       => $month,
+		'fields'         => 'ids',
+		'tax_query'      => array(
+			array(
+				'taxonomy' => 'edd_commission_status',
+				'terms'    => 'revoked',
+				'field'    => 'slug',
+				'operator' => 'NOT IN'
+			)
+		)
+	);
+	if ( ! empty( $day ) ) {
+		$args['day'] = $day;
+	}
+	if ( ! empty( $hour ) ) {
+		$args['hour'] = $hour;
+	}
+	if( ! empty( $user ) ) {
+		$args['meta_key']   = '_user_id';
+		$args['meta_value'] = absint( $user );
+	}
+	$args = apply_filters( 'edd_get_commission_count_by_date', $args, $day, $month, $year, $user );
+	$commissions = get_posts( $args );
+	if ( $commissions ) {
+		return count( $commissions );
+	} else {
+		return 0;
+	}
+}
 
 function eddc_generate_payout_file( $data ) {
 	if ( wp_verify_nonce( $data['eddc-payout-nonce'], 'eddc-payout-nonce' ) ) {
