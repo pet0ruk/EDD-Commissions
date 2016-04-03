@@ -692,7 +692,6 @@ function edd_get_commission_count_by_date( $day = null, $month = null, $year = n
 		'posts_per_page' => -1,
 		'year'           => $year,
 		'monthnum'       => $month,
-		'fields'         => 'ids',
 		'tax_query'      => array(
 			array(
 				'taxonomy' => 'edd_commission_status',
