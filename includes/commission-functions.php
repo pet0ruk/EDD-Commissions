@@ -43,6 +43,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	}
 	
 	$current_variable_price_number = array();
+	$already_purchased_ids = array();
 	
 	// loop through each purchased download and award commissions, if needed
 	foreach ( $cart_details as $download ) {
