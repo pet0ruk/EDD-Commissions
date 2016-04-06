@@ -82,7 +82,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 
 		}
 
-		// if we need to award a commission, and the price is greater than zero
+		// If we need to award a commission, and the price is greater than zero
 		if ( $commissions_enabled && floatval( $price ) > '0' ) {
 
 			// set a flag so downloads with commissions awarded are easy to query
