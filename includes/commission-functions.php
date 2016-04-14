@@ -44,16 +44,11 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	
 	$current_variable_price_number = array();
 	$already_purchased_ids = array();
+	$cart_item_counter = 0;
 	
 	// loop through each purchased download and award commissions, if needed
 	foreach ( $cart_details as $download ) {
-		
-		if ( in_array( $download['id'], $already_purchased_ids ) ){
-			$current_variable_price_number[$download['id']] = $current_variable_price_number[$download['id']] + 1;
-		}
-		$already_purchased_ids[] = $download['id'];
-		$current_variable_price_number[$download['id']] = !isset( $current_variable_price_number[$download['id']] ) ? 0 : $current_variable_price_number[$download['id']];
-
+				
 		$download_id         = absint( $download['id'] );
 		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
 		$commission_settings = get_post_meta( $download_id, '_edd_commission_settings', true );
@@ -125,21 +120,13 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 						
 						//Loop through each fee
 						foreach( $download['fees'] as $fee_id => $fee ) {
-							
-							//If this is a shipping fee AND we are dealing with the corresponding fee to the corresponding 
-							if ( $fee_id == 'simple_shipping_' . $current_variable_price_number[$download_id] ){
-								
-								if ( 'split_shipping' == $shipping ){
-									$commission_amount += $fee['amount'] * ( $rate / 100 );
-								}
-								elseif( 'pay_to_first_user' == $shipping ) {
-									
-									if ( $recipient_counter == 0 ){
-										$commission_amount += $fee['amount'];
-									}
-
-								}
-								else{
+															
+							if ( 'split_shipping' == $shipping ){
+								$commission_amount += $fee['amount'] * ( $rate / 100 );
+							}
+							elseif( 'pay_to_first_user' == $shipping ) {
+																									
+								if ( $recipient_counter == 0 ){
 									$commission_amount += $fee['amount'];
 								}
 
@@ -187,7 +174,11 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				}
 			}
 		}
+	
+		$cart_item_counter = $cart_item_counter + 1;
+	
 	}
+	
 }
 add_action( 'edd_update_payment_status', 'eddc_record_commission', 10, 3 );
 
