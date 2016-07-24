@@ -29,48 +29,31 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	$user_info    = maybe_unserialize( $payment_data['user_info'] );
 	$cart_details = edd_get_payment_meta_cart_details( $payment_id );
 	$calc_base    = edd_get_option( 'edd_commissions_calc_base', 'subtotal' );
-	$shipping     = edd_get_option( 'edd_commissions_shipping', 'split_shipping' );
-	
-	//Reset shipping fee value because originally they didn't make sense and are kept that way for backwards compatibility
-	if ( $shipping == 'ignored' ){
-		$shipping = 'split_shipping';	
-	}
-	elseif( $shipping == 'include_shipping' ){
-		$shipping = 'pay_to_first_user';
-	}
-	elseif( $shipping == 'exclude_shipping' ){
-		$shipping = 'pay_to_store';
-	}
 	
 	$current_variable_price_number = array();
 	$already_purchased_ids = array();
 	$cart_item_counter = 0;
 	
 	// loop through each purchased download and award commissions, if needed
-	foreach ( $cart_details as $download ) {
+	foreach ( $cart_details as $cart_item ) {
 				
-		$download_id         = absint( $download['id'] );
+		$download_id         = absint( $cart_item['id'] );
 		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
 		$commission_settings = get_post_meta( $download_id, '_edd_commission_settings', true );
-			
-		// Check if a special shipping setting has been applied to this product in particular and over-ride the site-default if so.
-		if ( isset( $commission_settings['shipping_fee'] ) && $commission_settings['shipping_fee'] !== 'site_default' ){
-			$shipping = $commission_settings['shipping_fee'];
-		}
 
 		if ( 'subtotal' == $calc_base ) {
 
-			$price = $download['subtotal'];
+			$price = $cart_item['subtotal'];
 
 		} else {
 
 			if ( 'total_pre_tax' == $calc_base ) {
 
-				$price = $download['price'] - $download['tax'];
+				$price = $cart_item['price'] - $cart_item['tax'];
 
 			} else {
 
-				$price = $download['price'];
+				$price = $cart_item['price'];
 
 			}
 
@@ -91,7 +74,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				$has_variable_prices = edd_has_variable_prices( $download_id );
 
 				if ( $has_variable_prices ) {
-					$price_id  = edd_get_cart_item_price_id ( $download );
+					$price_id  = edd_get_cart_item_price_id ( $cart_item );
 					$variation = edd_get_price_option_name( $download_id, $price_id );
 				}
 								
@@ -102,39 +85,20 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 				// Record a commission for each user
 				foreach( $recipients as $recipient ) {
 
-					$rate               = eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
-					$args               = array(
-						'price'         => $price,
-						'rate'          => $rate,
-						'type'          => $type,
-						'download_id'   => $download_id,
-						'recipient'     => $recipient,
-						'payment_id'    => $payment_id
+					$rate = eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
+					$args = array(
+						'price'         	=> $price,
+						'rate'          	=> $rate,
+						'type'          	=> $type,
+						'download_id'   	=> $download_id,
+						'cart_item' 		=> $cart_item,
+						'recipient'     	=> $recipient,
+						'recipient_counter' => $recipient_counter,
+						'payment_id'    	=> $payment_id
 					);
 
 					$commission_amount = eddc_calc_commission_amount( $args ); // calculate the commission amount to award
 					$currency          = $payment_data['currency'];
-
-					// If there are fees
-					if( !empty( $download['fees'] ) ) {
-						
-						//Loop through each fee
-						foreach( $download['fees'] as $fee_id => $fee ) {
-															
-							if ( 'split_shipping' == $shipping ){
-								$commission_amount += $fee['amount'] * ( $rate / 100 );
-							}
-							elseif( 'pay_to_first_user' == $shipping ) {
-																									
-								if ( $recipient_counter == 0 ){
-									$commission_amount += $fee['amount'];
-								}
-
-							}
-
-						}
-
-					}
 
 					$commission = array(
 						'post_type'   => 'edd_commission',
@@ -164,7 +128,7 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 					}
 
 					// If it's a renewal, save that detail
-					if ( ! empty( $download['item_number']['options']['is_renewal'] ) ) {
+					if ( ! empty( $cart_item['item_number']['options']['is_renewal'] ) ) {
 						update_post_meta( $commission_id, '_edd_commission_is_renewal', true );
 					}
 

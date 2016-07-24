@@ -66,6 +66,7 @@ include_once EDDC_PLUGIN_DIR . 'includes/post-type.php';
 include_once EDDC_PLUGIN_DIR . 'includes/user-meta.php';
 include_once EDDC_PLUGIN_DIR . 'includes/rest-api.php';
 include_once EDDC_PLUGIN_DIR . 'includes/short-codes.php';
+include_once EDDC_PLUGIN_DIR . 'includes/integrations/simple-shipping.php';
 
 if ( is_admin() ) {
 
