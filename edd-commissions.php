@@ -84,7 +84,7 @@ if ( is_admin() ) {
 	include_once EDDC_PLUGIN_DIR . 'includes/admin/customers.php';
 	include_once EDDC_PLUGIN_DIR . 'includes/EDD_C_List_Table.php';
 } else {
-	include_once EDDC_PLUGIN_DIR . 'includes/adaptive-payments.php';
+	include_once EDDC_PLUGIN_DIR . 'includes/integrations/paypal-adaptive-payments.php';
 }
 
 add_action( 'fes_load_fields_require', 'eddc_add_fes_functionality' );
