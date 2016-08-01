@@ -1,6 +1,108 @@
 <?php
 
 /**
+ * Helper function used by anything needing to calculate commissions for a payment ID.
+ *
+ * @since       3.2.11
+ * @param  		integer $payment_id The ID of the Payment for which we need to calculate commissions.
+ * @return      array of commissions that would need to be paid based on the payment id.
+ */
+function eddc_calculate_payment_commissions( $payment_id ){
+	
+	$commissions_calculated = array();
+	
+	$payment_data = edd_get_payment_meta( $payment_id );
+	$user_info    = maybe_unserialize( $payment_data['user_info'] );
+	$cart_details = edd_get_payment_meta_cart_details( $payment_id );
+	$calc_base    = edd_get_option( 'edd_commissions_calc_base', 'subtotal' );
+	
+	$current_variable_price_number = array();
+	$already_purchased_ids = array();
+	$cart_item_counter = 0;
+	
+	// loop through each purchased download and calculate commissions, if needed
+	foreach ( $cart_details as $cart_item ) {
+				
+		$download_id         = absint( $cart_item['id'] );
+		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
+		$commission_settings = get_post_meta( $download_id, '_edd_commission_settings', true );
+
+		if ( 'subtotal' == $calc_base ) {
+
+			$price = $cart_item['subtotal'];
+		} else {
+
+			if ( 'total_pre_tax' == $calc_base ) {
+
+				$price = $cart_item['price'] - $cart_item['tax'];
+			} else {
+
+				$price = $cart_item['price'];
+			}
+		}
+
+		// If we need to award a commission, and the price is greater than zero
+		if ( $commissions_enabled && floatval( $price ) > '0' ) {
+
+			if ( $commission_settings ) {
+
+				$type = eddc_get_commission_type( $download_id );
+
+				// but if we have price variations, then we need to get the name of the variation
+				$has_variable_prices = edd_has_variable_prices( $download_id );
+
+				if ( $has_variable_prices ) {
+					$price_id  = edd_get_cart_item_price_id ( $cart_item );
+					$variation = edd_get_price_option_name( $download_id, $price_id );
+				}
+								
+				$recipients = eddc_get_recipients( $download_id );
+				
+				$recipient_counter = 0;
+				
+				// Calculate a commission for each user
+				foreach( $recipients as $recipient ) {
+					
+					$rate = eddc_get_recipient_rate( $download_id, $recipient );
+										
+					$args = array(
+						'price'         	=> $price,
+						'rate'          	=> $rate,
+						'type'          	=> $type,
+						'download_id'   	=> $download_id,
+						'cart_item' 		=> $cart_item,
+						'recipient'     	=> $recipient,
+						'recipient_counter' => $recipient_counter,
+						'payment_id'    	=> $payment_id
+					);
+
+					$commission_amount = eddc_calc_commission_amount( $args ); // calculate the commission amount to award
+
+					$commissions_calculated[] = array(
+						'recipient' => $recipient, 
+						'commission_amount' => $commission_amount, 
+						'rate' => $rate, 
+						'download_id' => $download_id, 
+						'payment_id' => $payment_id ,
+						'currency' => $payment_data['currency'],
+						'has_variable_prices' => $has_variable_prices,
+						'price_id' => isset( $price_id ) ? $price_id : NULL,
+						'variation' => isset( $variation ) ? $variation : NULL,
+						'cart_item' => $cart_item
+					);
+					
+					$recipient_counter = $recipient_counter + 1;
+				}
+			}
+		}
+	
+		$cart_item_counter = $cart_item_counter + 1;
+	}
+	
+	return $commissions_calculated;
+}
+	
+/**
  * Record Commissions
  *
  * @access      private
@@ -24,122 +126,57 @@ function eddc_record_commission( $payment_id, $new_status, $old_status ) {
 	if( edd_get_payment_meta( $payment_id, '_edd_completed_date' ) ) {
 		return;
 	}
-
+	
+	$commissions_calculated = eddc_calculate_payment_commissions( $payment_id );
+	
 	$payment_data = edd_get_payment_meta( $payment_id );
 	$user_info    = maybe_unserialize( $payment_data['user_info'] );
-	$cart_details = edd_get_payment_meta_cart_details( $payment_id );
-	$calc_base    = edd_get_option( 'edd_commissions_calc_base', 'subtotal' );
 	
-	$current_variable_price_number = array();
-	$already_purchased_ids = array();
-	$cart_item_counter = 0;
-	
-	// loop through each purchased download and award commissions, if needed
-	foreach ( $cart_details as $cart_item ) {
+	// loop through each calculated commission and award commissions
+	foreach ( $commissions_calculated as $commission_calculated ) {
+		
+		extract( $commission_calculated );
 				
-		$download_id         = absint( $cart_item['id'] );
-		$commissions_enabled = get_post_meta( $download_id, '_edd_commisions_enabled', true );
-		$commission_settings = get_post_meta( $download_id, '_edd_commission_settings', true );
+		$download_id = absint( $download_id );
+		
+		// set a flag so downloads with commissions awarded are easy to query
+		update_post_meta( $download_id, '_edd_has_commission', true );
 
-		if ( 'subtotal' == $calc_base ) {
+		$type = eddc_get_commission_type( $download_id );
 
-			$price = $cart_item['subtotal'];
+		$commission_post_data = array(
+			'post_type'   => 'edd_commission',
+			'post_title'  => $user_info['email'] . ' - ' . get_the_title( $download_id ),
+			'post_status' => 'publish'
+		);
 
-		} else {
+		$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission_post_data ) );
 
-			if ( 'total_pre_tax' == $calc_base ) {
+		$commission_info = apply_filters( 'edd_commission_info', array( 
+			'user_id'  => $recipient,
+			'rate'     => $rate,
+			'amount'   => $commission_amount,
+			'currency' => $currency
+		), $commission_id, $payment_id, $download_id );
 
-				$price = $cart_item['price'] - $cart_item['tax'];
+		eddc_set_commission_status( $commission_id, 'unpaid' );
 
-			} else {
+		update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
+		update_post_meta( $commission_id, '_download_id', $download_id );
+		update_post_meta( $commission_id, '_user_id', $recipient );
+		update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
 
-				$price = $cart_item['price'];
-
-			}
-
-
+		// If we are dealing with a variation, then save variation info
+		if ( $has_variable_prices && !empty( $variation ) ) {
+			update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
 		}
 
-		// If we need to award a commission, and the price is greater than zero
-		if ( $commissions_enabled && floatval( $price ) > '0' ) {
-
-			// set a flag so downloads with commissions awarded are easy to query
-			update_post_meta( $download_id, '_edd_has_commission', true );
-
-			if ( $commission_settings ) {
-
-				$type = eddc_get_commission_type( $download_id );
-
-				// but if we have price variations, then we need to get the name of the variation
-				$has_variable_prices = edd_has_variable_prices( $download_id );
-
-				if ( $has_variable_prices ) {
-					$price_id  = edd_get_cart_item_price_id ( $cart_item );
-					$variation = edd_get_price_option_name( $download_id, $price_id );
-				}
-								
-				$recipients = eddc_get_recipients( $download_id );
-				
-				$recipient_counter = 0;
-				
-				// Record a commission for each user
-				foreach( $recipients as $recipient ) {
-
-					$rate = eddc_get_recipient_rate( $download_id, $recipient );    // percentage amount of download price
-					$args = array(
-						'price'         	=> $price,
-						'rate'          	=> $rate,
-						'type'          	=> $type,
-						'download_id'   	=> $download_id,
-						'cart_item' 		=> $cart_item,
-						'recipient'     	=> $recipient,
-						'recipient_counter' => $recipient_counter,
-						'payment_id'    	=> $payment_id
-					);
-
-					$commission_amount = eddc_calc_commission_amount( $args ); // calculate the commission amount to award
-					$currency          = $payment_data['currency'];
-
-					$commission = array(
-						'post_type'   => 'edd_commission',
-						'post_title'  => $user_info['email'] . ' - ' . get_the_title( $download_id ),
-						'post_status' => 'publish'
-					);
-
-					$commission_id = wp_insert_post( apply_filters( 'edd_commission_post_data', $commission ) );
-
-					$commission_info = apply_filters( 'edd_commission_info', array(
-						'user_id'  => $recipient,
-						'rate'     => $rate,
-						'amount'   => $commission_amount,
-						'currency' => $currency
-					), $commission_id, $payment_id, $download_id );
-
-					eddc_set_commission_status( $commission_id, 'unpaid' );
-
-					update_post_meta( $commission_id, '_edd_commission_info', $commission_info );
-					update_post_meta( $commission_id, '_download_id', $download_id );
-					update_post_meta( $commission_id, '_user_id', $recipient );
-					update_post_meta( $commission_id, '_edd_commission_payment_id', $payment_id );
-
-					// If we are dealing with a variation, then save variation info
-					if ( $has_variable_prices && isset( $variation ) ) {
-						update_post_meta( $commission_id, '_edd_commission_download_variation', $variation );
-					}
-
-					// If it's a renewal, save that detail
-					if ( ! empty( $cart_item['item_number']['options']['is_renewal'] ) ) {
-						update_post_meta( $commission_id, '_edd_commission_is_renewal', true );
-					}
-
-					do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
-					
-					$recipient_counter = $recipient_counter + 1;
-				}
-			}
+		// If it's a renewal, save that detail
+		if ( ! empty( $cart_item['item_number']['options']['is_renewal'] ) ) {
+			update_post_meta( $commission_id, '_edd_commission_is_renewal', true );
 		}
-	
-		$cart_item_counter = $cart_item_counter + 1;
+
+		do_action( 'eddc_insert_commission', $recipient, $commission_amount, $rate, $download_id, $commission_id, $payment_id );
 	
 	}
 	
