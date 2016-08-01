@@ -63,7 +63,7 @@ function eddc_include_shipping_calc_in_commission( $commission_amount, $args ){
 			}
 			elseif( 'pay_to_first_user' == $shipping ) {
 																					
-				if ( $args['recipient_counter'] == 0 ){
+				if ( eddc_get_recipient_position( $args['recipient'], $args['download_id'] ) == 0 ){
 					$commission_amount += $fee['amount'];
 				}
 			}
