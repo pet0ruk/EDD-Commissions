@@ -23,162 +23,46 @@ function eddc_paypal_adaptive_autopay( $receivers, $payment_id ) {
 	if( ! edd_get_option( 'edd_commissions_autopay_pa' ) ) {
 		return $receivers;
 	}
-
-	$shipping = edd_get_option( 'edd_commissions_shipping', 'ignored' );
-	$cart     = edd_get_payment_meta_cart_details( $payment_id );
-	if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-		$total = edd_get_payment_subtotal( $payment_id );
-	} else {
-		$total = edd_get_payment_amount( $payment_id );
-	}
-
-	$final = array();
-
-	foreach ( $cart as $item ) {
-
-		$recipients = eddc_get_recipients( $item['id'] );
-		
-		if ( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-
-			$price = $item['subtotal'];
-
-		} else {
-
-			if ( 'total_pre_tax' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-
-				$price = $item['price'] - $item['tax'];
-
-			} else {
-
-				$price = $item['price'];
-
-			}
-		
-		}
-
-		if( ! empty( $item['fees'] ) ) {
-
-			foreach( $item['fees'] as $fee_id => $fee ) {
-
-				if ( false !== strpos( $fee_id, 'shipping' ) ) {
-
-					// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
-					if( 'ignored' !== $shipping ) {
-
-						continue;
-
-					}
-
-				}
-
-				$price += $fee['amount'];
-			}
-
-		}
-
-		foreach ( $recipients as $recipient ) {
-
-			$type          = eddc_get_commission_type( $item['id'] );
-			$rate          = eddc_get_recipient_rate( $item['id'], $recipient );
-			$args          = array(
-				'price'       => $price,
-				'rate'        => $rate,
-				'type'        => $type,
-				'download_id' => $item['id'],
-				'recipient'   => $recipient,
-				'payment_id'  => $payment_id
-			);
-
-			$amount = eddc_calc_commission_amount( $args );
-
-			// If shipping is included or not included, we need to adjust the amount
-			if( ! empty( $item['fees'] ) && 'ignored' !== $shipping ) {
-
-				foreach( $item['fees'] as $fee_id => $fee ) {
-
-					if ( false !== strpos( $fee_id, 'shipping' ) ) {
-
-						// If we're adjusting the commission for shipping, we need to remove it from the calculation and then add it after the commission amount has been determined
-						if( 'include_shipping' == $shipping ) {
-
-							$amount += $fee['amount'];
-
-						}
-
-						if( 'subtotal' == edd_get_option( 'edd_commissions_calc_base', 'subtotal' ) ) {
-
-							$total += $fee['amount'];
-
-						}
-
-					}
-
-				}
-
-			}
-
-			$percentage    = round( ( 100 / $total ) * $amount, 2 );
-			$user          = get_userdata( $recipient );
-			$custom_paypal = get_user_meta( $recipient, 'eddc_user_paypal', true );
-			$email         = is_email( $custom_paypal ) ? $custom_paypal : $user->user_email;
-
-			if ( $percentage !== 0 ) {
-				if ( isset( $final[ $email ] ) ) {
-					$final[ $email ] = $percentage + $final[ $email ];
-				} else {
-					$final[ $email ] = $percentage;
-				}
-			}
-		}
-	}
-//	echo '<pre>'; print_r( $final ); echo '</pre>';
-	$return  = '';
+	
+	$paypal_adaptive_receivers = array();
+	
+	$commissions_calculated = eddc_calculate_payment_commissions( $payment_id );
+	
+	$payment = new EDD_Payment( $payment_id );
+	
+	$total_cost = $payment->total;
+	
 	$counter = 0;
-	$taken   = 0;
-
-	// Add up the total commissions
-	foreach ( $final as $person => $val ) {
-		$taken = $taken + $val;
-	}
-
-	// Calculate the final percentage the store owners should receive
-
-	$remaining = 100 - $taken;
-	$owners    = $receivers;
-	$owners    = explode( "\n", $owners );
-
-	foreach ( $owners as $key => $val ) {
-
-		$val        = explode( '|', $val );
-		$email      = $val[0];
-		$percentage = $val[1];
-		$remainder  = ( $percentage / 100 ) * $remaining;
-
-		if( ! $remainder > 0 ) {
-			continue;
+	
+	// Loop through each commission and add all commission amounts together if they are for the same recipient
+	foreach ( $commissions_calculated as $commission_calculated ) {
+		
+		extract( $commission_calculated );
+		
+		// If this recipient already has a commission listed from this payment, 
+		if ( in_array( $recipient, $paypal_adaptive_receivers ) ){
+			// Add the amount for this commission to the previous commission total for this recipient
+			$paypal_adaptive_receivers[$recipient] += $commission_amount;
+		} else{
+			$paypal_adaptive_receivers[$recipient] = $commission_amount;
 		}
-
-		if ( isset( $final[ $email ] ) ) {
-			$final[ $email ] = $final[ $email ] + $remainder;
-		} else {
-			$final[ $email ] = $remainder;
-		}
-
 	}
-
-	// Rebuild the final PayPal receivers string
-	foreach ( $final as $person => $val ) {
-
+	
+	// Rebuild the final PayPal Adaptive receivers string
+	foreach( $paypal_adaptive_receivers as $recipient => $commission_amount ){	
+		
+		$wp_user = get_user_by( 'id', $recipient );
+		
+		$rate = ( $commission_amount / $total_cost ) * 100;
+		
 		if ( $counter === 0) {
-			$return = $person . "|" . $val;
+			$return = $wp_user->user_email . "|" . $rate;
 		} else {
-			$return = $return . "\n" . $person . "|" . $val;
+			$return = $return . "\n" . $wp_user->user_email  . "|" . $rate;
 		}
+		
 		$counter++;
-
 	}
-
-//	echo '<pre>'; print_r( $return ); echo '</pre>'; exit;
 
 	return $return;
 }
