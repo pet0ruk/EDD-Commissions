@@ -217,6 +217,19 @@ function eddc_get_recipients( $download_id = 0 ) {
 }
 
 /**
+ * Check which position a recipient is in for a download's commission.
+ *
+ * @since    3.2.11
+ * @param  	 int $user_id The user id of the commission recipient (aka vendor).
+ * @param  	 int $download_id The download id being purchased
+ * @return   int $position The array position that the recipient is in.
+ */
+function eddc_get_recipient_position( $recipient_id, $download_id ){
+	$recipients = eddc_get_recipients( $download_id );
+	return array_search( $recipient_id, $recipients );
+}
+
+/**
  *
  * Retrieves the commission rate for a product and user
  *
